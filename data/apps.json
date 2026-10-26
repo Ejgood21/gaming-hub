@@ -1,0 +1,29 @@
+[
+  {
+    "id": "wow",
+    "title": "WoW Spec Playstyle Compass",
+    "description": "Find the playstyle that feels like you. Your next main starts here.",
+    "href": "/wow/",
+    "status": "shell",
+    "updated": "2026-10-26",
+    "icon": "compass"
+  },
+  {
+    "id": "tool-two",
+    "title": "Your next tool",
+    "description": "A little room for the next gaming rabbit hole.",
+    "href": "/placeholder/#tool-two",
+    "status": "coming-soon",
+    "updated": "2026-10-26",
+    "icon": "plus"
+  },
+  {
+    "id": "tool-three",
+    "title": "Something good ahead",
+    "description": "One more slot. No rush to fill it.",
+    "href": "/placeholder/#tool-three",
+    "status": "coming-soon",
+    "updated": "2026-10-26",
+    "icon": "plus"
+  }
+]

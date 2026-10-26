@@ -1,0 +1,42 @@
+[
+  {
+    "id": "the-duskbloods",
+    "title": "The Duskbloods",
+    "platform": "Switch 2 exclusive",
+    "status": "tba",
+    "date": null,
+    "window": "Expected 2026",
+    "note": "A new world from FromSoftware. Exact release date TBA.",
+    "art": "moon"
+  },
+  {
+    "id": "gta-6-pc",
+    "title": "GTA 6 on PC",
+    "platform": "PC",
+    "status": "unconfirmed",
+    "date": null,
+    "window": "Q1 2027?",
+    "note": "PC version unannounced; Q1 2027 is an unconfirmed report.",
+    "art": "sunset"
+  },
+  {
+    "id": "fellowship",
+    "title": "Fellowship 1.0",
+    "platform": "PC",
+    "status": "tba",
+    "date": null,
+    "window": "Date TBA",
+    "note": "Seasonal content ended after Season 3; watching for 1.0.",
+    "art": "crystal"
+  },
+  {
+    "id": "fable-pc",
+    "title": "Fable on PC",
+    "platform": "PC · Day-one Game Pass",
+    "status": "firm",
+    "date": "2027-02-23",
+    "window": "Tue, Feb 23, 2027",
+    "note": "Back to Albion. Available on Game Pass from day one.",
+    "art": "arch"
+  }
+]
