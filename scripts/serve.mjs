@@ -3,7 +3,7 @@ import { readFile, stat } from "node:fs/promises";
 import { watch } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { build, output, root } from "./build.mjs";
+import { build, normalizeBasePath, output, root } from "./build.mjs";
 
 const types = {
   ".html": "text/html; charset=utf-8",
@@ -22,10 +22,17 @@ const securityHeaders = Object.fromEntries(
       return [line.slice(0, index).trim(), line.slice(index + 1).trim()];
     }),
 );
-export function createStaticServer() {
+export function createStaticServer({
+  basePath = "/",
+  useSecurityHeaders = basePath === "/",
+} = {}) {
+  basePath = normalizeBasePath(basePath);
   return createServer(async (req, res) => {
-    for (const [name, value] of Object.entries(securityHeaders))
-      res.setHeader(name, value);
+    // GitHub Pages ignores _headers. Subpath previews model that behavior;
+    // the root development server retains the optional local-only headers.
+    if (useSecurityHeaders)
+      for (const [name, value] of Object.entries(securityHeaders))
+        res.setHeader(name, value);
     if (!["GET", "HEAD"].includes(req.method)) {
       res.writeHead(405, { Allow: "GET, HEAD" });
       res.end();
@@ -39,7 +46,21 @@ export function createStaticServer() {
         res.end();
         return;
       }
-      let file = path.resolve(output, `.${decoded}`);
+      if (basePath !== "/" && decoded === basePath.slice(0, -1)) {
+        res.writeHead(308, { Location: basePath + url.search });
+        res.end();
+        return;
+      }
+      if (!decoded.startsWith(basePath)) {
+        res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(
+          req.method === "HEAD"
+            ? undefined
+            : await readFile(path.join(output, "404.html")),
+        );
+        return;
+      }
+      let file = path.resolve(output, `./${decoded.slice(basePath.length)}`);
       if (file !== output && !file.startsWith(output + path.sep)) {
         res.writeHead(403);
         res.end();
@@ -79,12 +100,13 @@ if (
   process.argv[1] &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
-  await build();
-  const server = createStaticServer();
+  const basePath = normalizeBasePath(process.env.BASE_PATH ?? "/");
+  await build({ basePath });
+  const server = createStaticServer({ basePath });
   const port = Number(process.env.PORT || 4173);
   server.listen(port, "127.0.0.1", () =>
     console.log(
-      `Serving dist on port ${port}. ${process.argv.includes("--watch") ? "Watching source files; refresh the browser after edits." : ""}`,
+      `Serving dist at http://127.0.0.1:${port}${basePath}. ${process.argv.includes("--watch") ? "Watching source files; refresh the browser after edits." : ""}`,
     ),
   );
   if (process.argv.includes("--watch")) {
@@ -94,7 +116,7 @@ if (
       clearTimeout(timer);
       timer = setTimeout(() => {
         building = building
-          .then(build)
+          .then(() => build({ basePath }))
           .catch((error) => console.error("Build failed:", error.message));
       }, 120);
     };

@@ -1,6 +1,6 @@
 import { after, before, test } from "node:test";
 import assert from "node:assert/strict";
-import { readFile, readdir } from "node:fs/promises";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { build, output, root, validateData } from "../scripts/build.mjs";
 import { createStaticServer } from "../scripts/serve.mjs";
@@ -13,7 +13,7 @@ const apps = JSON.parse(
   await readFile(path.join(root, "data/apps.json"), "utf8"),
 );
 before(async () => {
-  await build();
+  await build({ basePath: "/" });
   server = createStaticServer();
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   base = `http://127.0.0.1:${server.address().port}`;
@@ -129,7 +129,7 @@ test("local assets and app card destinations resolve; external browser dependenc
   );
 });
 
-test("security headers forbid third-party code and connections, with no app authentication required", async () => {
+test("root-mode local preview retains legacy security headers", async () => {
   const response = await fetch(base + "/wow/");
   const csp = response.headers.get("content-security-policy");
   assert.match(csp, /default-src 'none'/);
@@ -175,7 +175,7 @@ test("bad hand-edited data fails the build validation with a useful diagnosis", 
 
 test("build is repeatable and exports no source, environment files, or provider credentials", async () => {
   const first = await readFile(path.join(output, "index.html"), "utf8");
-  await build();
+  await build({ basePath: "/" });
   assert.equal(await readFile(path.join(output, "index.html"), "utf8"), first);
   const walk = async (dir) => {
     for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -196,4 +196,128 @@ test("build is repeatable and exports no source, environment files, or provider 
     }
   };
   await walk(output);
+});
+
+test("Pages subpath resolves every page, asset and public data link without root aliases", async () => {
+  const basePath = "/gaming-hub/";
+  const fixture = path.join(root, "apps/your-tool");
+  let pagesServer;
+  // Exercise a future app without editing WoW content or the committed data.
+  await mkdir(fixture);
+  try {
+    await mkdir(path.join(fixture, "assets"));
+    await writeFile(
+      path.join(fixture, "index.html"),
+      `<!doctype html><html lang="en"><head>{{head}}<title>Base path fixture</title>
+      <link rel="stylesheet" href="/your-tool/assets/tool.css">
+      <script src="{{basePath}}your-tool/assets/tool.js" defer></script></head>
+      <body>{{header}}<main id="main"><a href="/data/releases.json">Release data</a>
+      <a href="{{basePath}}data/apps.json">App data</a>
+      <img src="/your-tool/assets/icon.svg" alt="Fixture icon"></main>{{footer}}</body></html>`,
+    );
+    await writeFile(
+      path.join(fixture, "assets/tool.css"),
+      '.art { background-image: url("/your-tool/assets/icon.svg"); }',
+    );
+    await writeFile(
+      path.join(fixture, "assets/tool.js"),
+      'const releaseData = "{{basePath}}data/releases.json";\n',
+    );
+    await writeFile(
+      path.join(fixture, "assets/icon.svg"),
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><path d="M0 0h1v1H0z"/></svg>',
+    );
+    await build({ basePath });
+    pagesServer = createStaticServer({ basePath });
+    await new Promise((resolve) => pagesServer.listen(0, "127.0.0.1", resolve));
+    const origin = `http://127.0.0.1:${pagesServer.address().port}`;
+    for (const route of ["", "wow/", "placeholder/", "your-tool/", "404.html"]) {
+      const response = await fetch(origin + basePath + route);
+      assert.equal(response.status, 200, route || "home");
+      const html = await response.text();
+      assert.doesNotMatch(html, /{{\w+}}/);
+      assert.match(html, /<meta name="robots" content="noindex, nofollow, noarchive">/);
+      for (const [, url] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+        if (url.startsWith("#")) {
+          assert.ok(html.includes(`id="${url.slice(1)}"`), `${route}: missing ${url}`);
+          continue;
+        }
+        assert.ok(url.startsWith(basePath), `${route}: escaped base path: ${url}`);
+        const target = await fetch(origin + url);
+        assert.equal(target.status, 200, `${route}: ${url}`);
+        const fragment = url.split("#")[1];
+        if (fragment)
+          assert.ok((await target.text()).includes(`id="${fragment}"`), url);
+      }
+      if (["", "wow/", "placeholder/"].includes(route))
+        assert.ok(html.includes(`href="${basePath + route}" aria-current="page"`));
+      // Pages ignores _headers; the mounted preview must not imply otherwise.
+      for (const header of [
+        "content-security-policy",
+        "referrer-policy",
+        "x-content-type-options",
+        "x-robots-tag",
+      ])
+        assert.equal(response.headers.get(header), null, header);
+    }
+    for (const [from, to] of [
+      ["/gaming-hub", basePath],
+      [basePath + "wow", basePath + "wow/"],
+    ]) {
+      const redirect = await fetch(origin + from, { redirect: "manual" });
+      assert.equal(redirect.status, 308, from);
+      assert.equal(redirect.headers.get("location"), to);
+    }
+    for (const wrongRoot of [
+      "/",
+      "/wow/",
+      "/placeholder/",
+      "/assets/site.css",
+      "/data/releases.json",
+    ])
+      assert.equal((await fetch(origin + wrongRoot)).status, 404, wrongRoot);
+    const missing = await fetch(origin + basePath + "not-an-app/");
+    assert.equal(missing.status, 404);
+    assert.match(await missing.text(), /OFF THE MAP/);
+    assert.equal((await fetch(origin + basePath + "wow/README.md")).status, 404);
+    assert.deepEqual(
+      await (await fetch(origin + basePath + "data/releases.json")).json(),
+      releases,
+    );
+    assert.deepEqual(
+      await (await fetch(origin + basePath + "data/apps.json")).json(),
+      apps.map((app) => ({ ...app, href: basePath + app.href.slice(1) })),
+    );
+    const css = await (
+      await fetch(origin + basePath + "your-tool/assets/tool.css")
+    ).text();
+    assert.match(css, /url\("\/gaming-hub\/your-tool\/assets\/icon\.svg"\)/);
+    const script = await (
+      await fetch(origin + basePath + "your-tool/assets/tool.js")
+    ).text();
+    assert.ok(script.includes('"/gaming-hub/data/releases.json"'));
+    assert.doesNotMatch(script, /{{\w+}}/);
+    const robots = await fetch(origin + basePath + "robots.txt");
+    assert.equal(robots.status, 200);
+    assert.match(await robots.text(), /Disallow: \//);
+  } finally {
+    if (pagesServer)
+      await new Promise((resolve, reject) =>
+        pagesServer.close((error) => (error ? reject(error) : resolve())),
+      );
+    await rm(fixture, { recursive: true, force: true });
+    await build({ basePath: "/" });
+  }
+});
+
+test("unsafe base paths fail before replacing the previous export", async () => {
+  const before = await readFile(path.join(output, "index.html"), "utf8");
+  for (const basePath of [
+    "https://example.com/",
+    "//example.com/",
+    "/../",
+    "/gaming-hub?query/",
+  ])
+    await assert.rejects(build({ basePath }));
+  assert.equal(await readFile(path.join(output, "index.html"), "utf8"), before);
 });
