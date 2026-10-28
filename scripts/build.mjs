@@ -12,6 +12,48 @@ import path from "node:path";
 
 export const root = fileURLToPath(new URL("../", import.meta.url));
 export const output = path.join(root, "dist");
+export function normalizeBasePath(value) {
+  if (
+    typeof value !== "string" ||
+    !/^\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]*$/.test(value)
+  )
+    throw new Error("BASE_PATH must be a local path such as / or /gaming-hub/");
+  return value.endsWith("/") ? value : `${value}/`;
+}
+const siteUrl = (url, basePath) =>
+  url.startsWith("/") && !url.startsWith("//")
+    ? basePath + url.slice(1)
+    : url;
+// Preserve source routes at /app/ while rendering deployable subpath URLs.
+// JS fetch/import URLs can use {{basePath}}; arbitrary JS strings are not rewritten.
+function withBasePath(source, basePath) {
+  return source
+    .replace(
+      /\b(href|src|action|poster)=(['"])(\/(?!\/)[^'"\s]*)\2/g,
+      (_, attribute, quote, url) =>
+        `${attribute}=${quote}${siteUrl(url, basePath)}${quote}`,
+    )
+    .replace(
+      /url\(\s*(['"]?)(\/(?!\/)[^'"\s)]*)\1\s*\)/g,
+      (_, quote, url) => `url(${quote}${siteUrl(url, basePath)}${quote})`,
+    )
+    .replaceAll("{{basePath}}", basePath);
+}
+async function copyPublicAssets(source, target, basePath) {
+  await cp(source, target, { recursive: true });
+  const rewrite = async (directory) => {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory()) await rewrite(file);
+      else if (/\.(?:css|js|svg|html)$/.test(entry.name))
+        await writeFile(
+          file,
+          withBasePath(await readFile(file, "utf8"), basePath),
+        );
+    }
+  };
+  await rewrite(target);
+}
 const escape = (value) =>
   String(value).replace(
     /[&<>"']/g,
@@ -157,7 +199,10 @@ function appCard(item) {
   <h3 id="app-${item.id}">${escape(item.title)}</h3><p>${escape(item.description)}</p><div class="tool-meta"><span>Last updated <time datetime="${item.updated}">${formatDate(item.updated)}</time></span><span class="tool-arrow" aria-hidden="true"><svg class="direction-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12 12 4M4 4h8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
 </a>`;
 }
-export async function build() {
+export async function build({
+  basePath = process.env.BASE_PATH ?? "/gaming-hub/",
+} = {}) {
+  basePath = normalizeBasePath(basePath);
   const releases = JSON.parse(
     await readFile(path.join(root, "data/releases.json"), "utf8"),
   );
@@ -191,17 +236,20 @@ export async function build() {
       );
   }
   const render = (html, route) =>
-    html.replace(
-      /{{(head|header|footer|releaseCards|appCards|compassIcon)}}/g,
-      (_, key) =>
-        ({
-          head,
-          header: header(route),
-          footer,
-          releaseCards: releases.map(releaseCard).join("\n"),
-          appCards: apps.map(appCard).join("\n"),
-          compassIcon: compass,
-        })[key],
+    withBasePath(
+      html.replace(
+        /{{(head|header|footer|releaseCards|appCards|compassIcon)}}/g,
+        (_, key) =>
+          ({
+            head,
+            header: header(route),
+            footer,
+            releaseCards: releases.map(releaseCard).join("\n"),
+            appCards: apps.map(appCard).join("\n"),
+            compassIcon: compass,
+          })[key],
+      ),
+      basePath,
     );
   await rm(output, { recursive: true, force: true });
   await mkdir(output, { recursive: true });
@@ -232,15 +280,28 @@ export async function build() {
           throw e;
         })
     ) {
-      await cp(assets, path.join(target, "assets"), { recursive: true });
+      await copyPublicAssets(assets, path.join(target, "assets"), basePath);
     }
   }
-  for (const file of ["assets", "data", "_headers", "robots.txt"])
+  await copyPublicAssets(
+    path.join(root, "assets"),
+    path.join(output, "assets"),
+    basePath,
+  );
+  for (const file of ["data", "_headers", "robots.txt"])
     await cp(path.join(root, file), path.join(output, file), {
       recursive: true,
     });
+  await writeFile(
+    path.join(output, "data/apps.json"),
+    JSON.stringify(
+      apps.map((app) => ({ ...app, href: siteUrl(app.href, basePath) })),
+      null,
+      2,
+    ) + "\n",
+  );
   console.log(
-    `Built dist/: home + ${directories.length} apps, ${releases.length} releases, ${apps.length} tool cards.`,
+    `Built dist/ for ${basePath}: home + ${directories.length} apps, ${releases.length} releases, ${apps.length} tool cards.`,
   );
 }
 if (
