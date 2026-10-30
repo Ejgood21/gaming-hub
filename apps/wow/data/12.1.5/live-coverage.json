@@ -18,7 +18,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/death-knight/blood",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/death-knight/blood/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/death-knight/blood/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "blood-death-knight:mythic_plus",
@@ -33,7 +41,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/death-knight/blood",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/death-knight/blood/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/death-knight/blood/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/blood/death-knight/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "frost-death-knight:raid",
@@ -48,7 +64,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/death-knight/frost",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/death-knight/frost/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/frost/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/frost/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/frost/death-knight/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "frost-death-knight:mythic_plus",
@@ -63,7 +87,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/death-knight/frost",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/death-knight/frost/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/frost/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/frost/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/frost/death-knight/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "unholy-death-knight:raid",
@@ -78,7 +110,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/death-knight/unholy",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/death-knight/unholy/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/unholy/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/unholy/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/unholy/death-knight/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "unholy-death-knight:mythic_plus",
@@ -93,7 +133,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/death-knight/unholy",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/death-knight/unholy/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/unholy/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/death-knight/unholy/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/unholy/death-knight/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "havoc-demon-hunter:raid",
@@ -108,7 +156,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/demon-hunter/havoc",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/demon-hunter/havoc/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/havoc/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/havoc/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/havoc/demon-hunter/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "havoc-demon-hunter:mythic_plus",
@@ -123,7 +179,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/demon-hunter/havoc",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/demon-hunter/havoc/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/havoc/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/havoc/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/havoc/demon-hunter/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "vengeance-demon-hunter:raid",
@@ -138,7 +202,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/demon-hunter/vengeance",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/vengeance/demon-hunter/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "vengeance-demon-hunter:mythic_plus",
@@ -153,7 +225,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/demon-hunter/vengeance",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/vengeance/demon-hunter/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "devourer-demon-hunter:raid",
@@ -168,7 +248,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/demon-hunter/devourer",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/demon-hunter/devourer/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/devourer/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/devourer/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/devourer/demon-hunter/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "devourer-demon-hunter:mythic_plus",
@@ -183,7 +271,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/demon-hunter/devourer",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/demon-hunter/devourer/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/devourer/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/demon-hunter/devourer/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/devourer/demon-hunter/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "balance-druid:raid",
@@ -198,7 +294,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/balance",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/balance/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/balance/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/balance/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/balance/druid/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "balance-druid:mythic_plus",
@@ -213,7 +317,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/balance",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/balance/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/balance/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/balance/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/balance/druid/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "feral-druid:raid",
@@ -228,7 +340,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/feral",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/feral/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/feral/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/feral/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/feral/druid/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "feral-druid:mythic_plus",
@@ -243,7 +363,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/feral",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/feral/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/feral/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/druid/feral/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/feral/druid/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "guardian-druid:raid",
@@ -258,7 +386,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/guardian",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/guardian/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/druid/guardian/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/druid/guardian/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/guardian/druid/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "guardian-druid:mythic_plus",
@@ -273,7 +409,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/guardian",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/guardian/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/druid/guardian/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/druid/guardian/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/guardian/druid/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "restoration-druid:raid",
@@ -288,7 +432,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/restoration",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/restoration/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/druid/restoration/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/druid/restoration/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/restoration/druid/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "restoration-druid:mythic_plus",
@@ -303,7 +455,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/druid/restoration",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/druid/restoration/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/druid/restoration/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/druid/restoration/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/restoration/druid/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "devastation-evoker:raid",
@@ -318,7 +478,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/evoker/devastation",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/evoker/devastation/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/devastation/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/devastation/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/devastation/evoker/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "devastation-evoker:mythic_plus",
@@ -333,7 +501,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/evoker/devastation",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/evoker/devastation/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/devastation/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/devastation/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/devastation/evoker/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "preservation-evoker:raid",
@@ -348,7 +524,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/evoker/preservation",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/evoker/preservation/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/evoker/preservation/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/evoker/preservation/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/preservation/evoker/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "preservation-evoker:mythic_plus",
@@ -363,7 +547,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/evoker/preservation",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/evoker/preservation/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/evoker/preservation/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/evoker/preservation/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/preservation/evoker/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "augmentation-evoker:raid",
@@ -378,7 +570,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/evoker/augmentation",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/evoker/augmentation/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/augmentation/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/augmentation/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/augmentation/evoker/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "augmentation-evoker:mythic_plus",
@@ -393,7 +593,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/evoker/augmentation",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/evoker/augmentation/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/augmentation/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/evoker/augmentation/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/augmentation/evoker/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "beast-mastery-hunter:raid",
@@ -408,7 +616,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/hunter/beast-mastery",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/hunter/beast-mastery/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/beast-mastery/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/beast-mastery/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/beast-mastery/hunter/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "beast-mastery-hunter:mythic_plus",
@@ -423,7 +639,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/hunter/beast-mastery",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/hunter/beast-mastery/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/beast-mastery/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/beast-mastery/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/beast-mastery/hunter/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "marksmanship-hunter:raid",
@@ -438,7 +662,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/hunter/marksmanship",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/hunter/marksmanship/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/marksmanship/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/marksmanship/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/marksmanship/hunter/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "marksmanship-hunter:mythic_plus",
@@ -453,7 +685,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/hunter/marksmanship",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/hunter/marksmanship/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/marksmanship/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/marksmanship/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/marksmanship/hunter/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "survival-hunter:raid",
@@ -468,7 +708,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/hunter/survival",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/hunter/survival/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/survival/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/survival/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/survival/hunter/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "survival-hunter:mythic_plus",
@@ -483,7 +731,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/hunter/survival",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/hunter/survival/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/survival/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/hunter/survival/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/survival/hunter/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "arcane-mage:raid",
@@ -498,7 +754,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/mage/arcane",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/mage/arcane/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/arcane/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/arcane/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/arcane/mage/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "arcane-mage:mythic_plus",
@@ -513,7 +777,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/mage/arcane",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/mage/arcane/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/arcane/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/arcane/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/arcane/mage/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "fire-mage:raid",
@@ -528,7 +800,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/mage/fire",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/mage/fire/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/fire/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/fire/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/fire/mage/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "fire-mage:mythic_plus",
@@ -543,7 +823,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/mage/fire",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/mage/fire/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/fire/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/fire/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/fire/mage/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "frost-mage:raid",
@@ -558,7 +846,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/mage/frost",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/mage/frost/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/frost/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/frost/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/frost/mage/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "frost-mage:mythic_plus",
@@ -573,7 +869,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/mage/frost",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/mage/frost/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/frost/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/mage/frost/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/frost/mage/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "brewmaster-monk:raid",
@@ -588,7 +892,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/monk/brewmaster",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/monk/brewmaster/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/monk/brewmaster/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/monk/brewmaster/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/brewmaster/monk/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "brewmaster-monk:mythic_plus",
@@ -603,7 +915,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/monk/brewmaster",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/monk/brewmaster/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/monk/brewmaster/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/monk/brewmaster/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/brewmaster/monk/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "mistweaver-monk:raid",
@@ -618,7 +938,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/monk/mistweaver",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/monk/mistweaver/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/monk/mistweaver/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/monk/mistweaver/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/mistweaver/monk/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "mistweaver-monk:mythic_plus",
@@ -633,7 +961,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/monk/mistweaver",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/monk/mistweaver/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/monk/mistweaver/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/monk/mistweaver/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/mistweaver/monk/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "windwalker-monk:raid",
@@ -648,7 +984,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/monk/windwalker",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/monk/windwalker/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/monk/windwalker/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/monk/windwalker/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/windwalker/monk/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "windwalker-monk:mythic_plus",
@@ -663,7 +1007,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/monk/windwalker",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/monk/windwalker/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/monk/windwalker/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/monk/windwalker/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/windwalker/monk/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "holy-paladin:raid",
@@ -678,7 +1030,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/paladin/holy",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/paladin/holy/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/paladin/holy/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/paladin/holy/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/holy/paladin/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "holy-paladin:mythic_plus",
@@ -693,7 +1053,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/paladin/holy",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/paladin/holy/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/paladin/holy/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/paladin/holy/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/holy/paladin/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "protection-paladin:raid",
@@ -708,7 +1076,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/paladin/protection",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/paladin/protection/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/paladin/protection/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/paladin/protection/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/protection/paladin/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "protection-paladin:mythic_plus",
@@ -723,7 +1099,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/paladin/protection",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/paladin/protection/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/paladin/protection/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/paladin/protection/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/protection/paladin/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "retribution-paladin:raid",
@@ -738,7 +1122,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/paladin/retribution",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/paladin/retribution/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/paladin/retribution/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/paladin/retribution/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/retribution/paladin/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "retribution-paladin:mythic_plus",
@@ -753,7 +1145,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/paladin/retribution",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/paladin/retribution/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/paladin/retribution/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/paladin/retribution/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/retribution/paladin/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "discipline-priest:raid",
@@ -768,7 +1168,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/priest/discipline",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/priest/discipline/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/discipline/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/discipline/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/discipline/priest/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "discipline-priest:mythic_plus",
@@ -783,7 +1191,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/priest/discipline",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/priest/discipline/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/discipline/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/discipline/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/discipline/priest/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "holy-priest:raid",
@@ -798,7 +1214,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/priest/holy",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/priest/holy/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/holy/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/holy/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/holy/priest/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "holy-priest:mythic_plus",
@@ -813,7 +1237,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/priest/holy",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/priest/holy/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/holy/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/priest/holy/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/holy/priest/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "shadow-priest:raid",
@@ -828,7 +1260,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/priest/shadow",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/priest/shadow/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/priest/shadow/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/priest/shadow/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/shadow/priest/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "shadow-priest:mythic_plus",
@@ -843,7 +1283,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/priest/shadow",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/priest/shadow/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/priest/shadow/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/priest/shadow/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/shadow/priest/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "assassination-rogue:raid",
@@ -858,7 +1306,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/rogue/assassination",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/rogue/assassination/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/assassination/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/assassination/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/assassination/rogue/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "assassination-rogue:mythic_plus",
@@ -873,7 +1329,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/rogue/assassination",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/rogue/assassination/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/assassination/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/assassination/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/assassination/rogue/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "outlaw-rogue:raid",
@@ -888,7 +1352,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/rogue/outlaw",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/rogue/outlaw/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/outlaw/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/outlaw/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/outlaw/rogue/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "outlaw-rogue:mythic_plus",
@@ -903,7 +1375,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/rogue/outlaw",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/rogue/outlaw/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/outlaw/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/outlaw/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/outlaw/rogue/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "subtlety-rogue:raid",
@@ -918,7 +1398,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/rogue/subtlety",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/rogue/subtlety/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/subtlety/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/subtlety/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/subtlety/rogue/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "subtlety-rogue:mythic_plus",
@@ -933,7 +1421,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/rogue/subtlety",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/rogue/subtlety/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/subtlety/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/rogue/subtlety/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/subtlety/rogue/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "elemental-shaman:raid",
@@ -948,7 +1444,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/shaman/elemental",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/shaman/elemental/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/elemental/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/elemental/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/elemental/shaman/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "elemental-shaman:mythic_plus",
@@ -963,7 +1467,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/shaman/elemental",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/shaman/elemental/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/elemental/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/elemental/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/elemental/shaman/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "enhancement-shaman:raid",
@@ -978,7 +1490,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/shaman/enhancement",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/shaman/enhancement/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/enhancement/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/enhancement/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/enhancement/shaman/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "enhancement-shaman:mythic_plus",
@@ -993,7 +1513,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/shaman/enhancement",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/shaman/enhancement/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/enhancement/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/shaman/enhancement/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/enhancement/shaman/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "restoration-shaman:raid",
@@ -1008,7 +1536,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/shaman/restoration",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/shaman/restoration/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/shaman/restoration/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/shaman/restoration/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/restoration/shaman/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "restoration-shaman:mythic_plus",
@@ -1023,7 +1559,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/shaman/restoration",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/shaman/restoration/rotation-cooldowns-pve-healer",
+        "https://www.wowhead.com/guide/classes/shaman/restoration/talent-builds-pve-healer",
+        "https://www.wowhead.com/guide/classes/shaman/restoration/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/restoration/shaman/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "affliction-warlock:raid",
@@ -1038,7 +1582,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warlock/affliction",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warlock/affliction/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/affliction/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/affliction/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/affliction/warlock/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "affliction-warlock:mythic_plus",
@@ -1053,7 +1605,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warlock/affliction",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warlock/affliction/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/affliction/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/affliction/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/affliction/warlock/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "demonology-warlock:raid",
@@ -1068,7 +1628,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warlock/demonology",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warlock/demonology/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/demonology/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/demonology/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/demonology/warlock/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "demonology-warlock:mythic_plus",
@@ -1083,7 +1651,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warlock/demonology",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warlock/demonology/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/demonology/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/demonology/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/demonology/warlock/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "destruction-warlock:raid",
@@ -1098,7 +1674,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warlock/destruction",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warlock/destruction/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/destruction/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/destruction/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/destruction/warlock/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "destruction-warlock:mythic_plus",
@@ -1113,7 +1697,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warlock/destruction",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warlock/destruction/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/destruction/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warlock/destruction/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/destruction/warlock/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "arms-warrior:raid",
@@ -1128,7 +1720,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warrior/arms",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warrior/arms/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/arms/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/arms/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/arms/warrior/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "arms-warrior:mythic_plus",
@@ -1143,7 +1743,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warrior/arms",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warrior/arms/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/arms/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/arms/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/arms/warrior/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "fury-warrior:raid",
@@ -1158,7 +1766,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warrior/fury",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warrior/fury/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/fury/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/fury/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/fury/warrior/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "fury-warrior:mythic_plus",
@@ -1173,7 +1789,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warrior/fury",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warrior/fury/rotation-cooldowns-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/fury/talent-builds-pve-dps",
+        "https://www.wowhead.com/guide/classes/warrior/fury/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/fury/warrior/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     },
     {
       "profile_id": "protection-warrior:raid",
@@ -1188,7 +1812,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "failed",
       "raid_representation": "unknown",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warrior/protection",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warrior/protection/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/warrior/protection/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/warrior/protection/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/protection/warrior/raid/overview/mythic/all-bosses",
+      "raiderio_url": "https://raider.io/api"
     },
     {
       "profile_id": "protection-warrior:mythic_plus",
@@ -1203,7 +1835,15 @@
       "warcraftlogs": "missing: optional adapter disabled",
       "required_source_coverage": "passed",
       "raid_representation": "not applicable",
-      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published"
+      "extraction_status": "Interrupted; saved workspace candidate not yet fully recovered or published",
+      "wowhead_url": "https://www.wowhead.com/guide/classes/warrior/protection",
+      "wowhead_section_urls": [
+        "https://www.wowhead.com/guide/classes/warrior/protection/rotation-cooldowns-pve-tank",
+        "https://www.wowhead.com/guide/classes/warrior/protection/talent-builds-pve-tank",
+        "https://www.wowhead.com/guide/classes/warrior/protection/bis-gear"
+      ],
+      "archon_url": "https://www.archon.gg/wow/builds/protection/warrior/mythic-plus/overview/10/all-dungeons/this-week",
+      "raiderio_url": "https://raider.io/api/v1/mythic-plus/runs?season=season-mn-2&region=us"
     }
   ],
   "publication_status": "blocked; previously validated profiles preserved",
@@ -1244,5 +1884,19 @@
     "Agent extraction was interrupted. Workspace recovery is pending; the new raw run and incomplete extraction remain unpushed.",
     "Strict finalization was attempted without allow-partial and failed before validation because Ajv was unavailable. Independently, required source coverage is unmet for all 40 raid profiles.",
     "npm and PyPI downloads received proxy CONNECT 403. No environment settings were changed."
-  ]
+  ],
+  "validation": {
+    "local": "Full npm checks blocked by unavailable dependencies; isolated parser checks passed. Interim unknown candidate passed Python JSON Schema validation.",
+    "github_actions": {
+      "commit": "3400e8877a36a413d045827af8782187d0721e84",
+      "workflow": "Check static hub",
+      "run_id": 40556637229,
+      "url": "https://github.com/Ejgood21/gaming-hub/actions/runs/40556637229",
+      "tests": 53,
+      "passed": 53,
+      "failed": 0,
+      "static_build": "passed"
+    },
+    "extraction": "No completed final extraction or successful strict data publication claimed."
+  }
 }

@@ -91,6 +91,8 @@ See [the live coverage report](data/12.1.5/live-coverage.md), [all 80 profile ro
 
 Finalization was attempted without `--allow-partial`; unavailable Ajv dependencies blocked the command before validation, and all 40 raid profiles also fail the required source gate. npm/PyPI downloads are denied by the environment policy. No environment settings were changed, and no full-coverage claim or merge has been made.
 
+GitHub Actions passed all **53 tests and the static build** for collector-fix commit `3400e887` ([workflow](https://github.com/Ejgood21/gaming-hub/actions/runs/40556637229)). This validates the committed code and preserved dataset; the interrupted new extraction is not published.
+
 The first-build dataset and browser checks are historical: the original build exercised Chromium at 1440, 820, 390, and 320px, including JavaScript-disabled reading. Those results do not establish that the interrupted live refresh has completed.
 
 ## Hosting and standalone use

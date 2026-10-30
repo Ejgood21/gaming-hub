@@ -30,7 +30,11 @@ Strict finalization was attempted **without** `--allow-partial`. It failed befor
 
 ## Validation limits
 
-The collector's source-fixture checks passed before workspace recovery, and the recovered parsing logic passed isolated synthetic checks for passive CAPTCHA configuration, real challenges, author prose, patch badges, and comment rejection. Full npm validation/build could not complete: `registry.npmjs.org` and PyPI package downloads returned proxy CONNECT 403, and no usable offline dependencies were available. Python JSON Schema validation passed for the interim unknown candidate; that is not validation of a completed final extraction.
+The collector's source-fixture checks passed before workspace recovery, and the recovered parsing logic passed isolated synthetic checks for passive CAPTCHA configuration, real challenges, author prose, patch badges, and comment rejection. Full npm validation/build could not complete in the local collector workspace: `registry.npmjs.org` and PyPI package downloads returned proxy CONNECT 403, and no usable offline dependencies were available. Python JSON Schema validation passed for the interim unknown candidate; that is not validation of a completed final extraction.
+
+GitHub Actions subsequently installed the existing lockfile dependencies and passed **all 53 tests and the static build** for collector-fix commit `3400e887`. [Verified workflow run](https://github.com/Ejgood21/gaming-hub/actions/runs/40556637229). These checks validate the committed code and preserved dashboard data; they do not establish a completed new extraction.
+
+CSV/JSON rows retain the attempted source URLs as provenance for each profile.
 
 No environment settings were changed. The PR remains a draft and has not been merged.
 
