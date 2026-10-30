@@ -1,0 +1,24 @@
+{
+  "region": "us",
+  "max_concurrency": 4,
+  "request_timeout_seconds": 18,
+  "preferred_creators": ["AutomaticJak", "Ellesmere", "megasett", "Sha", "Dorki", "Tactyks", "WindwalkerPOV", "bicepspump", "biceps-pump"],
+  "youtube": {"max_results": 12, "max_age_days": 120},
+  "season_override": {
+    "patch": "12.1.5",
+    "expansion": "Midnight",
+    "name": "Midnight Season 2",
+    "slug": "season-mn-2",
+    "number": 2,
+    "patch_started_at": "2026-10-13T00:00:00Z",
+    "source": "config fallback; verify against live sources on every refresh",
+    "reference_url": "https://news.blizzard.com/en-us/article/24307306/midnight-s-12-1-5-content-update-is-now-live"
+  },
+  "wowhead": {"base_url": "https://www.wowhead.com/guide/classes", "sections": ["rotation-cooldowns", "talent-builds", "gear"]},
+  "archon": {
+    "mythic_plus_template": "https://www.archon.gg/wow/builds/{spec}/{class}/mythic-plus/overview/10/all-dungeons/this-week",
+    "raid_template": "https://www.archon.gg/wow/builds/{spec}/{class}/raid/overview/mythic/all-bosses"
+  },
+  "raiderio": {"sample_pages": 3, "page_size_note": "Public API determines page size; sample is top runs only, never the full population."},
+  "warcraftlogs": {"enabled": false, "zone_id": null}
+}

@@ -1,0 +1,3300 @@
+{
+  "generated_at": "2026-10-26T17:13:44.438385Z",
+  "patch": "12.1.5",
+  "method": "Codex-agent extraction from full current-patch Method guide text returned by web research tools. Qualitative fallback only. Classifications are guide-grounded interpretations; no pick-rate or viability claims inferred.",
+  "profiles": [
+    {
+      "spec_id": "fire-mage",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Hot Streak still drives damage; at five targets Flamestrike replaces the single-target payoff.",
+          "key_abilities": [
+            "Hot Streak",
+            "Flamestrike",
+            "Pyroblast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Hot Streak still drives damage; at five targets Flamestrike replaces the single-target payoff."
+        },
+        "resource_model": {
+          "value": "proc-driven",
+          "explanation": "Fireball crits create Heating Up; Fire Blast converts it into instant Pyroblast.",
+          "key_abilities": [
+            "Fireball",
+            "Heating Up",
+            "Fire Blast",
+            "Pyroblast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Shimmer and instant Fire Blast preserve casting, but movement still needs advance planning.",
+          "key_abilities": [
+            "Shimmer",
+            "Fire Blast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Bank Fire Blast charges to chain Pyroblast casts during Combustion.",
+          "key_abilities": [
+            "Combustion",
+            "Fire Blast",
+            "Pyroblast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Convert crits into instant fireballs, then accelerate inside Combustion. Keep casting between windows.",
+      "play_this_if": "You enjoy chaining instant Pyroblasts.",
+      "avoid_if": "You dislike planning movement around casts.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "fire-mage",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Hot Streak still drives damage; at five targets Flamestrike replaces the single-target payoff.",
+          "key_abilities": [
+            "Hot Streak",
+            "Flamestrike",
+            "Pyroblast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Hot Streak still drives damage; at five targets Flamestrike replaces the single-target payoff."
+        },
+        "resource_model": {
+          "value": "proc-driven",
+          "explanation": "Fireball crits create Heating Up; Fire Blast converts it into instant Pyroblast.",
+          "key_abilities": [
+            "Fireball",
+            "Heating Up",
+            "Fire Blast",
+            "Pyroblast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Shimmer and instant Fire Blast preserve casting, but movement still needs advance planning.",
+          "key_abilities": [
+            "Shimmer",
+            "Fire Blast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Bank Fire Blast charges to chain Pyroblast casts during Combustion.",
+          "key_abilities": [
+            "Combustion",
+            "Fire Blast",
+            "Pyroblast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Convert crits into instant fireballs, then accelerate inside Combustion. Keep casting between windows.",
+      "play_this_if": "You enjoy chaining instant Pyroblasts.",
+      "avoid_if": "You dislike planning movement around casts.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "frost-mage",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Spellslinger largely keeps its single-target priority, adding Blizzard when Freezing Rain is active.",
+          "key_abilities": [
+            "Blizzard",
+            "Freezing Rain",
+            "Glacial Spike"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Spellslinger largely keeps its single-target priority, adding Blizzard when Freezing Rain is active."
+        },
+        "resource_model": {
+          "value": "proc-driven",
+          "explanation": "Flurry and Frostbolt rebuild Freezing stacks; Ice Lance spends them or Fingers of Frost.",
+          "key_abilities": [
+            "Flurry",
+            "Frostbolt",
+            "Freezing",
+            "Ice Lance",
+            "Fingers of Frost"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Cycle cooldown spells, then turn Freezing stacks into Ice Lances. Hero talents alter the spending thresholds.",
+      "play_this_if": "You like reacting to Ice Lance procs.",
+      "avoid_if": "You dislike tracking Freezing stacks.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/frost-mage/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "frost-mage",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Spellslinger largely keeps its single-target priority, adding Blizzard when Freezing Rain is active.",
+          "key_abilities": [
+            "Blizzard",
+            "Freezing Rain",
+            "Glacial Spike"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Spellslinger largely keeps its single-target priority, adding Blizzard when Freezing Rain is active."
+        },
+        "resource_model": {
+          "value": "proc-driven",
+          "explanation": "Flurry and Frostbolt rebuild Freezing stacks; Ice Lance spends them or Fingers of Frost.",
+          "key_abilities": [
+            "Flurry",
+            "Frostbolt",
+            "Freezing",
+            "Ice Lance",
+            "Fingers of Frost"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Cycle cooldown spells, then turn Freezing stacks into Ice Lances. Hero talents alter the spending thresholds.",
+      "play_this_if": "You like reacting to Ice Lance procs.",
+      "avoid_if": "You dislike tracking Freezing stacks.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/frost-mage/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "arcane-mage",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Spellslinger keeps its Arcane Salvo loop in AoE, but promotes Arcane Orb to cooldown priority.",
+          "key_abilities": [
+            "Arcane Salvo",
+            "Arcane Orb",
+            "Arcane Barrage"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Spellslinger keeps its Arcane Salvo loop in AoE, but promotes Arcane Orb to cooldown priority."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Arcane Missiles builds Arcane Salvo for stronger Arcane Barrages; avoid wasting Prismatic Bolt procs.",
+          "key_abilities": [
+            "Arcane Missiles",
+            "Arcane Salvo",
+            "Arcane Barrage",
+            "Prismatic Bolt"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Prepare powerful Arcane Barrages for Arcane Surge and Touch of the Magi windows.",
+          "key_abilities": [
+            "Arcane Barrage",
+            "Arcane Surge",
+            "Touch of the Magi"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Build toward a large Barrage while juggling Prismatic Bolts. Burst windows reward preparation.",
+      "play_this_if": "You enjoy building a large damage payoff.",
+      "avoid_if": "You dislike tracking several stack thresholds.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "arcane-mage",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Spellslinger keeps its Arcane Salvo loop in AoE, but promotes Arcane Orb to cooldown priority.",
+          "key_abilities": [
+            "Arcane Salvo",
+            "Arcane Orb",
+            "Arcane Barrage"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Spellslinger keeps its Arcane Salvo loop in AoE, but promotes Arcane Orb to cooldown priority."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Arcane Missiles builds Arcane Salvo for stronger Arcane Barrages; avoid wasting Prismatic Bolt procs.",
+          "key_abilities": [
+            "Arcane Missiles",
+            "Arcane Salvo",
+            "Arcane Barrage",
+            "Prismatic Bolt"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Prepare powerful Arcane Barrages for Arcane Surge and Touch of the Magi windows.",
+          "key_abilities": [
+            "Arcane Barrage",
+            "Arcane Surge",
+            "Touch of the Magi"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Build toward a large Barrage while juggling Prismatic Bolts. Burst windows reward preparation.",
+      "play_this_if": "You enjoy building a large damage payoff.",
+      "avoid_if": "You dislike tracking several stack thresholds.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "devastation-evoker",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Fire Breath and Eternity Surge remain; four-plus targets swap Disintegrate for Pyre, except priority Mass Disintegrates.",
+          "key_abilities": [
+            "Fire Breath",
+            "Eternity Surge",
+            "Disintegrate",
+            "Pyre",
+            "Mass Disintegrate"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Fire Breath and Eternity Surge remain; four-plus targets swap Disintegrate for Pyre, except priority Mass Disintegrates."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Spend Essence and Essence Burst on Disintegrate or Pyre; fillers bridge resource gaps.",
+          "key_abilities": [
+            "Essence Burst",
+            "Disintegrate",
+            "Pyre"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Hover permits moving casts; when unavailable, Azure Strike replaces stationary Living Flame filler.",
+          "key_abilities": [
+            "Hover",
+            "Azure Strike",
+            "Living Flame"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "A small set of empowered spells anchors the loop. Spend Essence between them and plan Hover carefully.",
+      "play_this_if": "You like a compact spell toolkit.",
+      "avoid_if": "You dislike managing movement buffs.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "devastation-evoker",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Fire Breath and Eternity Surge remain; four-plus targets swap Disintegrate for Pyre, except priority Mass Disintegrates.",
+          "key_abilities": [
+            "Fire Breath",
+            "Eternity Surge",
+            "Disintegrate",
+            "Pyre",
+            "Mass Disintegrate"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Fire Breath and Eternity Surge remain; four-plus targets swap Disintegrate for Pyre, except priority Mass Disintegrates."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Spend Essence and Essence Burst on Disintegrate or Pyre; fillers bridge resource gaps.",
+          "key_abilities": [
+            "Essence Burst",
+            "Disintegrate",
+            "Pyre"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Hover permits moving casts; when unavailable, Azure Strike replaces stationary Living Flame filler.",
+          "key_abilities": [
+            "Hover",
+            "Azure Strike",
+            "Living Flame"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "A small set of empowered spells anchors the loop. Spend Essence between them and plan Hover carefully.",
+      "play_this_if": "You like a compact spell toolkit.",
+      "avoid_if": "You dislike managing movement buffs.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "fury-warrior",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Build Rage, then use Rampage to spend it and maintain Enrage.",
+          "key_abilities": [
+            "Rampage",
+            "Enrage",
+            "Bloodthirst"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "cooldown_flexibility": {
+          "value": "flexible",
+          "explanation": "Anger Management brings Recklessness and Avatar back roughly every 45 seconds; long holds waste uses.",
+          "key_abilities": [
+            "Anger Management",
+            "Recklessness",
+            "Avatar"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Cooldowns"
+            }
+          ],
+          "cooldowns": [
+            {
+              "name": "Recklessness",
+              "duration_seconds": 45,
+              "explanation": "Approximate effective cooldown with Anger Management, not base duration."
+            },
+            {
+              "name": "Avatar",
+              "duration_seconds": 45,
+              "explanation": "Approximate effective cooldown with Anger Management, if talented."
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "sustained",
+          "explanation": "Rampage-focused damage stays relatively flat; frequent cooldowns support continuous target uptime.",
+          "key_abilities": [
+            "Rampage",
+            "Anger Management"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "high",
+          "explanation": "The Rampage and Bloodthirst loop asks for a decision on almost every global.",
+          "key_abilities": [
+            "Rampage",
+            "Bloodthirst"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Keep hitting and keep spending Rage. Frequent cooldowns favor momentum over saving one giant burst.",
+      "play_this_if": "You enjoy constant button presses.",
+      "avoid_if": "You dislike a busy melee pace.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-25T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "fury-warrior",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Build Rage, then use Rampage to spend it and maintain Enrage.",
+          "key_abilities": [
+            "Rampage",
+            "Enrage",
+            "Bloodthirst"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "cooldown_flexibility": {
+          "value": "flexible",
+          "explanation": "Anger Management brings Recklessness and Avatar back roughly every 45 seconds; long holds waste uses.",
+          "key_abilities": [
+            "Anger Management",
+            "Recklessness",
+            "Avatar"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Cooldowns"
+            }
+          ],
+          "cooldowns": [
+            {
+              "name": "Recklessness",
+              "duration_seconds": 45,
+              "explanation": "Approximate effective cooldown with Anger Management, not base duration."
+            },
+            {
+              "name": "Avatar",
+              "duration_seconds": 45,
+              "explanation": "Approximate effective cooldown with Anger Management, if talented."
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "sustained",
+          "explanation": "Rampage-focused damage stays relatively flat; frequent cooldowns support continuous target uptime.",
+          "key_abilities": [
+            "Rampage",
+            "Anger Management"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "high",
+          "explanation": "The Rampage and Bloodthirst loop asks for a decision on almost every global.",
+          "key_abilities": [
+            "Rampage",
+            "Bloodthirst"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Keep hitting and keep spending Rage. Frequent cooldowns favor momentum over saving one giant burst.",
+      "play_this_if": "You enjoy constant button presses.",
+      "avoid_if": "You dislike a busy melee pace.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-25T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "arms-warrior",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Auto-attacks generate Rage for Mortal Strike and Execute; poor spending can leave empty globals.",
+          "key_abilities": [
+            "Mortal Strike",
+            "Execute",
+            "Charge"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arms-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "medium",
+          "explanation": "Mortal Strike and Execute feel slower than Fury, but available Rage still fills each global.",
+          "key_abilities": [
+            "Mortal Strike",
+            "Execute",
+            "Overpower"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arms-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Spend Rage carefully and shift priorities during Execute. Resource dry spells can slow the rhythm.",
+      "play_this_if": "You like deliberate melee resource decisions.",
+      "avoid_if": "You dislike waiting for Rage.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/arms-warrior/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-25T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "arms-warrior",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Auto-attacks generate Rage for Mortal Strike and Execute; poor spending can leave empty globals.",
+          "key_abilities": [
+            "Mortal Strike",
+            "Execute",
+            "Charge"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arms-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "medium",
+          "explanation": "Mortal Strike and Execute feel slower than Fury, but available Rage still fills each global.",
+          "key_abilities": [
+            "Mortal Strike",
+            "Execute",
+            "Overpower"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/arms-warrior/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Spend Rage carefully and shift priorities during Execute. Resource dry spells can slow the rhythm.",
+      "play_this_if": "You like deliberate melee resource decisions.",
+      "avoid_if": "You dislike waiting for Rage.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/arms-warrior/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-25T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "enhancement-shaman",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Keep cycling melee strikes; at two targets Chain Lightning replaces Lightning Bolt.",
+          "key_abilities": [
+            "Stormstrike",
+            "Lava Lash",
+            "Lightning Bolt",
+            "Chain Lightning"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/enhancement-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Keep cycling melee strikes; at two targets Chain Lightning replaces Lightning Bolt."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Melee attacks build Maelstrom Weapon; spending stacks refunds Stormstrike and Lava Lash through Elemental Tempo.",
+          "key_abilities": [
+            "Maelstrom Weapon",
+            "Elemental Tempo",
+            "Stormstrike",
+            "Lava Lash"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/enhancement-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Melee strikes feed spell spenders, which bring strikes back sooner. Losing target uptime disrupts that feedback loop.",
+      "play_this_if": "You like melee attacks feeding spells.",
+      "avoid_if": "You dislike being punished for downtime.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/enhancement-shaman/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "enhancement-shaman",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Keep cycling melee strikes; at two targets Chain Lightning replaces Lightning Bolt.",
+          "key_abilities": [
+            "Stormstrike",
+            "Lava Lash",
+            "Lightning Bolt",
+            "Chain Lightning"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/enhancement-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Keep cycling melee strikes; at two targets Chain Lightning replaces Lightning Bolt."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Melee attacks build Maelstrom Weapon; spending stacks refunds Stormstrike and Lava Lash through Elemental Tempo.",
+          "key_abilities": [
+            "Maelstrom Weapon",
+            "Elemental Tempo",
+            "Stormstrike",
+            "Lava Lash"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/enhancement-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Melee strikes feed spell spenders, which bring strikes back sooner. Losing target uptime disrupts that feedback loop.",
+      "play_this_if": "You like melee attacks feeding spells.",
+      "avoid_if": "You dislike being punished for downtime.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/enhancement-shaman/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "elemental-shaman",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Build Maelstrom with Lightning Bolt or Chain Lightning, then spend on Elemental Blast or Earthquake.",
+          "key_abilities": [
+            "Lightning Bolt",
+            "Chain Lightning",
+            "Elemental Blast",
+            "Earthquake"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "tier_set_impact": {
+          "value": "tweaks",
+          "explanation": "After cooldown windows, the tier bonus makes spenders free; alternate builders with Elemental Blast on one target or Earthquake on packs.",
+          "key_abilities": [
+            "Ascendance",
+            "Elemental Blast",
+            "Earthquake"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 2,
+          "explanation": "Raid AoE replaces Lightning Bolt and Elemental Blast with Chain Lightning and Earthquake; Lava Burst becomes conditional.",
+          "key_abilities": [
+            "Lightning Bolt",
+            "Elemental Blast",
+            "Chain Lightning",
+            "Earthquake",
+            "Lava Burst"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Raid AoE replaces Lightning Bolt and Elemental Blast with Chain Lightning and Earthquake; Lava Burst becomes conditional."
+        }
+      },
+      "feel_summary": "Alternate generators and heavy spenders. Target count changes which lightning spells and spenders matter most.",
+      "play_this_if": "You like clear builder and spender decisions.",
+      "avoid_if": "You want identical single-target and AoE buttons.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "elemental-shaman",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Build Maelstrom with Lightning Bolt or Chain Lightning, then spend on Elemental Blast or Earthquake.",
+          "key_abilities": [
+            "Lightning Bolt",
+            "Chain Lightning",
+            "Elemental Blast",
+            "Earthquake"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "tier_set_impact": {
+          "value": "tweaks",
+          "explanation": "After cooldown windows, the tier bonus makes spenders free; alternate builders with Elemental Blast on one target or Earthquake on packs.",
+          "key_abilities": [
+            "Ascendance",
+            "Elemental Blast",
+            "Earthquake"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 2,
+          "explanation": "The dungeon build shifts to Chain Lightning and Earthquake on packs; Lava Burst remains for Purging Flames.",
+          "key_abilities": [
+            "Chain Lightning",
+            "Earthquake",
+            "Lava Burst",
+            "Purging Flames"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "The dungeon build shifts to Chain Lightning and Earthquake on packs; Lava Burst remains for Purging Flames."
+        }
+      },
+      "feel_summary": "Alternate generators and heavy spenders. Target count changes which lightning spells and spenders matter most.",
+      "play_this_if": "You like clear builder and spender decisions.",
+      "avoid_if": "You want identical single-target and AoE buttons.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "affliction-warlock",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "maintenance-dot",
+          "explanation": "Maintain Agony and Corruption or Wither; Agony generates shards for Unstable Affliction or Seed of Corruption.",
+          "key_abilities": [
+            "Agony",
+            "Corruption",
+            "Wither",
+            "Unstable Affliction",
+            "Seed of Corruption"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/affliction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "DoT maintenance remains, but stacked multi-target fights spend shards on Seed of Corruption instead of Unstable Affliction.",
+          "key_abilities": [
+            "Agony",
+            "Seed of Corruption",
+            "Unstable Affliction"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/affliction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "DoT maintenance remains, but stacked multi-target fights spend shards on Seed of Corruption instead of Unstable Affliction."
+        }
+      },
+      "feel_summary": "Keep damage-over-time effects running, then spend shards into burn opportunities. Targets need time and attention.",
+      "play_this_if": "You enjoy maintaining damage over time.",
+      "avoid_if": "You dislike setting up each target.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/affliction-warlock/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "affliction-warlock",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "maintenance-dot",
+          "explanation": "Maintain Agony and Corruption or Wither; Agony generates shards for Unstable Affliction or Seed of Corruption.",
+          "key_abilities": [
+            "Agony",
+            "Corruption",
+            "Wither",
+            "Unstable Affliction",
+            "Seed of Corruption"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/affliction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "DoT maintenance remains, but stacked multi-target fights spend shards on Seed of Corruption instead of Unstable Affliction.",
+          "key_abilities": [
+            "Agony",
+            "Seed of Corruption",
+            "Unstable Affliction"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/affliction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "DoT maintenance remains, but stacked multi-target fights spend shards on Seed of Corruption instead of Unstable Affliction."
+        }
+      },
+      "feel_summary": "Keep damage-over-time effects running, then spend shards into burn opportunities. Targets need time and attention.",
+      "play_this_if": "You enjoy maintaining damage over time.",
+      "avoid_if": "You dislike setting up each target.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/affliction-warlock/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "demonology-warlock",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Shadow Bolt and Demonbolt build shards for Hand of Gul\u2019dan; avoid capping Demonic Core procs.",
+          "key_abilities": [
+            "Shadow Bolt",
+            "Demonbolt",
+            "Hand of Gul\u2019dan",
+            "Demonic Core"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/demonology-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Summon Demonic Tyrant rewards assembling Dreadstalkers and other large demons before extending them.",
+          "key_abilities": [
+            "Summon Demonic Tyrant",
+            "Call Dreadstalkers"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/demonology-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Build a demon army before the Tyrant payoff. Managing resources and summon timing matters more than immediate damage.",
+      "play_this_if": "You enjoy preparing a summon payoff.",
+      "avoid_if": "You dislike setup before burst damage.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/demonology-warlock/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "demonology-warlock",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Shadow Bolt and Demonbolt build shards for Hand of Gul\u2019dan; avoid capping Demonic Core procs.",
+          "key_abilities": [
+            "Shadow Bolt",
+            "Demonbolt",
+            "Hand of Gul\u2019dan",
+            "Demonic Core"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/demonology-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Summon Demonic Tyrant rewards assembling Dreadstalkers and other large demons before extending them.",
+          "key_abilities": [
+            "Summon Demonic Tyrant",
+            "Call Dreadstalkers"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/demonology-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Build a demon army before the Tyrant payoff. Managing resources and summon timing matters more than immediate damage.",
+      "play_this_if": "You enjoy preparing a summon payoff.",
+      "avoid_if": "You dislike setup before burst damage.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/demonology-warlock/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "destruction-warlock",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Build Soul Shards, avoid capping Conflagrate charges, and spend on Chaos Bolt or Rain of Fire.",
+          "key_abilities": [
+            "Soul Shards",
+            "Conflagrate",
+            "Chaos Bolt",
+            "Rain of Fire"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/destruction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Hellcaller swaps to Rain of Fire in AoE; Diabolist usually retains Chaos Bolt below eight targets.",
+          "key_abilities": [
+            "Rain of Fire",
+            "Chaos Bolt",
+            "Diabolic Ritual"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/destruction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Hellcaller swaps to Rain of Fire in AoE; Diabolist usually retains Chaos Bolt below eight targets."
+        }
+      },
+      "feel_summary": "Build shards for heavy spenders. Your hero talents determine whether packs change the spender or preserve Chaos Bolt.",
+      "play_this_if": "You enjoy large deliberate spell payoffs.",
+      "avoid_if": "You want hero choices to feel identical.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/destruction-warlock/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "destruction-warlock",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Build Soul Shards, avoid capping Conflagrate charges, and spend on Chaos Bolt or Rain of Fire.",
+          "key_abilities": [
+            "Soul Shards",
+            "Conflagrate",
+            "Chaos Bolt",
+            "Rain of Fire"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/destruction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Hellcaller swaps to Rain of Fire in AoE; Diabolist usually retains Chaos Bolt below eight targets.",
+          "key_abilities": [
+            "Rain of Fire",
+            "Chaos Bolt",
+            "Diabolic Ritual"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/destruction-warlock/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Hellcaller swaps to Rain of Fire in AoE; Diabolist usually retains Chaos Bolt below eight targets."
+        }
+      },
+      "feel_summary": "Build shards for heavy spenders. Your hero talents determine whether packs change the spender or preserve Chaos Bolt.",
+      "play_this_if": "You enjoy large deliberate spell payoffs.",
+      "avoid_if": "You want hero choices to feel identical.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/destruction-warlock/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "shadow-priest",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Generate Insanity, then use Shadow Word: Madness before it expires or Insanity caps.",
+          "key_abilities": [
+            "Shadow Word: Madness",
+            "Mind Blast",
+            "Mind Flay"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/shadow-priest/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "tier_set_impact": {
+          "value": "tweaks",
+          "explanation": "The new four-piece changes the Archon opener, introducing Mind Blast before Tentacle Slam and an earlier Void Volley.",
+          "key_abilities": [
+            "Mind Blast",
+            "Tentacle Slam",
+            "Void Volley"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/shadow-priest/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Maintain Vampiric Touch while feeding Insanity into Shadow Word: Madness. Hero talents change the priority substantially.",
+      "play_this_if": "You like resource spending with DoT upkeep.",
+      "avoid_if": "You dislike adapting to hero-specific priorities.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/shadow-priest/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "shadow-priest",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Generate Insanity, then use Shadow Word: Madness before it expires or Insanity caps.",
+          "key_abilities": [
+            "Shadow Word: Madness",
+            "Mind Blast",
+            "Mind Flay"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/shadow-priest/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "tier_set_impact": {
+          "value": "tweaks",
+          "explanation": "The new four-piece changes the Archon opener, introducing Mind Blast before Tentacle Slam and an earlier Void Volley.",
+          "key_abilities": [
+            "Mind Blast",
+            "Tentacle Slam",
+            "Void Volley"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/shadow-priest/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Maintain Vampiric Touch while feeding Insanity into Shadow Word: Madness. Hero talents change the priority substantially.",
+      "play_this_if": "You like resource spending with DoT upkeep.",
+      "avoid_if": "You dislike adapting to hero-specific priorities.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/shadow-priest/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "unholy-death-knight",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "The melee core remains; packs add Death and Decay and replace Death Coil with Epidemic at three targets.",
+          "key_abilities": [
+            "Death and Decay",
+            "Death Coil",
+            "Epidemic"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/unholy-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "The melee core remains; packs add Death and Decay and replace Death Coil with Epidemic at three targets."
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Place Death and Decay on two-plus targets and maintain Festering Scythe\u2019s debuff.",
+          "key_abilities": [
+            "Death and Decay",
+            "Festering Scythe"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/unholy-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Keep diseases and ghoul-related conditions running while coordinating summons. Packs add a ground effect and different spenders.",
+      "play_this_if": "You like managing several overlapping conditions.",
+      "avoid_if": "You dislike ground-effect setup on packs.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/unholy-death-knight/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "unholy-death-knight",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "The melee core remains; packs add Death and Decay and replace Death Coil with Epidemic at three targets.",
+          "key_abilities": [
+            "Death and Decay",
+            "Death Coil",
+            "Epidemic"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/unholy-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "The melee core remains; packs add Death and Decay and replace Death Coil with Epidemic at three targets."
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Place Death and Decay on two-plus targets and maintain Festering Scythe\u2019s debuff.",
+          "key_abilities": [
+            "Death and Decay",
+            "Festering Scythe"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/unholy-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Keep diseases and ghoul-related conditions running while coordinating summons. Packs add a ground effect and different spenders.",
+      "play_this_if": "You like managing several overlapping conditions.",
+      "avoid_if": "You dislike ground-effect setup on packs.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/unholy-death-knight/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "frost-death-knight",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Three-plus targets replace Obliterate with Frostscythe and favor Glacial Advance over routine Frost Strike spending.",
+          "key_abilities": [
+            "Obliterate",
+            "Frostscythe",
+            "Glacial Advance",
+            "Frost Strike"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Three-plus targets replace Obliterate with Frostscythe and favor Glacial Advance over routine Frost Strike spending."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Balance Runes and Runic Power while prioritizing Killing Machine Obliterates and Rime Howling Blasts.",
+          "key_abilities": [
+            "Obliterate",
+            "Frost Strike",
+            "Killing Machine",
+            "Rime",
+            "Howling Blast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Juggle two resources and consume damage procs. AoE replaces key attacks while retaining the cooldown framework.",
+      "play_this_if": "You enjoy reactive procs within resource planning.",
+      "avoid_if": "You want exactly the same AoE buttons.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/frost-death-knight/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "frost-death-knight",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Three-plus targets replace Obliterate with Frostscythe and favor Glacial Advance over routine Frost Strike spending.",
+          "key_abilities": [
+            "Obliterate",
+            "Frostscythe",
+            "Glacial Advance",
+            "Frost Strike"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Three-plus targets replace Obliterate with Frostscythe and favor Glacial Advance over routine Frost Strike spending."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Balance Runes and Runic Power while prioritizing Killing Machine Obliterates and Rime Howling Blasts.",
+          "key_abilities": [
+            "Obliterate",
+            "Frost Strike",
+            "Killing Machine",
+            "Rime",
+            "Howling Blast"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/frost-death-knight/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Juggle two resources and consume damage procs. AoE replaces key attacks while retaining the cooldown framework.",
+      "play_this_if": "You enjoy reactive procs within resource planning.",
+      "avoid_if": "You want exactly the same AoE buttons.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/frost-death-knight/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "feral-druid",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "maintenance-dot",
+          "explanation": "Maintain Rake and Rip while building combo points and spending on Ferocious Bite.",
+          "key_abilities": [
+            "Rake",
+            "Rip",
+            "Ferocious Bite"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/feral-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "low",
+          "explanation": "Energy limits the Rake, Rip and Ferocious Bite loop; pauses are expected outside faster windows.",
+          "key_abilities": [
+            "Rake",
+            "Rip",
+            "Ferocious Bite"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/feral-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Watch bleeds and energy instead of filling every global. Timing refreshes is part of the rhythm.",
+      "play_this_if": "You like measured melee with bleed upkeep.",
+      "avoid_if": "You dislike waiting for Energy.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/feral-druid/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "feral-druid",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "maintenance-dot",
+          "explanation": "Maintain Rake and Rip while building combo points and spending on Ferocious Bite.",
+          "key_abilities": [
+            "Rake",
+            "Rip",
+            "Ferocious Bite"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/feral-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "low",
+          "explanation": "Energy limits the Rake, Rip and Ferocious Bite loop; pauses are expected outside faster windows.",
+          "key_abilities": [
+            "Rake",
+            "Rip",
+            "Ferocious Bite"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/feral-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Watch bleeds and energy instead of filling every global. Timing refreshes is part of the rhythm.",
+      "play_this_if": "You like measured melee with bleed upkeep.",
+      "avoid_if": "You dislike waiting for Energy.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/feral-druid/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "balance-druid",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Wrath or Starfire builds Astral Power; Starsurge and Starfall spend it around Eclipse.",
+          "key_abilities": [
+            "Wrath",
+            "Starfire",
+            "Starsurge",
+            "Starfall",
+            "Eclipse"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/balance-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Keeper swaps Starsurge for Starfall on multiple targets; higher target counts also switch Wrath to Starfire.",
+          "key_abilities": [
+            "Starsurge",
+            "Starfall",
+            "Wrath",
+            "Starfire"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/balance-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Keeper swaps Starsurge for Starfall on multiple targets; higher target counts also switch Wrath to Starfire."
+        }
+      },
+      "feel_summary": "Maintain Moonfire and Sunfire, then spend Astral Power around Eclipse. Hero talents change the preferred filler and cooldown alignment.",
+      "play_this_if": "You like planning resource spending around Eclipse.",
+      "avoid_if": "You dislike maintaining DoTs on multiple enemies.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/balance-druid/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "balance-druid",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Wrath or Starfire builds Astral Power; Starsurge and Starfall spend it around Eclipse.",
+          "key_abilities": [
+            "Wrath",
+            "Starfire",
+            "Starsurge",
+            "Starfall",
+            "Eclipse"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/balance-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Elune\u2019s Chosen keeps Lunar Eclipse and Starfire for all target counts, swapping Starsurge for Starfall.",
+          "key_abilities": [
+            "Lunar Eclipse",
+            "Starfire",
+            "Starsurge",
+            "Starfall"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/balance-druid/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Elune\u2019s Chosen keeps Lunar Eclipse and Starfire for all target counts, swapping Starsurge for Starfall."
+        }
+      },
+      "feel_summary": "Maintain Moonfire and Sunfire, then spend Astral Power around Eclipse. Hero talents change the preferred filler and cooldown alignment.",
+      "play_this_if": "You like planning resource spending around Eclipse.",
+      "avoid_if": "You dislike maintaining DoTs on multiple enemies.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/balance-druid/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "assassination-rogue",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "maintenance-dot",
+          "explanation": "Maintain Garrote and Rupture, then use generated combo points to sustain Envenom.",
+          "key_abilities": [
+            "Garrote",
+            "Rupture",
+            "Envenom"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "AoE adds Crimson Tempest bleed spreading and replaces Mutilate with Fan of Knives.",
+          "key_abilities": [
+            "Crimson Tempest",
+            "Mutilate",
+            "Fan of Knives"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "AoE adds Crimson Tempest bleed spreading and replaces Mutilate with Fan of Knives."
+        },
+        "cooldown_flexibility": {
+          "value": "committed",
+          "explanation": "Deathmark\u2019s two-minute window doubles poisons and bleeds; synchronize every second one-minute Kingsbane with it.",
+          "key_abilities": [
+            "Deathmark",
+            "Kingsbane"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+              "section": "Cooldowns"
+            }
+          ],
+          "cooldowns": [
+            {
+              "name": "Deathmark",
+              "duration_seconds": 120
+            },
+            {
+              "name": "Kingsbane",
+              "duration_seconds": 60
+            }
+          ]
+        }
+      },
+      "feel_summary": "Establish bleeds, then build and spend combo points. Coordinated poison windows give preparation its payoff.",
+      "play_this_if": "You enjoy maintaining bleeds before burst.",
+      "avoid_if": "You dislike synchronizing damage cooldowns.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-18T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "assassination-rogue",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "maintenance-dot",
+          "explanation": "Maintain Garrote and Rupture, then use generated combo points to sustain Envenom.",
+          "key_abilities": [
+            "Garrote",
+            "Rupture",
+            "Envenom"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "AoE adds Crimson Tempest bleed spreading and replaces Mutilate with Fan of Knives.",
+          "key_abilities": [
+            "Crimson Tempest",
+            "Mutilate",
+            "Fan of Knives"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "AoE adds Crimson Tempest bleed spreading and replaces Mutilate with Fan of Knives."
+        },
+        "cooldown_flexibility": {
+          "value": "committed",
+          "explanation": "Deathmark\u2019s two-minute window doubles poisons and bleeds; synchronize every second one-minute Kingsbane with it.",
+          "key_abilities": [
+            "Deathmark",
+            "Kingsbane"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+              "section": "Cooldowns"
+            }
+          ],
+          "cooldowns": [
+            {
+              "name": "Deathmark",
+              "duration_seconds": 120
+            },
+            {
+              "name": "Kingsbane",
+              "duration_seconds": 60
+            }
+          ]
+        }
+      },
+      "feel_summary": "Establish bleeds, then build and spend combo points. Coordinated poison windows give preparation its payoff.",
+      "play_this_if": "You enjoy maintaining bleeds before burst.",
+      "avoid_if": "You dislike synchronizing damage cooldowns.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-18T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "outlaw-rogue",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Blade Flurry adds cleave while Sinister Strike, Pistol Shot and finishers retain the main loop.",
+          "key_abilities": [
+            "Blade Flurry",
+            "Sinister Strike",
+            "Pistol Shot",
+            "Dispatch"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Blade Flurry adds cleave while Sinister Strike, Pistol Shot and finishers retain the main loop."
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Activate Blade Flurry on two-plus targets; it also has an active refresh priority on larger packs.",
+          "key_abilities": [
+            "Blade Flurry"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "high",
+          "explanation": "Adrenaline Rush speeds the global; finishers refund cooldowns through Restless Blades, sustaining constant decisions.",
+          "key_abilities": [
+            "Adrenaline Rush",
+            "Restless Blades",
+            "Dispatch"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "sustained",
+          "explanation": "Adrenaline Rush has substantial uptime; the spec quickly returns to its usual damage loop.",
+          "key_abilities": [
+            "Adrenaline Rush",
+            "Dispatch"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Keep cooldown refunds rolling. AoE overlays cleave onto a familiar, busy loop.",
+      "play_this_if": "You enjoy continuous fast decisions.",
+      "avoid_if": "You dislike a high button-press rate.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-18T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "outlaw-rogue",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Blade Flurry adds cleave while Sinister Strike, Pistol Shot and finishers retain the main loop.",
+          "key_abilities": [
+            "Blade Flurry",
+            "Sinister Strike",
+            "Pistol Shot",
+            "Dispatch"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Blade Flurry adds cleave while Sinister Strike, Pistol Shot and finishers retain the main loop."
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Activate Blade Flurry on two-plus targets; it also has an active refresh priority on larger packs.",
+          "key_abilities": [
+            "Blade Flurry"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "apm": {
+          "value": "high",
+          "explanation": "Adrenaline Rush speeds the global; finishers refund cooldowns through Restless Blades, sustaining constant decisions.",
+          "key_abilities": [
+            "Adrenaline Rush",
+            "Restless Blades",
+            "Dispatch"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "sustained",
+          "explanation": "Adrenaline Rush has substantial uptime; the spec quickly returns to its usual damage loop.",
+          "key_abilities": [
+            "Adrenaline Rush",
+            "Dispatch"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Keep cooldown refunds rolling. AoE overlays cleave onto a familiar, busy loop.",
+      "play_this_if": "You enjoy continuous fast decisions.",
+      "avoid_if": "You dislike a high button-press rate.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-18T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "subtlety-rogue",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Shadowstrike or Backstab generates combo points for Secret Technique and Eviscerate finishers.",
+          "key_abilities": [
+            "Shadowstrike",
+            "Backstab",
+            "Secret Technique",
+            "Eviscerate"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Multi-target swaps generators to Shuriken Storm and ordinary finishers to Black Powder, preserving Shadow Dance sequencing.",
+          "key_abilities": [
+            "Shuriken Storm",
+            "Black Powder",
+            "Shadow Dance"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Multi-target swaps generators to Shuriken Storm and ordinary finishers to Black Powder, preserving Shadow Dance sequencing."
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Enter Shadow Dance with combo points and Secret Technique ready, then align Shadow Blades inside it.",
+          "key_abilities": [
+            "Shadow Dance",
+            "Secret Technique",
+            "Shadow Blades"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Prepare combo points for compact Shadow Dance sequences. Packs change the attacks inside that burst structure.",
+      "play_this_if": "You like rehearsed burst sequences.",
+      "avoid_if": "You dislike entering cooldowns unprepared.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "subtlety-rogue",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Shadowstrike or Backstab generates combo points for Secret Technique and Eviscerate finishers.",
+          "key_abilities": [
+            "Shadowstrike",
+            "Backstab",
+            "Secret Technique",
+            "Eviscerate"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Multi-target swaps generators to Shuriken Storm and ordinary finishers to Black Powder, preserving Shadow Dance sequencing.",
+          "key_abilities": [
+            "Shuriken Storm",
+            "Black Powder",
+            "Shadow Dance"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Multi-target swaps generators to Shuriken Storm and ordinary finishers to Black Powder, preserving Shadow Dance sequencing."
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Enter Shadow Dance with combo points and Secret Technique ready, then align Shadow Blades inside it.",
+          "key_abilities": [
+            "Shadow Dance",
+            "Secret Technique",
+            "Shadow Blades"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Prepare combo points for compact Shadow Dance sequences. Packs change the attacks inside that burst structure.",
+      "play_this_if": "You like rehearsed burst sequences.",
+      "avoid_if": "You dislike entering cooldowns unprepared.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "augmentation-evoker",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 5,
+          "explanation": "The multi-target opener stays the same; adjust Upheaval\u2019s empower rank to cover enemies.",
+          "key_abilities": [
+            "Upheaval",
+            "Ebon Might",
+            "Eruption"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "The multi-target opener stays the same; adjust Upheaval\u2019s empower rank to cover enemies."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Living Flame supports Essence generation; spend Essence on Eruption to extend active Ebon Might.",
+          "key_abilities": [
+            "Living Flame",
+            "Eruption",
+            "Ebon Might"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Align Breath of Eons with buffed allies\u2019 damage cooldowns for its main burst payoff.",
+          "key_abilities": [
+            "Breath of Eons",
+            "Prescience",
+            "Ebon Might"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "A simple personal spell loop supports other players. Choosing buff targets and aligning their cooldowns adds the depth.",
+      "play_this_if": "You enjoy making teammates stronger.",
+      "avoid_if": "You want damage independent of allies.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "augmentation-evoker",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 5,
+          "explanation": "The multi-target opener stays the same; adjust Upheaval\u2019s empower rank to cover enemies.",
+          "key_abilities": [
+            "Upheaval",
+            "Ebon Might",
+            "Eruption"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "The multi-target opener stays the same; adjust Upheaval\u2019s empower rank to cover enemies."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Living Flame supports Essence generation; spend Essence on Eruption to extend active Ebon Might.",
+          "key_abilities": [
+            "Living Flame",
+            "Eruption",
+            "Ebon Might"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Align Breath of Eons with buffed allies\u2019 damage cooldowns for its main burst payoff.",
+          "key_abilities": [
+            "Breath of Eons",
+            "Prescience",
+            "Ebon Might"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "A simple personal spell loop supports other players. Choosing buff targets and aligning their cooldowns adds the depth.",
+      "play_this_if": "You enjoy making teammates stronger.",
+      "avoid_if": "You want damage independent of allies.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "havoc-demon-hunter",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Aldrachi retains Eye Beam, Essence Break and Death Sweep in packs, but buff order changes priorities.",
+          "key_abilities": [
+            "Eye Beam",
+            "Essence Break",
+            "Death Sweep",
+            "Reaver\u2019s Glaive"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Aldrachi retains Eye Beam, Essence Break and Death Sweep in packs, but buff order changes priorities."
+        },
+        "movement": {
+          "value": "mobile",
+          "explanation": "Vengeful Retreat is paired with Eye Beam; Felblade supplies Fury while repositioning into attacks.",
+          "key_abilities": [
+            "Vengeful Retreat",
+            "Eye Beam",
+            "Felblade"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Sequence Eye Beam before Metamorphosis and spend empowered attacks around Essence Break.",
+          "key_abilities": [
+            "Eye Beam",
+            "Metamorphosis",
+            "Essence Break",
+            "Death Sweep"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Rehearse short empowered attack sequences while moving around your target. Hero talents change ordering details.",
+      "play_this_if": "You enjoy movement woven into attacks.",
+      "avoid_if": "You dislike precision during burst sequences.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "havoc-demon-hunter",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Aldrachi retains Eye Beam, Essence Break and Death Sweep in packs, but buff order changes priorities.",
+          "key_abilities": [
+            "Eye Beam",
+            "Essence Break",
+            "Death Sweep",
+            "Reaver\u2019s Glaive"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Aldrachi retains Eye Beam, Essence Break and Death Sweep in packs, but buff order changes priorities."
+        },
+        "movement": {
+          "value": "mobile",
+          "explanation": "Vengeful Retreat is paired with Eye Beam; Felblade supplies Fury while repositioning into attacks.",
+          "key_abilities": [
+            "Vengeful Retreat",
+            "Eye Beam",
+            "Felblade"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "damage_profile": {
+          "value": "burst-windows",
+          "explanation": "Sequence Eye Beam before Metamorphosis and spend empowered attacks around Essence Break.",
+          "key_abilities": [
+            "Eye Beam",
+            "Metamorphosis",
+            "Essence Break",
+            "Death Sweep"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Rehearse short empowered attack sequences while moving around your target. Hero talents change ordering details.",
+      "play_this_if": "You enjoy movement woven into attacks.",
+      "avoid_if": "You dislike precision during burst sequences.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-16T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "devourer-demon-hunter",
+      "content_type": "raid",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Consume generates Fury and souls; spend Fury on Void Ray and collect souls with Reap.",
+          "key_abilities": [
+            "Consume",
+            "Void Ray",
+            "Reap",
+            "Soul Fragments"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Consume works while moving, but Void Ray and Collapsing Star require standing still; plan Shift ahead.",
+          "key_abilities": [
+            "Consume",
+            "Void Ray",
+            "Collapsing Star",
+            "Shift"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Fully channel Void Ray to enable Eradicate, which makes the next Reap or Cull a frontal.",
+          "key_abilities": [
+            "Void Ray",
+            "Eradicate",
+            "Reap",
+            "Cull"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Collect souls to reach Void Metamorphosis. Mobile building alternates with stationary channels and cast payoffs.",
+      "play_this_if": "You enjoy a transformation resource loop.",
+      "avoid_if": "You dislike stationary channel commitments.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-18T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "devourer-demon-hunter",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Consume generates Fury and souls; spend Fury on Void Ray and collect souls with Reap.",
+          "key_abilities": [
+            "Consume",
+            "Void Ray",
+            "Reap",
+            "Soul Fragments"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Consume works while moving, but Void Ray and Collapsing Star require standing still; plan Shift ahead.",
+          "key_abilities": [
+            "Consume",
+            "Void Ray",
+            "Collapsing Star",
+            "Shift"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Fully channel Void Ray to enable Eradicate, which makes the next Reap or Cull a frontal.",
+          "key_abilities": [
+            "Void Ray",
+            "Eradicate",
+            "Reap",
+            "Cull"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Collect souls to reach Void Metamorphosis. Mobile building alternates with stationary channels and cast payoffs.",
+      "play_this_if": "You enjoy a transformation resource loop.",
+      "avoid_if": "You dislike stationary channel commitments.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-18T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "marksmanship-hunter",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Keep Aimed Shot and Rapid Fire, but weave Multi-Shot to repeatedly enable their AoE cleave.",
+          "key_abilities": [
+            "Aimed Shot",
+            "Rapid Fire",
+            "Multi-Shot",
+            "Trick Shots"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Keep Aimed Shot and Rapid Fire, but weave Multi-Shot to repeatedly enable their AoE cleave."
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Trick Shots must precede each Aimed Shot and Rapid Fire; Volley temporarily removes those refreshes.",
+          "key_abilities": [
+            "Trick Shots",
+            "Aimed Shot",
+            "Rapid Fire",
+            "Volley",
+            "Multi-Shot"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Aimed Shot needs stationary casts; Arcane Shot or Steady Shot fills movement gaps.",
+          "key_abilities": [
+            "Aimed Shot",
+            "Arcane Shot",
+            "Steady Shot"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Alternate heavy shots with proc spenders. Packs add deliberate cleave activation before the heavy shots.",
+      "play_this_if": "You enjoy deliberate ranged shot sequencing.",
+      "avoid_if": "You dislike refreshing an AoE-enabling buff.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "marksmanship-hunter",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 3,
+          "explanation": "Keep Aimed Shot and Rapid Fire, but weave Multi-Shot to repeatedly enable their AoE cleave.",
+          "key_abilities": [
+            "Aimed Shot",
+            "Rapid Fire",
+            "Multi-Shot",
+            "Trick Shots"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Keep Aimed Shot and Rapid Fire, but weave Multi-Shot to repeatedly enable their AoE cleave."
+        },
+        "aoe_setup": {
+          "value": "manual",
+          "explanation": "Trick Shots must precede each Aimed Shot and Rapid Fire; Volley temporarily removes those refreshes.",
+          "key_abilities": [
+            "Trick Shots",
+            "Aimed Shot",
+            "Rapid Fire",
+            "Volley",
+            "Multi-Shot"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        },
+        "movement": {
+          "value": "mixed",
+          "explanation": "Aimed Shot needs stationary casts; Arcane Shot or Steady Shot fills movement gaps.",
+          "key_abilities": [
+            "Aimed Shot",
+            "Arcane Shot",
+            "Steady Shot"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Alternate heavy shots with proc spenders. Packs add deliberate cleave activation before the heavy shots.",
+      "play_this_if": "You enjoy deliberate ranged shot sequencing.",
+      "avoid_if": "You dislike refreshing an AoE-enabling buff.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-13T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "survival-hunter",
+      "content_type": "raid",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Single-target and packs retain Kill Command, Wildfire Bomb, Boomstick and Takedown with changed priorities.",
+          "key_abilities": [
+            "Kill Command",
+            "Wildfire Bomb",
+            "Boomstick",
+            "Takedown"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/survival-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Single-target and packs retain Kill Command, Wildfire Bomb, Boomstick and Takedown with changed priorities."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Kill Command builds Focus and Tip of the Spear stacks to empower high-priority attacks.",
+          "key_abilities": [
+            "Kill Command",
+            "Tip of the Spear",
+            "Wildfire Bomb"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/survival-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Build with Kill Command, then spend buffs on heavier attacks. Bomb charges and cooldown order keep the loop moving.",
+      "play_this_if": "You enjoy weaving builders between explosions.",
+      "avoid_if": "You dislike tracking bomb charges and buffs.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/survival-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    },
+    {
+      "spec_id": "survival-hunter",
+      "content_type": "mythic_plus",
+      "dimensions": {
+        "rotation_stability": {
+          "value": 4,
+          "explanation": "Single-target and packs retain Kill Command, Wildfire Bomb, Boomstick and Takedown with changed priorities.",
+          "key_abilities": [
+            "Kill Command",
+            "Wildfire Bomb",
+            "Boomstick",
+            "Takedown"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/survival-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ],
+          "note": "Single-target and packs retain Kill Command, Wildfire Bomb, Boomstick and Takedown with changed priorities."
+        },
+        "resource_model": {
+          "value": "builder-spender",
+          "explanation": "Kill Command builds Focus and Tip of the Spear stacks to empower high-priority attacks.",
+          "key_abilities": [
+            "Kill Command",
+            "Tip of the Spear",
+            "Wildfire Bomb"
+          ],
+          "sources": [
+            {
+              "source_id": "method-web",
+              "url": "https://www.method.gg/guides/survival-hunter/playstyle-and-rotation",
+              "section": "Playstyle & Rotation"
+            }
+          ]
+        }
+      },
+      "feel_summary": "Build with Kill Command, then spend buffs on heavier attacks. Bomb charges and cooldown order keep the loop moving.",
+      "play_this_if": "You enjoy weaving builders between explosions.",
+      "avoid_if": "You dislike tracking bomb charges and buffs.",
+      "provenance_sources": [
+        {
+          "id": "method-web",
+          "status": "success",
+          "url": "https://www.method.gg/guides/survival-hunter/playstyle-and-rotation",
+          "scraped_at": "2026-10-26T17:13:44.438385Z",
+          "updated_at": "2026-10-14T00:00:00Z",
+          "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+          "kind": "qualitative"
+        }
+      ],
+      "coverage_gaps": [
+        "Only the cited dimensions were extracted from this guide. Other dimensions require additional evidence.",
+        "No verified current-patch video transcript or quantitative representation/pick-rate evidence was available in this research."
+      ]
+    }
+  ]
+}

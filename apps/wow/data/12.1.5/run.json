@@ -1,0 +1,10 @@
+{
+  "run_id": "2026-10-26T21-37-24-914Z-ab49e2d0-6552-4b69-985f-1efb1e2dafab",
+  "raw_bundle": "data/12.1.5/raw/runs/2026-10-26T21-37-24-914Z-ab49e2d0-6552-4b69-985f-1efb1e2dafab.json",
+  "patch": "12.1.5",
+  "status": "finalized_partial",
+  "generated_at": "2026-10-26T21:39:16.980Z",
+  "profiles": 80,
+  "required_coverage_missing": 80,
+  "acceptance_coverage_passed": false
+}

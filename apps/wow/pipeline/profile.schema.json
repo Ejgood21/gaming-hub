@@ -1,0 +1,2675 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gaming-hub.local/wow/profile.schema.json",
+  "title": "WoW Spec Playstyle Compass profiles",
+  "description": "Every known dimension must include linked evidence. Null values explicitly preserve coverage gaps without pretending to know playstyle.",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "patch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "season": {
+      "$ref": "#/$defs/season"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/profile"
+      },
+      "minItems": 0
+    },
+    "previous_patch": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "patch",
+    "season",
+    "generated_at",
+    "profiles"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "source_ref": {
+      "type": "object",
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://"
+        },
+        "section": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timestamp_seconds": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "source_id",
+        "url",
+        "section"
+      ],
+      "additionalProperties": false
+    },
+    "cooldown": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "duration_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "charges": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "explanation": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "duration_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "dimensions": {
+      "type": "object",
+      "properties": {
+        "rotation_stability": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 5
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "aoe_setup": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "automatic",
+                "manual",
+                "none",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "resource_model": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "builder-spender",
+                "cooldown-driven",
+                "proc-driven",
+                "maintenance-dot",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "cooldown_flexibility": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "flexible",
+                "committed",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  },
+                  "cooldowns": {
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "cooldowns"
+                ]
+              }
+            }
+          ]
+        },
+        "movement": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "turret",
+                "mobile",
+                "mixed",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "damage_profile": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "burst-windows",
+                "sustained",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "complexity": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 5
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "apm": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "ramp": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "none",
+                "soft",
+                "hard",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "healing_model": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "setup-payoff",
+                "direct",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "proactive_vs_reactive": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "blanketer",
+                "spot-healer",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "cooldown_style": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "one-button-raid-savers",
+                "rotation-of-smaller-cds",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "healer_dps_expectation": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "low",
+                "moderate",
+                "high",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "mitigation_style": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "proactive-maintenance",
+                "reactive",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "pull_profile": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "weak-on-pull-ramps-up",
+                "stable",
+                "strong-on-pull",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "self_sustain": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "self-sufficient",
+                "healer-dependent",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "defensive_toolkit": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "many-small-defensives",
+                "few-big-ones",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "mobility_style": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "kiter",
+                "face-tanker",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "tier_set_impact": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "none",
+                "tweaks",
+                "transforms-the-rotation",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "meta_viability": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "enum": [
+                "high",
+                "moderate",
+                "low",
+                null
+              ]
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "tier_set_impact",
+        "meta_viability"
+      ],
+      "additionalProperties": false
+    },
+    "hero_talent": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "playstyle_delta": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1
+            },
+            "explanation": {
+              "type": "string",
+              "minLength": 25
+            },
+            "key_abilities": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 0
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/source_ref"
+              },
+              "minItems": 0
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cooldowns": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/cooldown"
+              },
+              "minItems": 0
+            },
+            "representation_percent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sample_size": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "value",
+            "explanation",
+            "key_abilities",
+            "sources"
+          ],
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "value": {
+                    "not": {
+                      "type": "null"
+                    }
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "sources": {
+                    "minItems": 1
+                  },
+                  "key_abilities": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "pick_rate": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "popular": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "removes_annoyance": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pick_rate_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_ref"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "playstyle_delta",
+        "pick_rate",
+        "popular"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "pick_rate": {
+                "type": "number"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "pick_rate_sources"
+            ],
+            "properties": {
+              "pick_rate_sources": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "video": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "channel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "view_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "uploaded_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "title",
+        "channel",
+        "view_count",
+        "uploaded_at"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "success",
+            "missing",
+            "failed",
+            "stale"
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scraped_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "qualitative",
+            "quantitative",
+            "video"
+          ]
+        },
+        "video": {
+          "$ref": "#/$defs/video"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "url",
+        "scraped_at",
+        "updated_at",
+        "reason",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "patch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scraped_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          },
+          "minItems": 0
+        },
+        "coverage_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "extraction_method": {
+          "enum": [
+            "codex-agent",
+            "pending"
+          ]
+        },
+        "raw_bundle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "extracted_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "patch",
+        "scraped_at",
+        "sources",
+        "coverage_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "confidence": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "level",
+        "score",
+        "reasons"
+      ],
+      "additionalProperties": false
+    },
+    "change": {
+      "type": "object",
+      "properties": {
+        "dimension": {
+          "type": "string",
+          "minLength": 1
+        },
+        "previous": {},
+        "current": {},
+        "explanation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "value",
+            "evidence",
+            "added",
+            "removed",
+            "hero-talent",
+            "coverage"
+          ]
+        }
+      },
+      "required": [
+        "dimension",
+        "previous",
+        "current",
+        "explanation"
+      ],
+      "additionalProperties": false
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spec_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spec_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "class_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "dps",
+            "healer",
+            "tank"
+          ]
+        },
+        "content_type": {
+          "enum": [
+            "raid",
+            "mythic_plus"
+          ]
+        },
+        "dimensions": {
+          "$ref": "#/$defs/dimensions"
+        },
+        "hero_talents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/hero_talent"
+          },
+          "minItems": 2
+        },
+        "feel_summary": {
+          "type": "string",
+          "minLength": 25
+        },
+        "play_this_if": {
+          "type": "string",
+          "minLength": 15
+        },
+        "avoid_if": {
+          "type": "string",
+          "minLength": 15
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "uniqueItems": true
+        },
+        "tag_evidence": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "id",
+        "spec_id",
+        "spec_name",
+        "class_name",
+        "role",
+        "content_type",
+        "dimensions",
+        "hero_talents",
+        "feel_summary",
+        "play_this_if",
+        "avoid_if",
+        "tags",
+        "tag_evidence",
+        "provenance",
+        "confidence",
+        "changes"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "dps"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "dimensions": {
+                "required": [
+                  "rotation_stability",
+                  "aoe_setup",
+                  "resource_model",
+                  "cooldown_flexibility",
+                  "movement",
+                  "damage_profile",
+                  "complexity",
+                  "apm"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "healer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "dimensions": {
+                "required": [
+                  "ramp",
+                  "healing_model",
+                  "proactive_vs_reactive",
+                  "cooldown_style",
+                  "healer_dps_expectation"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "tank"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "dimensions": {
+                "required": [
+                  "mitigation_style",
+                  "pull_profile",
+                  "self_sustain",
+                  "defensive_toolkit",
+                  "mobility_style"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "season": {
+      "type": "object",
+      "properties": {
+        "expansion": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "slug": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "number": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "detected_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "coverage_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "expansion",
+        "name",
+        "slug",
+        "number",
+        "detected_at",
+        "source",
+        "coverage_gaps"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

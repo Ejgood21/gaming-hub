@@ -2,13 +2,14 @@
 
 A single, public static home for personal gaming tools, intentionally approved for public hosting by the owner on **2026-10-27**. One public repository, one GitHub Pages deployment, one shared theme. It contains public game data only, with no personal data, secrets, app accounts, backend, database, analytics, advertising, or tracking. **This is separate from Weather To Wear**: no shared code, design, credentials, or hosting.
 
-The v1 hub includes four seeded release cards, a WoW Spec Playstyle Compass **shell**, and two clearly marked coming-soon slots. The full WoW app is a separate task. The releases are the owner's supplied watchlist, not a live or independently verified news feed. In particular, the GTA PC window is explicitly unconfirmed.
+The hub includes four seeded release cards, the WoW Spec Playstyle Compass dashboard, and two clearly marked coming-soon slots. WoW profiles are separate for raid and Mythic+, with feel filters, taste matching, comparison, provenance, and a built-in patch-refresh prompt. The first dataset has incomplete source coverage; unknown values are labeled explicitly. The releases are the owner's supplied watchlist, not a live or independently verified news feed. In particular, the GTA PC window is explicitly unconfirmed.
 
 ## Local development
 
-Use **Node.js 24 LTS** (`.node-version`). There are zero third-party npm dependencies and no credentials are required to build or browse.
+Use **Node.js 24 LTS** (`.node-version`). Install the checked-in dependency set with `npm ci` once per clean checkout. No credentials are required to build or browse.
 
 ```sh
+npm ci
 npm run dev
 ```
 
@@ -17,14 +18,15 @@ This builds `dist/`, serves it on port **4173**, and rebuilds when HTML, app fil
 ```sh
 npm run build    # static export to dist/ for /gaming-hub/
 npm run preview  # rebuild for /, then serve on port 4173
-npm test         # data, route, output, and HTTP checks
+npm test         # hub and WoW data, route, output, and HTTP checks
+npm run validate # validate the current versioned WoW profiles
 ```
 
 `npm run build` defaults to the GitHub Pages base path **`/gaming-hub/`**. Set `BASE_PATH=/ npm run build` for a domain-root export. Local dev and preview default to `/`; to check the Pages layout locally, run `BASE_PATH=/gaming-hub/ npm run preview` and open `http://localhost:4173/gaming-hub/`.
 
-`npm ci --ignore-scripts` is supported for CI or a clean checkout, but there are no packages to download. `package-lock.json` is committed. No framework CLI, bundler, Tailwind, API service, or environment file is needed.
+`package-lock.json` pins the dependencies. The static hub builder uses an isolated Vite build in `apps/wow/build.mjs` to render and hydrate the React dashboard inside the shared shell. React, React DOM, Lucide, YAML, Ajv/Ajv Formats, and Undici are pinned dependencies; Vite is a build dependency. No runtime API service or browsing credentials are required.
 
-All reading works **without JavaScript**. The build turns JSON into real HTML; browser JavaScript only adds the release-status filters. The script does not fetch data, save preferences, or contact another host. The theme uses local CSS, system fonts, and inline SVG artwork.
+The build renders the release cards and all 80 WoW content profiles into real HTML for reading **without JavaScript**. Browser JavaScript adds release filters and the WoW filters, detail/comparison controls, copy action, and browser-local taste/shortlist preferences. It does not fetch profile data or contact another host. The theme uses local CSS, system fonts, and SVG artwork.
 
 ## Repository layout
 
@@ -32,10 +34,17 @@ All reading works **without JavaScript**. The build turns JSON into real HTML; b
 index.html                  Home page template
 404.html                    Real static 404 (no SPA fallback)
 apps/
-  wow/                      /wow/ — shell; full app comes later
-    index.html
-    README.md
-    per-patch-prompt.md      Future Codex refresh task prompt
+  wow/                      /wow/ — playstyle dashboard and independent pipeline
+    index.html              Shared-shell template
+    build.mjs               Isolated Vite/React static rendering and hydration
+    dashboard/              Dashboard UI source
+    scraper/                Isolated source adapters
+    pipeline/               Extraction prompt, schema, derivations, validation
+    config/                 Spec registry, source/creator configuration
+    data/<patch>/           Versioned profiles, raw runs, and diffs
+    taste.yaml              Evidence-based preference defaults
+    README.md               Collection and refresh instructions
+    per-patch-prompt.md      Single source for the in-app refresh prompt
   placeholder/              /placeholder/ — two coming-soon slots
   _template/                Copy-me app starter; not published
 assets/                     Shared theme, filter JS, favicon
@@ -45,14 +54,15 @@ data/                       Editable public display data
 scripts/
   build.mjs                 Validates data and generates dist/
   serve.mjs                 Local static server and file watcher
-tests/hub.test.mjs           Node's built-in test runner
+tests/hub.test.mjs           Hub route, output, and HTTP checks
+apps/wow/tests/             WoW schema, evidence, pipeline, and derivation checks
 _headers                    Legacy headers; ignored by GitHub Pages
 robots.txt                  Asks crawlers not to index (not access control)
 .github/workflows/check.yml Build/test checks for PRs and main
 .github/workflows/deploy.yml GitHub Pages deployment on pushes to main only
 ```
 
-The source folder `apps/wow/` exports to `dist/wow/`, served at `/gaming-hub/wow/` on Pages. Each non-underscore app folder becomes a route under the configured base path. Only its `index.html` and optional public `assets/` folder are exported. Markdown, future pipeline scripts, and raw collector files are not exported. Keep public app assets free of sensitive content. The `data/` directory is public output too; store only public display data there.
+The source folder `apps/wow/` exports to `dist/wow/`, served at `/gaming-hub/wow/` on Pages. Apps are mounted under the configured base path. Ordinary apps export only `index.html` and optional public `assets/`; WoW also exports generated dashboard assets and prompt text from its single markdown source. The collector, extraction rubric, credentials, and raw corpus remain outside public output. Store only public display data in exported assets and the top-level `data/` directory.
 
 Do not edit or commit `dist/`; it is rebuilt from source. `.env`, `.env.*`, `.dev.vars`, dependency caches, and local build outputs are ignored.
 
@@ -132,23 +142,23 @@ The PR must then be reviewed and merged into `main` by the owner or a maintainer
 
 `.github/workflows/deploy.yml` uses official GitHub actions to check out the source, set up Node, test and build the static export, upload the Pages artifact, and deploy it to the `github-pages` environment. Deployment uses GitHub's built-in workflow identity; there are no added secrets, service credentials, paid services, or npm dependencies. Every later push or merge to `main` redeploys. Pull requests retain `.github/workflows/check.yml` and never deploy a preview or production site.
 
-Draft [PR #2](https://github.com/Ejgood21/gaming-hub/pull/2), `feat/wow-playstyle-compass`, is still separate. After this Pages change merges, that branch needs to **rebase onto `main` and integrate the base-path handling** before it merges. This change does not rewrite or merge the WoW branch.
+Draft [PR #2](https://github.com/Ejgood21/gaming-hub/pull/2), `feat/wow-playstyle-compass`, rebases the WoW dashboard and existing coverage audit onto the merged GitHub Pages shell. Its generated assets follow the same base path. This PR remains unmerged.
 
 ## Public access and hosting limitations
 
-Anyone can read the site without signing in. `robots.txt` and the HTML robots meta tag retain the request not to index the site; these are crawler hints, not access control. The app sets no cookies or storage and makes no requests beyond the site itself.
+Anyone can read the site without signing in. `robots.txt` and the HTML robots meta tag retain the request not to index the site; these are crawler hints, not access control. The app sets no cookies and makes no requests beyond the site itself. WoW taste and shortlist preferences stay in browser-local storage.
 
 `_headers` is retained as a harmless legacy file. **GitHub Pages ignores this Cloudflare-format file** and does not let this repository configure those response headers. Its CSP, anti-framing, content-type, referrer, permissions, cache-control, and `X-Robots-Tag` directives therefore **do not apply on GitHub Pages**. The local root-mode server still uses them for existing checks; the `/gaming-hub/` preview omits them to reflect Pages behavior. No equivalent production header protections are claimed. The HTML robots meta tag and `robots.txt` remain part of the static output.
 
 After the owner enables Pages and a deployment succeeds, verify the public URL, the WoW and placeholder routes, local assets and data links, and the custom 404. Check without JavaScript and confirm browser requests stay on the site. Local validation cannot establish that the owner has enabled Pages or that the production deployment succeeded.
 
-## Secrets and future WoW refreshes
+## Secrets and WoW patch refreshes
 
-The browsed site and its static build require **zero keys**. Do not add secrets to GitHub Pages or GitHub Actions. This v1 shell does not read, validate, or use pipeline credentials.
+The browsed site and its static build require **zero keys**. Do not add secrets to GitHub Pages or GitHub Actions. The static build and dashboard do not read or use collector credentials.
 
-For future collector tasks only, the owner expects `YOUTUBE_API_KEY`, `WCL_CLIENT_ID`, and `WCL_CLIENT_SECRET` in their **Codex Personal vault**, exposed as environment variables. Never hardcode, print, copy to setup scripts, write to a committed `.env`, or include their values in raw published files or generated profiles. Presence in one task does not guarantee API authorization; verify the documented collector when it exists. Credential **names** in these instructions are documentation, not credential values.
+For collector tasks only, the owner expects `YOUTUBE_API_KEY`, `WCL_CLIENT_ID`, and `WCL_CLIENT_SECRET` in their **Codex Personal vault**, exposed as environment variables. Never hardcode, print, copy to setup scripts, write to a committed `.env`, or include their values in raw published files or generated profiles. Presence in one task does not guarantee API authorization or permitted network access; check actual collector results. Credential **names** in these instructions are documentation, not credential values.
 
-**No paid LLM provider, no Gemini Flash, no external LLM key requirement.** The Codex agent running on the owner's existing ChatGPT subscription performs the extraction inside a task: read collected public raw data, apply `pipeline/extract-playstyle.md`, and write profiles JSON. That rubric and the collectors belong to the separate full WoW implementation; they do not exist in this shell. A new task each patch uses [apps/wow/per-patch-prompt.md](apps/wow/per-patch-prompt.md). Builds must continue to work without any provider credentials.
+**No paid LLM provider, no Gemini Flash, no external LLM key requirement.** The Codex agent running on the owner's existing ChatGPT subscription performs the extraction inside a task: read collected public raw data, apply `pipeline/extract-playstyle.md`, and write profiles JSON. The editable rubric is [apps/wow/pipeline/extract-playstyle.md](apps/wow/pipeline/extract-playstyle.md). A new task each patch uses [apps/wow/per-patch-prompt.md](apps/wow/per-patch-prompt.md), also available through **New patch? Refresh data** in the dashboard. The prompt is loaded from that file at build time, not maintained as a second UI copy. Builds continue to work without any provider credentials.
 
 Only public game data and playstyle summaries belong on the site: no personal data, passwords, payment information, or secrets. The app has no analytics, third-party fonts, remote scripts, or browser API calls. Keep the repository and all published files suitable for public viewing.
 
@@ -156,4 +166,4 @@ Only public game data and playstyle summaries belong on the site: no personal da
 
 `npm test` exercises the actual generated HTML, all app routes and assets, status/date caveats, hand-edited data validation, local-only legacy headers, deterministic rebuilds, a real 404, and exclusion of credentials and source files from the export. It also checks the `/gaming-hub/` mount, public data URLs, CSS/JS base-path handling, redirects, absent root aliases, ignored Pages headers, and invalid base paths. GitHub Actions runs these tests and the build on PRs and `main`.
 
-For this Pages switch, all eight automated tests and `npm run build` passed. Chromium checked home, WoW, placeholder, and the 404 page at 1440, 820, 390, and 320px, each with JavaScript enabled and disabled. Subpath links, assets, data, anchors, filters/reset, and keyboard skip navigation passed, with no page errors, layout overflow, failed requests, or external requests. A repository/output credential scan was clean. These are local checks of the Pages URL structure. Public repository settings, Pages enablement, production deployment verification, and the separate full WoW app remain owner/follow-up steps; the site is not claimed live.
+For the original Pages switch, all eight automated tests and `npm run build` passed. Chromium checked home, WoW, placeholder, and the 404 page at 1440, 820, 390, and 320px, each with JavaScript enabled and disabled. Subpath links, assets, data, anchors, filters/reset, and keyboard skip navigation passed, with no page errors, layout overflow, failed requests, or external requests. A repository/output credential scan was clean. These are local checks of the Pages URL structure. Public repository settings, Pages enablement, production deployment verification, remain owner/follow-up steps; local checks do not establish production availability.
