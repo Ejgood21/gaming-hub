@@ -9,6 +9,7 @@ import {
 } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { buildWow } from "../apps/wow/build.mjs";
 
 export const root = fileURLToPath(new URL("../", import.meta.url));
 export const output = path.join(root, "dist");
@@ -300,6 +301,8 @@ export async function build({
       2,
     ) + "\n",
   );
+  await buildWow({ root, output, basePath });
+
   console.log(
     `Built dist/ for ${basePath}: home + ${directories.length} apps, ${releases.length} releases, ${apps.length} tool cards.`,
   );

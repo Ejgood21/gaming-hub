@@ -2,9 +2,9 @@
   {
     "id": "wow",
     "title": "WoW Spec Playstyle Compass",
-    "description": "Find the playstyle that feels like you. Your next main starts here.",
+    "description": "Compare how all 40 specs play in raid and Mythic+. Source-linked profiles, with coverage gaps in view.",
     "href": "/wow/",
-    "status": "shell",
+    "status": "ready",
     "updated": "2026-10-26",
     "icon": "compass"
   },
