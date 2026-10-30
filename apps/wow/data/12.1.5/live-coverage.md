@@ -9,7 +9,7 @@ Required source coverage is **40/80**. All 40 Mythic+ profiles have Wowhead plus
 | Wowhead | 80/80; 240/240 sections | No remaining guide-access gap in the final run. |
 | Raider.io | 40/40 Mythic+ | 60-run leaderboard sample with role roster-slot denominators; repeated runs/players may occur. No raid specialization representation endpoint. |
 | Archon | 0/80 | Origin HTTP 403, `Attention Required! &#124; Cloudflare`, after proxy CONNECT 200. No quantitative data captured. |
-| YouTube | 0 transcript profiles | Search/metadata worked; no returned candidate met current-patch guide rules. No creator notes inferred. |
+| YouTube | 0/80; all 80 failed | HTTP 429 from www.googleapis.com; rate limited. Earlier metadata access belonged to a prior diagnostic run. No transcript or creator notes inferred. |
 | WarcraftLogs | 0 | Optional adapter remains disabled; no spec event corpus. |
 
 [Every spec/content profile in CSV](live-coverage.csv) · [Machine-readable audit](live-coverage.json).
@@ -20,9 +20,13 @@ The existing Wowhead adapter incorrectly interpreted the newsletter's passive `r
 
 The final run returned all 240 guide sections successfully with update dates and patch 12.1.5 evidence. Ten sections also mention older patches as historical author context. Blizzard's version table returned 12.1.5.70575; Raider.io returned active `season-mn-2` / `MN Season 2`. The explicit Midnight label follows the requested context. The patch release date remains unverified, so video selection requires the exact patch.
 
+## Rebase and Pages subpath
+
+The existing WoW branch was rebased onto merged Pages main `8d6db770`. Conflicts in `README.md`, `scripts/build.mjs`, and `tests/hub.test.mjs` were resolved preserving the WoW dashboard and this audit. Generated assets use `/gaming-hub/wow/assets/`; dashboard data remains bundled at build time. The main-only Pages deployment workflow is unchanged. Root and mounted subpath checks passed before extraction resumed.
+
 ## Extraction and publication status
 
-Agent extraction was interrupted. The workspace is currently unavailable during recovery; the new raw archive and incomplete extraction candidate have not been pushed. This report preserves the collection outcomes already observed in the completed run; it does not claim that the extraction is complete.
+Evidence audits cover all 80 saved extraction drafts. The workspace is currently unavailable during recovery; the final merged candidate and raw archive have not been pushed. This report preserves observed collection outcomes and does not claim successful data publication.
 
 Raid quantitative values remain unknown. No hero pick rates, representation percentages, creator notes, or timestamps have been invented. A source's successful download alone does not establish every playstyle dimension.
 
@@ -32,7 +36,7 @@ Strict finalization was attempted **without** `--allow-partial`. It failed befor
 
 The collector's source-fixture checks passed before workspace recovery, and the recovered parsing logic passed isolated synthetic checks for passive CAPTCHA configuration, real challenges, author prose, patch badges, and comment rejection. Full npm validation/build could not complete in the local collector workspace: `registry.npmjs.org` and PyPI package downloads returned proxy CONNECT 403, and no usable offline dependencies were available. Python JSON Schema validation passed for the interim unknown candidate; that is not validation of a completed final extraction.
 
-GitHub Actions subsequently installed the existing lockfile dependencies and passed **all 53 tests and the static build** for collector-fix commit `3400e887`. [Verified workflow run](https://github.com/Ejgood21/gaming-hub/actions/runs/40556637229). These checks validate the committed code and preserved dashboard data; they do not establish a completed new extraction.
+GitHub Actions passed **all 57 tests and the `/gaming-hub/` build** for commit `4c3ab476`. [Verified workflow run](https://github.com/Ejgood21/gaming-hub/actions/runs/41104193136). Tests include mounted WoW assets/data, 80 readable profiles, raw-file exclusion, and lossless compressed-evidence handling with the strict source gate. These checks validate the committed code and preserved dashboard data; final new data publication is not claimed.
 
 CSV/JSON rows retain the attempted source URLs as provenance for each profile.
 

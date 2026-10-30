@@ -79,19 +79,21 @@ Each registry spec has two profile entries. Hero options store a sourced playsty
 
 Confidence is derived from coverage, freshness, and quantitative availability. It is not a measure of spec strength or the agent's rhetorical certainty. Similar-spec suggestions use shared supported playstyle tags. Patch diffs compare the new profile with the previous patch; the first baseline does not claim invented changes, and losing evidence is not proof that gameplay changed.
 
+Immutable raw runs may be losslessly archived as `.json.gz`; candidate provenance pins that exact run path, and strict finalization decompresses it before the same identity, validation, and source-coverage checks. Select it explicitly with `--raw-bundle <archive path>` when needed.
+
 `data/<patch>/raw/` is audit input; `profiles.json` is validated dashboard data. Do not edit values manually as a substitute for new evidence. Agent extraction of automatically collected material is the supported authoring path. Keep raw evidence bounded; prefer supporting passages or summaries and links over redistributing complete guides or videos.
 
 ## Live coverage status
 
 The October 27, 2026 refresh collected Wowhead evidence for **80/80 profiles (240/240 guide sections)** and Raider.io samples for **40/40 Mythic+ profiles**. Required Wowhead plus quantitative coverage is **40/80**. All 40 raid profiles retain explicit quantitative gaps: Archon returns an origin HTTP 403 Cloudflare block after successful proxy connection. Raider.io guild progression is not substituted for raid specialization representation.
 
-The Wowhead collector now distinguishes a passive newsletter CAPTCHA configuration from an actual access challenge, reads returned author guide prose without executing scripts or accepting user comments, and follows canonical `/bis-gear` links. No Wowhead access gap remains in the final run. YouTube search/metadata worked, but no returned guide met the exact-patch rules; the optional WarcraftLogs adapter remains disabled.
+The Wowhead collector now distinguishes a passive newsletter CAPTCHA configuration from an actual access challenge, reads returned author guide prose without executing scripts or accepting user comments, and follows canonical `/bis-gear` links. No Wowhead access gap remains in the final run. The final immutable run records YouTube HTTP 429 for all 80 profiles; earlier metadata access was from a prior diagnostic run; the optional WarcraftLogs adapter remains disabled.
 
-See [the live coverage report](data/12.1.5/live-coverage.md), [all 80 profile rows](data/12.1.5/live-coverage.csv), and [the JSON audit](data/12.1.5/live-coverage.json). These reports describe collected source coverage, not a finalized extraction. Agent extraction was interrupted, and workspace recovery currently prevents pushing its new raw archive and incomplete candidate. The previously validated dashboard data is preserved.
+See [the live coverage report](data/12.1.5/live-coverage.md), [all 80 profile rows](data/12.1.5/live-coverage.csv), and [the JSON audit](data/12.1.5/live-coverage.json). These reports describe collected source coverage, not a finalized extraction. Evidence audits cover all 80 saved drafts, but workspace recovery currently prevents the final merged candidate and raw archive push. The previously validated dashboard data is preserved.
 
 Finalization was attempted without `--allow-partial`; unavailable Ajv dependencies blocked the command before validation, and all 40 raid profiles also fail the required source gate. npm/PyPI downloads are denied by the environment policy. No environment settings were changed, and no full-coverage claim or merge has been made.
 
-GitHub Actions passed all **53 tests and the static build** for collector-fix commit `3400e887` ([workflow](https://github.com/Ejgood21/gaming-hub/actions/runs/40556637229)). This validates the committed code and preserved dataset; the interrupted new extraction is not published.
+The branch is rebased onto Pages main `8d6db770`. GitHub Actions passed **57 tests and the `/gaming-hub/` build** at `4c3ab476` ([workflow](https://github.com/Ejgood21/gaming-hub/actions/runs/41104193136)). This includes WoW subpath asset/data checks and compressed-evidence strict-gate tests; new extraction data is not yet published.
 
 The first-build dataset and browser checks are historical: the original build exercised Chromium at 1440, 820, 390, and 320px, including JavaScript-disabled reading. Those results do not establish that the interrupted live refresh has completed.
 
