@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,readFile,writeFile,readdir,rename,rm} from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
+import {gzipSync, gunzipSync} from 'node:zlib';
 import {scrape,finalize,commitJSONFiles} from '../../pipeline/update-data.mjs';
 
 const readJSON=async file=>JSON.parse(await readFile(file,'utf8'));
@@ -117,4 +118,33 @@ test('strict finalize refuses missing coverage and partial finalize pins immutab
   assert.equal(await readFile(profilesPath,'utf8'),finalizedProfiles);
   assert.equal(await readFile(selectedRawPath,'utf8'),selectedRaw);
   assert.ok((await readJSON(profilesPath)).profiles.every(profile=>profile.provenance.raw_bundle===expectedRef));
+});
+
+for(const blocked of [false,true]) test(`gzip evidence retains immutable provenance and ${blocked?'strictly refuses missing':'accepts complete'} source coverage`,async t=>{
+  const root=await temporaryRoot(t),patchDir=path.join(root,'data',patch);
+  const modules=blocked?{...sourceModules,wowhead:async()=>({source:'wowhead',status:'failed',url:'https://fixture.invalid/wowhead',fetched_at:new Date().toISOString(),error:'Synthetic blocked guide'})}:sourceModules;
+  const {bundle}=await scrape({},catalog,config,{root,sourceModules:modules,seasonDetector,log:()=>{}});
+  const plain=path.join(patchDir,'raw','runs',`${bundle.run_id}.json`), compressed=plain+'.gz';
+  const original=await readFile(plain), archive=gzipSync(original);
+  await writeFile(compressed,archive);
+  assert.deepEqual(gunzipSync(archive),original);
+  const candidatePath=path.join(patchDir,'candidate-profiles.json'),candidate=await readJSON(candidatePath);
+  const rawRef=`data/${patch}/raw/runs/${bundle.run_id}.json.gz`;
+  for(const profile of candidate.profiles)profile.provenance.raw_bundle=rawRef;
+  await writeFile(candidatePath,JSON.stringify(candidate));
+  await rm(plain);
+  const profilesPath=path.join(patchDir,'profiles.json');
+  if(blocked){
+    const preserved='{"published":"preserve these exact bytes"}\n';
+    await writeFile(profilesPath,preserved);
+    await assert.rejects(finalize(candidatePath,{},catalog,{root}),/lack the required Wowhead \+ quantitative source/);
+    assert.equal(await readFile(profilesPath,'utf8'),preserved);
+  }else{
+    const result=await finalize(candidatePath,{},catalog,{root});
+    assert.equal(result.status.status,'finalized');
+    assert.equal(result.status.acceptance_coverage_passed,true);
+    assert.equal(result.status.raw_bundle,rawRef);
+    assert.ok(result.bundle.profiles.every(profile=>profile.provenance.raw_bundle===rawRef));
+  }
+  assert.deepEqual(await readFile(compressed),archive);
 });
