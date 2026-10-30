@@ -81,15 +81,17 @@ Confidence is derived from coverage, freshness, and quantitative availability. I
 
 `data/<patch>/raw/` is audit input; `profiles.json` is validated dashboard data. Do not edit values manually as a substitute for new evidence. Agent extraction of automatically collected material is the supported authoring path. Keep raw evidence bounded; prefer supporting passages or summaries and links over redistributing complete guides or videos.
 
-## First-build status and acceptance
+## Live coverage status
 
-The first all-spec run attempted 80 separate content profiles. Direct requests were denied with HTTP 403 by the environment proxy's destination policy. Configured API keys do not grant network access, and the build does not claim API authorization from secret presence alone. Any separately collected web evidence must be labeled as such; an indexed excerpt does not count as a successful full-guide scrape. Empty or partial profiles are intentional evidence gaps rather than fictional current-patch advice.
+The October 27, 2026 refresh collected Wowhead evidence for **80/80 profiles (240/240 guide sections)** and Raider.io samples for **40/40 Mythic+ profiles**. Required Wowhead plus quantitative coverage is **40/80**. All 40 raid profiles retain explicit quantitative gaps: Archon returns an origin HTTP 403 Cloudflare block after successful proxy connection. Raider.io guild progression is not substituted for raid specialization representation.
 
-The all-spec collection acceptance criterion is met only when every spec/content profile has successful Wowhead evidence plus a quantitative source. A robust run can finish while that criterion is unmet. Use the processing view, raw `run.json`, and profile provenance to audit the difference. The source code and validation workflow can pass while live collection remains blocked.
+The Wowhead collector now distinguishes a passive newsletter CAPTCHA configuration from an actual access challenge, reads returned author guide prose without executing scripts or accepting user comments, and follows canonical `/bis-gear` links. No Wowhead access gap remains in the final run. YouTube search/metadata worked, but no returned guide met the exact-patch rules; the optional WarcraftLogs adapter remains disabled.
 
-The first build passed Chromium interaction checks at 1440, 820, 390, and 320px widths, including filters, two-profile detail, comparison, preference persistence, processing, exact prompt copying and blocked-clipboard fallback. A JavaScript-disabled pass read all 80 content profiles. No browser requests went to external hosts.
+See [the live coverage report](data/12.1.5/live-coverage.md), [all 80 profile rows](data/12.1.5/live-coverage.csv), and [the JSON audit](data/12.1.5/live-coverage.json). These reports describe collected source coverage, not a finalized extraction. Agent extraction was interrupted, and workspace recovery currently prevents pushing its new raw archive and incomplete candidate. The previously validated dashboard data is preserved.
 
-Browser verification depends on the available environment tooling. Static build and schema checks do not prove every interaction has been exercised on a physical phone or iPad. Check the final task report for the actual tests performed and any remaining deployment/collection limits.
+Finalization was attempted without `--allow-partial`; unavailable Ajv dependencies blocked the command before validation, and all 40 raid profiles also fail the required source gate. npm/PyPI downloads are denied by the environment policy. No environment settings were changed, and no full-coverage claim or merge has been made.
+
+The first-build dataset and browser checks are historical: the original build exercised Chromium at 1440, 820, 390, and 320px, including JavaScript-disabled reading. Those results do not establish that the interrupted live refresh has completed.
 
 ## Hosting and standalone use
 

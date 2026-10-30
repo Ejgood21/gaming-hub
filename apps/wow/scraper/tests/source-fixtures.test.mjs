@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {scrapeWowhead} from '../wowhead.mjs';
+import {scrapeWowhead, parseWowheadHTML} from '../wowhead.mjs';
+import {isBlockedPage} from '../html.mjs';
 import {scrapeArchon} from '../archon.mjs';
 import {scrapeRaiderio} from '../raiderio.mjs';
 import {chooseVideo, scrapeYoutube} from '../youtube.mjs';
@@ -29,7 +30,7 @@ test('Wowhead reads script-only JSON-LD guide prose without evaluating JavaScrip
 
 test('one blocked Wowhead section preserves the other sections and explicit gap', async () => {
   const html = await fixture('wowhead-script-only.html');
-  const result = await scrapeWowhead({spec,content:'raid',context,config,httpGetText:async url=>url.includes('/gear-')?'<html><title>Just a moment</title><p>Verify you are human</p></html>':html});
+  const result = await scrapeWowhead({spec,content:'raid',context,config,httpGetText:async url=>url.endsWith('/bis-gear')?'<html><title>Just a moment</title><p>Verify you are human</p></html>':html});
   assert.equal(result.status,'success');
   assert.equal(result.data.sections.filter(section=>section.status==='success').length,2);
   assert.equal(result.data.sections.find(section=>section.section==='gear').status,'failed');
@@ -164,4 +165,34 @@ test('YouTube successful captions preserve timing for agent source citations', a
   assert.equal(result.data.transcript[0].start,85.5);
   assert.equal(result.data.transcript_language,'en');
   assert.equal(result.data.creator_notes,null);
+});
+
+test('passive reCAPTCHA configuration is not an access challenge', async () => {
+  const html=(await fixture('wowhead-script-only.html')).replace('</head>','<script type="application/json">{"recaptchaSiteKey":"synthetic-key"}</script><script src="/challenge.js"></script></head>');
+  assert.equal(isBlockedPage(html),false);
+  assert.match(parseWowheadHTML(html,spec).text,/Tiger Palm/);
+  assert.equal(isBlockedPage('<title>Attention Required! | Cloudflare</title><p>Please enable cookies.</p>'),true);
+  assert.equal(isBlockedPage('<title>Security check</title><form id="challenge-form"></form>'),true);
+});
+
+test('Wowhead author fallback excludes comments and PTR navigation', () => {
+  const prose='Windwalker Monk rotation uses Tiger Palm and Blackout Kick to build its resource rhythm. '.repeat(8);
+  const html=`<html><head><title>Windwalker Monk Guide</title><script type="application/ld+json">{"@type":"Article","headline":"Windwalker Monk Rotation","dateModified":"2026-10-13T20:00:00Z"}</script><script type="application/json">{"recaptchaSiteKey":"synthetic-key"}</script></head><body><nav>PTR 12.1.7</nav><div class="interior-sidebar-header-text-subtitle">Patch 12.1.5</div><div id="guide-body" class="text"></div><noscript><h2>Windwalker Rotation</h2><p>${prose}</p></noscript><noscript><div id="user-comments">Unverified Patch 11.0.5 comments</div></noscript></body></html>`;
+  const parsed=parseWowheadHTML(html,spec);
+  assert.match(parsed.text,/Tiger Palm/);
+  assert.doesNotMatch(parsed.text,/Unverified/);
+  assert.deepEqual(parsed.detected_patches,['12.1.5']);
+  assert.equal(parsed.updated_at,'2026-10-13T20:00:00.000Z');
+});
+
+test('missing author fallback cannot substitute user comments', () => {
+  const prose='Windwalker Monk rotation uses Tiger Palm and Blackout Kick. '.repeat(20);
+  assert.throws(()=>parseWowheadHTML(`<title>Windwalker guide</title><div id="guide-body"></div><noscript><div id="user-comments">${prose}</div></noscript>`,spec),/Guide prose missing/);
+});
+
+test('Wowhead gear collection uses the observed canonical bis-gear URL', async () => {
+  const html=await fixture('wowhead-script-only.html'), urls=[];
+  await scrapeWowhead({spec,content:'raid',context,config,httpGetText:async url=>{urls.push(url);return html;}});
+  assert.ok(urls.some(url=>url.endsWith('/bis-gear')));
+  assert.ok(urls.every(url=>!url.includes('/gear-pve-')));
 });

@@ -12,4 +12,12 @@ export function jsonScripts(html) {
   }
   return result;
 }
-export function isBlockedPage(html) { return /checking your browser|verify you are human|just a moment|access denied|captcha|challenge-platform|enable javascript and cookies to continue/i.test(html.slice(0,30000)); }
+export function isBlockedPage(html) {
+  // Ordinary articles can load reCAPTCHA for newsletter/comment forms. Script
+  // names and configuration keys do not establish an access interstitial.
+  const title = plainText(html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1] || '');
+  if (/checking your browser|just a moment|access denied|attention required.*cloudflare|\bcaptcha\b/i.test(title)) return true;
+  const visible = plainText(html);
+  return /checking your browser|verify you are human|enable javascript and cookies to continue/i.test(visible)
+    || /\bid=["'](?:challenge-form|cf-challenge-running|cf-chl-widget)["']/i.test(html);
+}
