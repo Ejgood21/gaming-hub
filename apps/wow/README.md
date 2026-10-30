@@ -1,6 +1,6 @@
 # WoW Spec Playstyle Compass
 
-A read-only dashboard answering **"How does this spec feel, and does that match what I like?"** It keeps raid and Mythic+ profiles separate, explains every supported label, and shows source coverage instead of hiding missing evidence. The app belongs to the gaming hub's one build and `/wow/` route. Its scraper, pipeline, configuration, and data stay independent under this directory.
+A read-only dashboard answering **"How does this spec feel, and does that match what I like?"** It keeps raid and Mythic+ profiles separate, explains every supported label, and shows source coverage instead of hiding missing evidence. The app belongs to the gaming hub's one build and `/gaming-hub/wow/` Pages route (`/wow/` in root-mode preview). Its scraper, pipeline, configuration, and data stay independent under this directory.
 
 ## Browse and personalize
 
@@ -97,6 +97,6 @@ The first-build dataset and browser checks are historical: the original build ex
 
 ## Hosting and standalone use
 
-Run the hub's `npm run build` and deploy `dist/` through its existing Cloudflare Pages project. There is one project and no WoW-specific hosting setup. The hub retains its original static builder; `apps/wow/build.mjs` uses an isolated Vite/React render and hydration build inside the shared light theme, header, and footer. The dashboard uses build-time data and the single prompt file; it makes no browser data-fetch or source-API calls. It can run from a static HTTP server without collection credentials; module browsers require HTTP rather than opening source files directly with `file://`.
+Run the hub's `npm run build` for the existing GitHub Pages workflow. The default base is `/gaming-hub/`; pushes to `main` deploy `dist/`, while PR checks build without deploying. There is one project and no WoW-specific hosting setup. The hub retains its original static builder; `apps/wow/build.mjs` uses an isolated Vite/React render and hydration build inside the shared light theme, header, and footer. The dashboard uses build-time data and the single prompt file; it makes no browser data-fetch or source-API calls. It can run from a static HTTP server without collection credentials; module browsers require HTTP rather than opening source files directly with `file://`.
 
 To use this app in another static shell, retain `scraper/`, `pipeline/`, `config/`, `data/`, `taste.yaml`, and `per-patch-prompt.md` together and mount the dashboard at its configured base route. Do not make the scraper part of the public browsing runtime.
