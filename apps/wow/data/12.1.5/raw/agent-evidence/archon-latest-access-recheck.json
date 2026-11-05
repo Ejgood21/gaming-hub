@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-11-05T00:48:53.319282+00:00",
+  "source": "archon",
+  "url": "https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses",
+  "status": "failed",
+  "http_status_lines": [
+    "HTTP/1.1 200 OK",
+    "HTTP/2 403 "
+  ],
+  "document_title": "Attention Required! | Cloudflare",
+  "interpretation": "Allowed destination reached through proxy; origin Cloudflare HTTP403 supplies no quantitative evidence."
+}

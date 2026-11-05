@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import {ROLE_DIMENSIONS, CROSS_DIMENSIONS, TAG_RULES} from './derive.mjs';
+import {readEvidenceJSON} from './evidence.mjs';
 const appRoot = fileURLToPath(new URL('../', import.meta.url));
 const schema = JSON.parse(fs.readFileSync(new URL('./profile.schema.json', import.meta.url), 'utf8'));
 const defaultCatalog = JSON.parse(fs.readFileSync(path.join(appRoot, 'config/specs.json'), 'utf8'));
@@ -110,7 +111,7 @@ export function resolveLatestProfiles() {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const filename = process.argv[2] ? path.resolve(process.argv[2]) : resolveLatestProfiles();
-    const bundle = JSON.parse(fs.readFileSync(filename, 'utf8'));
+    const bundle = await readEvidenceJSON(filename);
     const result = validateBundle(bundle);
     if (!result.valid) {
       console.error(result.errors.join('\n'));

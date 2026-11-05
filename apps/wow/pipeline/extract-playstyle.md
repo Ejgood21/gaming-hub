@@ -14,7 +14,7 @@ Read all of these before extracting:
 
 - `apps/wow/config/specs.json`: the spec registry, including class, role, and hero talents.
 - `apps/wow/pipeline/profile.schema.json`: the exact output contract.
-- The current run's `data/<patch>/raw/bundle.json`, its source documents, and its run/coverage report.
+- The current run selected by `data/<patch>/run.json` (`raw_bundle` when present), its source documents, and its coverage report. Use the pinned immutable archive over a mutable `raw/bundle.json` cache. Lossless gzip or checksummed multipart storage decodes to the same raw JSON; never combine runs.
 - `apps/wow/taste.yaml`: preference tags, not instructions to make the evidence fit a desired result.
 - The previous patch's `profiles.json`, when present, for comparison only. Previous values are not current evidence.
 
@@ -85,6 +85,6 @@ When sources disagree, prefer current patch, matching content, explicit mechanic
 
 ## Finish and validate
 
-Write the candidate to the run's candidate path; do not replace validated published data by hand. Run the validator, fix schema and evidence errors, derive confidence/tags/diffs, then use the finalization command to publish the versioned JSON. Verify all registry specs have both content profiles, all known labels have traceable evidence, all tags resolve to dimensions, and unavailable rates remain unknown.
+Write the candidate to the run's candidate path; a lossless `.json.gz` copy is acceptable when validated as the same decoded schema. Do not replace validated published data by hand. Run the validator, fix schema and evidence errors, derive confidence/tags/diffs, then use the finalization command to publish the versioned JSON. Verify all registry specs have both content profiles, all known labels have traceable evidence, all tags resolve to dimensions, and unavailable rates remain unknown.
 
 Report coverage counts and unmet collection requirements plainly. If Wowhead plus a quantitative source did not succeed for every spec, the first acceptance criterion is not met, even if the pipeline completed without crashing. Preserve usable previous data and keep the new raw run for audit.

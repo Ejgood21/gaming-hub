@@ -4,6 +4,7 @@ import {mkdtemp,mkdir,readFile,writeFile,readdir,rename,rm} from 'node:fs/promis
 import path from 'node:path';
 import os from 'node:os';
 import {gzipSync, gunzipSync} from 'node:zlib';
+import {createHash} from 'node:crypto';
 import {scrape,finalize,commitJSONFiles} from '../../pipeline/update-data.mjs';
 
 const readJSON=async file=>JSON.parse(await readFile(file,'utf8'));
@@ -147,4 +148,39 @@ for(const blocked of [false,true]) test(`gzip evidence retains immutable provena
     assert.ok(result.bundle.profiles.every(profile=>profile.provenance.raw_bundle===rawRef));
   }
   assert.deepEqual(await readFile(compressed),archive);
+});
+
+for(const blocked of [false,true]) test(`multipart evidence preserves the archive and ${blocked?'refuses missing':'accepts complete'} source coverage`,async t=>{
+  const root=await temporaryRoot(t),patchDir=path.join(root,'data',patch);
+  const modules=blocked?{...sourceModules,raiderio:async()=>({source:'raiderio',status:'failed',url:'https://fixture.invalid/raiderio',fetched_at:new Date().toISOString(),error:'Synthetic quantitative gap'})}:sourceModules;
+  const {bundle}=await scrape({},catalog,config,{root,sourceModules:modules,seasonDetector,log:()=>{}});
+  const plain=path.join(patchDir,'raw','runs',`${bundle.run_id}.json`);
+  const original=await readFile(plain),compressed=gzipSync(original),sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+  const parts=[compressed.subarray(0,31),compressed.subarray(31)];
+  const manifest={format:'wow-evidence-gzip-parts-v1',run_id:bundle.run_id,compressed_bytes:compressed.length,compressed_sha256:sha(compressed),raw_bytes:original.length,raw_sha256:sha(original),parts:parts.map((bytes,index)=>({path:`${bundle.run_id}.json.gz.part-${index}`,bytes:bytes.length,sha256:sha(bytes)}))};
+  const manifestPath=plain+'.gz.manifest.json',manifestBytes=JSON.stringify(manifest);
+  await writeFile(manifestPath,manifestBytes);
+  for(const [index,bytes] of parts.entries())await writeFile(path.join(path.dirname(plain),manifest.parts[index].path),bytes);
+  const candidatePath=path.join(patchDir,'candidate-profiles.json'),candidate=await readJSON(candidatePath);
+  const rawRef=`data/${patch}/raw/runs/${bundle.run_id}.json.gz.manifest.json`;
+  for(const profile of candidate.profiles)profile.provenance.raw_bundle=rawRef;
+  await writeFile(candidatePath,JSON.stringify(candidate));
+  await rm(plain);
+  const profilesPath=path.join(patchDir,'profiles.json');
+  if(blocked){
+    const preserved='{"published":"preserve these exact bytes"}\n';
+    await writeFile(profilesPath,preserved);
+    await assert.rejects(finalize(candidatePath,{},catalog,{root}),/2 profiles lack the required Wowhead \+ quantitative source/);
+    assert.equal(await readFile(profilesPath,'utf8'),preserved);
+  }else{
+    const importedPath=path.join(path.dirname(plain),'imported.json.gz.manifest.json');
+    await writeFile(importedPath,manifestBytes);
+    await assert.rejects(finalize(candidatePath,{'raw-bundle':importedPath},catalog,{root}),/canonical immutable raw run path/);
+    const result=await finalize(candidatePath,{},catalog,{root});
+    assert.equal(result.status.acceptance_coverage_passed,true);
+    assert.equal(result.status.raw_bundle,rawRef);
+    assert.ok(result.bundle.profiles.every(profile=>profile.provenance.raw_bundle===rawRef));
+  }
+  assert.equal(await readFile(manifestPath,'utf8'),manifestBytes);
+  for(const [index,bytes] of parts.entries())assert.deepEqual(await readFile(path.join(path.dirname(plain),manifest.parts[index].path)),bytes);
 });

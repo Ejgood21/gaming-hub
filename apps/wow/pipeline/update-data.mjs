@@ -1,7 +1,7 @@
 import {readFile, writeFile, mkdir, readdir, rename, copyFile, rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import {randomUUID} from 'node:crypto';
-import {gzipSync, gunzipSync} from 'node:zlib';
+import {gzipSync} from 'node:zlib';
 import path from 'node:path';
 import {detectSeason} from '../scraper/season.mjs';
 import {scrapeWowhead} from '../scraper/wowhead.mjs';
@@ -10,12 +10,13 @@ import {scrapeRaiderio} from '../scraper/raiderio.mjs';
 import {scrapeYoutube} from '../scraper/youtube.mjs';
 import {scrapeWarcraftlogs} from '../scraper/warcraftlogs.mjs';
 import {cleanError, sourceResult} from '../scraper/http.mjs';
+import {readEvidenceJSON} from './evidence.mjs';
 
 const appRoot = fileURLToPath(new URL('../',import.meta.url));
 const dataRoot = path.join(appRoot,'data');
 // Lossless compression keeps large immutable evidence runs reviewable in Git.
 // Publication still uses the same validation and required-source coverage gate.
-const readJSON = async file => {const bytes=await readFile(file);return JSON.parse((String(file).endsWith('.gz')?gunzipSync(bytes):bytes).toString('utf8'));};
+const readJSON = readEvidenceJSON;
 const existsJSON = async file => {try{return await readJSON(file);}catch(error){if(error.code==='ENOENT')return null;throw error;}};
 const writeJSON = async (file,data) => {await mkdir(path.dirname(file),{recursive:true});const temp=`${file}.${randomUUID()}.tmp`;try{const bytes=Buffer.from(JSON.stringify(data,null,2)+'\n');await writeFile(temp,String(file).endsWith('.gz')?gzipSync(bytes):bytes);await rename(temp,file);}finally{await rm(temp,{force:true});}};
 
@@ -80,18 +81,20 @@ export async function finalize(candidatePath, options, catalog, {root=appRoot}={
   const patchDir = path.join(dataRoot,candidate.patch);
   const candidateRawRefs=[...new Set((candidate.profiles||[]).map(profile=>profile.provenance?.raw_bundle).filter(Boolean))];
   if(candidateRawRefs.length>1 && !options['raw-bundle'])throw new Error('Candidate refers to multiple raw runs; use one immutable run per extraction.');
-  const frozenRef=candidateRawRefs.length===1 && /\/raw\/runs\/[^/]+\.json(?:\.gz)?$/.test(candidateRawRefs[0])?candidateRawRefs[0]:null;
+  const frozenRef=candidateRawRefs.length===1 && /\/raw\/runs\/[^/]+\.json(?:\.gz(?:\.manifest\.json)?)?$/.test(candidateRawRefs[0])?candidateRawRefs[0]:null;
   const rawPath=options['raw-bundle']?path.resolve(options['raw-bundle']):frozenRef?path.resolve(root,frozenRef):path.join(patchDir,'raw/bundle.json');
   if(!rawPath.startsWith(path.join(patchDir,'raw')+path.sep))throw new Error('Raw bundle must belong to this patch under its raw directory.');
   const raw = await existsJSON(rawPath);
   if (!raw) throw new Error('No scraped raw bundle for this patch. Run npm run update-data before extraction/finalization.');
   if(raw.context?.patch!==candidate.patch || !/^[\da-z-]+$/i.test(raw.run_id||''))throw new Error('Raw bundle patch/run identity is invalid or differs from the candidate.');
+  const multipart=rawPath.endsWith('.json.gz.manifest.json');
+  const rawRef=`data/${candidate.patch}/raw/runs/${raw.run_id}.json${multipart?'.gz.manifest.json':rawPath.endsWith('.gz')?'.gz':''}`;
+  if(multipart && rawPath!==path.resolve(root,rawRef))throw new Error('Multipart evidence must already be stored at its canonical immutable raw run path.');
   const {deriveBundle} = await import('./derive.mjs');
   const {validateBundle} = await import('./validate.mjs');
   const previous = await previousBundle(candidate.patch,dataRoot);
   const derived = deriveBundle(candidate,previous);
   const bundle = derived || candidate;
-  const rawRef=`data/${candidate.patch}/raw/runs/${raw.run_id}.json${rawPath.endsWith('.gz')?'.gz':''}`;
   for(const profile of bundle.profiles)profile.provenance.raw_bundle=rawRef;
   const validation = validateBundle(bundle,{catalog,requireComplete:true});
   const result = await validation;

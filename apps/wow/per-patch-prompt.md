@@ -13,3 +13,5 @@ Work in apps/wow/ and preserve the shared gaming-hub shell, /gaming-hub/wow/ Pag
 9. Commit the reviewed source/data changes and open a pull request into main; do not merge or deploy it. The PR must summarize the detected patch and season, meaningful playstyle changes, successful source coverage, gaps/stale data, validation results, and any collection acceptance criteria that remain unmet. Do not claim complete data coverage merely because the scraper process exited successfully. The existing hub deployment will build the merged commit.
 
 Proceed through all available work without stopping for routine confirmation. If a source or environment is blocked, preserve the evidence, complete independent work, and state the concrete blocker and how to resolve it. Never bypass network policy or claim a source was scraped when only a search excerpt or link was available.
+
+For saved completed runs, use the immutable raw archive selected by run.json and candidate provenance; do not substitute an older mutable raw/bundle.json cache. Lossless gzip candidates and checksummed multipart evidence retain the same decoded schema and strict source requirements.
