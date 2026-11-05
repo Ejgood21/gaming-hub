@@ -86,7 +86,7 @@
   ],
   "publication_status": "blocked_required_coverage",
   "published_data_preserved": true,
-  "finalization_result": "Strict publication blocked by 40 raid required quantitative-source gaps; published data preserved; no --allow-partial used",
+  "finalization_result": "Verified strict-finalizer rejection of 40 raid required-source gaps; published profiles, changes, latest pointer and run bytes preserved by the isolated CI check. No --allow-partial used.",
   "allow_partial_used": false,
   "coverage_report": "data/12.1.5/live-coverage.json",
   "raw_integrity": {
@@ -96,7 +96,7 @@
     "decompressed_sha256": "80be666da901970037465014a6696f7807084ef49fb7cea067a84249464c6b54"
   },
   "validation": {
-    "current_candidate": "Python JSON Schema and semantic/provenance audits passed with 678 source references and zero errors. Final candidate Ajv validation, multipart archive integrity tests, and isolated strict-finalization rejection checks are pending GitHub Actions; the historical 57-test and /gaming-hub/ build result is listed separately.",
+    "current_candidate": "GitHub Actions validated the delivered candidate with the checked-in schema/semantic validator, verified multipart archive integrity, and confirmed strict finalization rejects all 40 required-source gaps without changing published data. All 65 tests and the /gaming-hub/ static build passed.",
     "historical_github_actions": {
       "commit": "4c3ab476c3f68df5b0f64ca6e631f813bc72c0a8",
       "workflow": "Check static hub",
@@ -107,6 +107,19 @@
       "failed": 0,
       "static_build": "passed for /gaming-hub/",
       "includes": "Mounted WoW/data/assets checks and compressed-evidence strict-gate regressions."
+    },
+    "github_actions": {
+      "commit": "ce510aa9cbf35b5daca76ed027788e29dce1e969",
+      "workflow": "Check static hub",
+      "run_id": 41945237035,
+      "url": "https://github.com/Ejgood21/gaming-hub/actions/runs/41945237035",
+      "tests": 65,
+      "passed": 65,
+      "failed": 0,
+      "static_build": "passed for /gaming-hub/",
+      "candidate_schema_and_semantics": "passed with checked-in Ajv validator",
+      "immutable_archive_integrity": "passed",
+      "strict_finalization": "verified rejection of 40 profiles missing required sources; published snapshots unchanged"
     }
   },
   "artifact_delivery": "Compressed candidate and integrity-checked 20-part lossless raw archive with manifest included in this commit; prior workspace-offline block resolved."

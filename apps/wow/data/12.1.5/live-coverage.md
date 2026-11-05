@@ -33,7 +33,7 @@ Candidate extraction: **80/80 profiles extracted**, with 409 known and 313 unkno
 
 A null categorical representation label may accompany a sourced numeric sample; that sample does not establish population coverage, spec strength, or playstyle.
 
-Validation: Python JSON Schema and semantic/provenance audits passed with 678 source references and zero errors. Final candidate Ajv validation, multipart archive integrity tests, and isolated strict-finalization rejection checks are pending GitHub Actions; the historical 57-test and /gaming-hub/ build result is listed separately.
+Validation: GitHub Actions validated the delivered candidate with the checked-in schema/semantic validator, verified multipart archive integrity, and confirmed strict finalization rejects all 40 required-source gaps without changing published data. All 65 tests and the /gaming-hub/ static build passed. [Verified CI run](https://github.com/Ejgood21/gaming-hub/actions/runs/41945237035).
 
 | Profile | Wowhead | Archon | Raider.IO | YouTube | Required | Known labels / total | Unknown hero options |
 | --- | --- | --- | --- | --- | --- | ---: | ---: |

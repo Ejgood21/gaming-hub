@@ -23,7 +23,21 @@
     "required_source_passed": 40,
     "required_source_missing": 40,
     "allow_partial_used": false,
-    "local_finalization_attempt": "Blocked by unavailable Ajv dependency; actual candidate validation and isolated strict finalizer refusal require CI."
+    "local_finalization_attempt": "Blocked by unavailable Ajv dependency; actual candidate validation and isolated strict finalizer refusal require CI.",
+    "ci": "Verified required-source gate rejects 40 profiles; publication snapshots unchanged"
   },
-  "candidate": "data/12.1.5/candidate-profiles.json.gz"
+  "candidate": "data/12.1.5/candidate-profiles.json.gz",
+  "github_actions": {
+    "commit": "ce510aa9cbf35b5daca76ed027788e29dce1e969",
+    "workflow": "Check static hub",
+    "run_id": 41945237035,
+    "url": "https://github.com/Ejgood21/gaming-hub/actions/runs/41945237035",
+    "tests": 65,
+    "passed": 65,
+    "failed": 0,
+    "static_build": "passed for /gaming-hub/",
+    "candidate_schema_and_semantics": "passed with checked-in Ajv validator",
+    "immutable_archive_integrity": "passed",
+    "strict_finalization": "verified rejection of 40 profiles missing required sources; published snapshots unchanged"
+  }
 }
