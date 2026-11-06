@@ -22,7 +22,7 @@ async function getSample(context, config, httpGetJSON) {
 }
 export async function scrapeRaiderio({spec, content, context, config, httpGetJSON = productionGetJSON}) {
   const url = `https://raider.io/api/v1/mythic-plus/runs?season=${encodeURIComponent(context.slug)}&region=${encodeURIComponent(config.region)}`;
-  if (content === 'raid') return sourceResult('raiderio','https://raider.io/api','missing',{error:'The documented public Raider.IO raid ranking endpoints rank guild progression, not specialization representation. Raid quantitative coverage comes from Archon; guild rank is not a spec pick rate.',coverage_gaps:['No public raid specialization representation endpoint available']});
+  if (content === 'raid') return sourceResult('raiderio','https://raider.io/swagger.json','missing',{error:'This adapter has not collected a verified raid specialization sample. Raid rankings measure guild progression, not spec representation. The public guild raid-comps endpoint documents per-pull spec rosters, but requires verified guild/pull, raid, date and sample-denominator coverage before it can supply raid representation.',coverage_gaps:['No verified raid specialization sample collected; documented raid-comps endpoint remains a collection lead']});
   try {
     const {members,rankings,urls} = await getSample(context,config,httpGetJSON);
     const role = spec.role === 'dps' ? 'dps' : spec.role;

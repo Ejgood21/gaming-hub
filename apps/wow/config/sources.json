@@ -20,5 +20,5 @@
     "raid_template": "https://www.archon.gg/wow/builds/{spec}/{class}/raid/overview/mythic/all-bosses"
   },
   "raiderio": {"sample_pages": 3, "page_size_note": "Public API determines page size; sample is top runs only, never the full population."},
-  "warcraftlogs": {"enabled": false, "zone_id": null}
+  "warcraftlogs": {"enabled": true, "zone_id": null}
 }
