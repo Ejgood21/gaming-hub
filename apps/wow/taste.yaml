@@ -1,0 +1,7 @@
+# Edit these tags, then rebuild. Avoids are warnings; they never hide a spec.
+must:
+  - stable-rotation
+  - always-send-cds
+  - no-ramp
+avoid:
+  - weak-on-pull

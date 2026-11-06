@@ -1,0 +1,43 @@
+{
+  "schema": {
+    "engine": "Python jsonschema Draft 2020-12 with formats",
+    "valid": true,
+    "profiles": 80
+  },
+  "semantic_and_provenance": {
+    "valid": true,
+    "profiles": 80,
+    "source_references": 678,
+    "errors": []
+  },
+  "raw_integrity": {
+    "manifest": "apps/wow/data/12.1.5/raw/runs/2026-10-27T05-00-41-763Z-360b0d78-6c4c-4a7d-8dc5-eb17e20d0f81.json.gz.manifest.json",
+    "raw_bytes": 6711798,
+    "raw_sha256": "80be666da901970037465014a6696f7807084ef49fb7cea067a84249464c6b54",
+    "compressed_bytes": 1270784,
+    "part_count": 20,
+    "all_hashes_verified": true
+  },
+  "publication": {
+    "status": "blocked_required_source_coverage",
+    "required_source_passed": 40,
+    "required_source_missing": 40,
+    "allow_partial_used": false,
+    "local_finalization_attempt": "Blocked by unavailable Ajv dependency; actual candidate validation and isolated strict finalizer refusal require CI.",
+    "ci": "Verified required-source gate rejects 40 profiles; publication snapshots unchanged"
+  },
+  "candidate": "data/12.1.5/candidate-profiles.json.gz",
+  "github_actions": {
+    "commit": "ce510aa9cbf35b5daca76ed027788e29dce1e969",
+    "workflow": "Check static hub",
+    "run_id": 41945237035,
+    "url": "https://github.com/Ejgood21/gaming-hub/actions/runs/41945237035",
+    "tests": 65,
+    "passed": 65,
+    "failed": 0,
+    "static_build": "passed for /gaming-hub/",
+    "candidate_schema_and_semantics": "passed with checked-in Ajv validator",
+    "immutable_archive_integrity": "passed",
+    "strict_finalization": "verified rejection of 40 profiles missing required sources; published snapshots unchanged"
+  }
+}

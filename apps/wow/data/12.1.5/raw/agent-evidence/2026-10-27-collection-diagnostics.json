@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-10-27T04:57:42Z",
+  "purpose": "Bounded diagnostics supporting collection access and requested context; no complete HTML copies or access-control bypasses.",
+  "version": {
+    "url": "https://us.version.battle.net/wow/versions",
+    "us_versions_name": "12.1.5.70575"
+  },
+  "season": {
+    "url": "https://raider.io/api/v1/mythic-plus/static-data?expansion_id=11",
+    "returned_name": "MN Season 2",
+    "slug": "season-mn-2",
+    "starts": {
+      "us": "2026-08-18T15:00:00Z",
+      "eu": "2026-08-19T04:00:00Z",
+      "tw": "2026-08-19T23:00:00Z",
+      "kr": "2026-08-19T23:00:00Z",
+      "cn": "2026-08-19T23:00:00Z"
+    },
+    "ends": {
+      "us": "2030-01-01T00:00:00Z",
+      "eu": "2030-01-01T00:00:00Z",
+      "tw": "2030-01-01T00:00:00Z",
+      "kr": "2030-01-01T00:00:00Z",
+      "cn": "2030-01-01T00:00:00Z"
+    },
+    "is_main_season": true,
+    "expansion_label": "Midnight, explicitly requested by user; upstream abbreviates name as MN Season 2"
+  },
+  "archon": {
+    "url": "https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses",
+    "proxy_connect_status": 200,
+    "origin_http_status": 403,
+    "document_title": "Attention Required! | Cloudflare",
+    "interpretation": "Destination is permitted; source Cloudflare access control blocks returned content. No quantitative evidence captured."
+  },
+  "wowhead": {
+    "url": "https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns-pve-tank",
+    "proxy_connect_status": 200,
+    "origin_http_status": 200,
+    "document_title": "Blood Death Knight Rotation Guide - Midnight - Wowhead",
+    "resolved_collector_defects": [
+      "Passive newsletter recaptchaSiteKey was incorrectly identified as a whole-page challenge.",
+      "Author guide text was in a returned noscript fallback, while generic body keys included user comments.",
+      "Canonical guide gear link is /bis-gear."
+    ],
+    "final_run_id": "2026-10-27T05-00-41-763Z-360b0d78-6c4c-4a7d-8dc5-eb17e20d0f81"
+  },
+  "environment_limits": {
+    "registry.npmjs.org": "CONNECT HTTP 403; npm dependencies unavailable, no usable offline cache.",
+    "pypi.org": "CONNECT HTTP 403; transcript dependency unavailable. No eligible selected videos reached transcript retrieval.",
+    "github.com": "CONNECT HTTP 403 from shell; GitHub connector used for existing branch read/update."
+  }
+}

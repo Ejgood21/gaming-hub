@@ -1,0 +1,247 @@
+{
+  "retrieved_at": "2026-10-26T17:13:44.438385Z",
+  "access_method": "web research open tool; actual full HTML text visible to Codex agent",
+  "wowhead_direct_open_status": "challenge: JavaScript bot verification on the four sampled rotation pages (fire/frost/arcane mage and devastation evoker)",
+  "sources": [
+    {
+      "spec_id": "fire-mage",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/fire-mage/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-14T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "frost-mage",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/frost-mage/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-16T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "arcane-mage",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/arcane-mage/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-16T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "devastation-evoker",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/devastation-evoker/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-16T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "fury-warrior",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/fury-warrior/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-25T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "arms-warrior",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/arms-warrior/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-25T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "enhancement-shaman",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/enhancement-shaman/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "elemental-shaman",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/elemental-shaman/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-14T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "affliction-warlock",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/affliction-warlock/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "demonology-warlock",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/demonology-warlock/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "destruction-warlock",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/destruction-warlock/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "shadow-priest",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/shadow-priest/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-14T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "unholy-death-knight",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/unholy-death-knight/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "frost-death-knight",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/frost-death-knight/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "feral-druid",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/feral-druid/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-16T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "balance-druid",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/balance-druid/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-16T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "assassination-rogue",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/assassination-rogue/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-18T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "outlaw-rogue",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/outlaw-rogue/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-18T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "subtlety-rogue",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/subtlety-rogue/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-16T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "augmentation-evoker",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/augmentation-evoker/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "havoc-demon-hunter",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/havoc-demon-hunter/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-16T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "devourer-demon-hunter",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/devourer-demon-hunter/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-18T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "marksmanship-hunter",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/marksmanship-hunter/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-13T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    },
+    {
+      "spec_id": "survival-hunter",
+      "id": "method-web",
+      "status": "success",
+      "url": "https://www.method.gg/guides/survival-hunter/playstyle-and-rotation",
+      "scraped_at": "2026-10-26T17:13:44.438385Z",
+      "updated_at": "2026-10-14T00:00:00Z",
+      "reason": "Codex read the full current-patch guide through the web research tool; this is an additional qualitative fallback, not a successful Wowhead scrape.",
+      "kind": "qualitative"
+    }
+  ]
+}

@@ -1,0 +1,1388 @@
+[
+  {
+    "spec_id": "discipline-priest",
+    "sources": [
+      {
+        "id": "method-discipline-priest-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Apply Atonement with helpful spells, then turn Penance and other damage into healing; damage before coverage loses the payoff.",
+            "key_abilities": [
+              "Atonement",
+              "Penance"
+            ],
+            "sources": [
+              {
+                "source_id": "method-discipline-priest-support",
+                "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "blanketer",
+            "explanation": "Power Word: Radiance spreads Atonement so your later damage reaches the group.",
+            "key_abilities": [
+              "Power Word: Radiance",
+              "Atonement"
+            ],
+            "sources": [
+              {
+                "source_id": "method-discipline-priest-support",
+                "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "hard",
+            "explanation": "Evangelism and multiple Power Word: Radiance casts establish raid coverage before the damage sequence begins.",
+            "key_abilities": [
+              "Evangelism",
+              "Power Word: Radiance"
+            ],
+            "sources": [
+              {
+                "source_id": "method-discipline-priest-support",
+                "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+                "section": "Evangelism Ramp"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Prepare Atonement coverage before a raid hit, then heal by attacking. Missing the setup makes the same damage buttons much less helpful.",
+        "play_this_if": "Play this if planning ahead and healing through damage sounds satisfying.",
+        "avoid_if": "Avoid if you want every heal to work without placing Atonement first."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Apply Atonement with helpful spells, then turn Penance and other damage into healing; damage before coverage loses the payoff.",
+            "key_abilities": [
+              "Atonement",
+              "Penance"
+            ],
+            "sources": [
+              {
+                "source_id": "method-discipline-priest-support",
+                "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "blanketer",
+            "explanation": "Power Word: Radiance spreads Atonement so your later damage reaches the group.",
+            "key_abilities": [
+              "Power Word: Radiance",
+              "Atonement"
+            ],
+            "sources": [
+              {
+                "source_id": "method-discipline-priest-support",
+                "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "soft",
+            "explanation": "One Power Word: Radiance covers the five-player group, so Atonement setup is much shorter than the raid sequence.",
+            "key_abilities": [
+              "Power Word: Radiance",
+              "Atonement"
+            ],
+            "sources": [
+              {
+                "source_id": "method-discipline-priest-support",
+                "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+                "section": "Mythic+"
+              }
+            ]
+          },
+          "healer_dps_expectation": {
+            "value": "high",
+            "explanation": "Penance, Mind Blast and Void Blast are part of healing through Atonement, so the damage priority is a core job.",
+            "key_abilities": [
+              "Penance",
+              "Mind Blast",
+              "Void Blast",
+              "Atonement"
+            ],
+            "sources": [
+              {
+                "source_id": "method-discipline-priest-support",
+                "url": "https://www.method.gg/guides/discipline-priest/playstyle-and-rotation",
+                "section": "Mythic+"
+              }
+            ]
+          }
+        },
+        "feel_summary": "A single Radiance gets the group covered before you attack to heal. The setup is smaller than raid, but damage and healing still share one loop.",
+        "play_this_if": "Play this if planning ahead and healing through damage sounds satisfying.",
+        "avoid_if": "Avoid if you want every heal to work without placing Atonement first."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "holy-priest",
+    "sources": [
+      {
+        "id": "method-holy-priest-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/holy-priest/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "ramp": {
+            "value": "none",
+            "explanation": "Holy Word: Serenity and Flash Heal answer missing health directly; Prayer of Mending maintenance does not require a long preparatory sequence.",
+            "key_abilities": [
+              "Holy Word: Serenity",
+              "Flash Heal",
+              "Prayer of Mending"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-priest-support",
+                "url": "https://www.method.gg/guides/holy-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "direct",
+            "explanation": "Holy Word: Serenity supplies an immediate targeted heal, while Holy Word: Sanctify covers a group.",
+            "key_abilities": [
+              "Holy Word: Serenity",
+              "Holy Word: Sanctify"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-priest-support",
+                "url": "https://www.method.gg/guides/holy-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "spot-healer",
+            "explanation": "Use Holy Word: Serenity and Flash Heal to rescue an injured player, while Prayer of Mending adds background healing.",
+            "key_abilities": [
+              "Holy Word: Serenity",
+              "Flash Heal",
+              "Prayer of Mending"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-priest-support",
+                "url": "https://www.method.gg/guides/holy-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          }
+        },
+        "feel_summary": "A reactive toolkit with strong individual heals and group Holy Words. Your filler casts bring those large heals back sooner.",
+        "play_this_if": "Play this if you want direct heals whose effect is easy to see.",
+        "avoid_if": "Avoid if you want a healer built around constant movement or damage-to-healing conversion."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "ramp": {
+            "value": "none",
+            "explanation": "Holy Word: Serenity and Flash Heal answer missing health directly; Prayer of Mending maintenance does not require a long preparatory sequence.",
+            "key_abilities": [
+              "Holy Word: Serenity",
+              "Flash Heal",
+              "Prayer of Mending"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-priest-support",
+                "url": "https://www.method.gg/guides/holy-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "direct",
+            "explanation": "Holy Word: Serenity supplies an immediate targeted heal, while Holy Word: Sanctify covers a group.",
+            "key_abilities": [
+              "Holy Word: Serenity",
+              "Holy Word: Sanctify"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-priest-support",
+                "url": "https://www.method.gg/guides/holy-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "spot-healer",
+            "explanation": "Use Holy Word: Serenity and Flash Heal to rescue an injured player, while Prayer of Mending adds background healing.",
+            "key_abilities": [
+              "Holy Word: Serenity",
+              "Flash Heal",
+              "Prayer of Mending"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-priest-support",
+                "url": "https://www.method.gg/guides/holy-priest/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Respond directly to the player who is hurt, then spend spare globals recovering Holy Word availability. There is no long raid-style setup sequence.",
+        "play_this_if": "Play this if you want direct heals whose effect is easy to see.",
+        "avoid_if": "Avoid if you want a healer built around constant movement or damage-to-healing conversion."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "holy-paladin",
+    "sources": [
+      {
+        "id": "method-holy-paladin-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "proactive_vs_reactive": {
+            "value": "spot-healer",
+            "explanation": "Holy Shock and Holy Power spenders answer injured targets; the guide describes the baseline as reactive.",
+            "key_abilities": [
+              "Holy Shock",
+              "Holy Power"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-paladin-support",
+                "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "soft",
+            "explanation": "Beacon of Virtue creates a short preparation window; pairing Divine Toll with it spreads a much larger burst of healing.",
+            "key_abilities": [
+              "Beacon of Virtue",
+              "Divine Toll"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-paladin-support",
+                "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Place Beacon of Virtue before Divine Toll so the burst transfers across its marked targets.",
+            "key_abilities": [
+              "Beacon of Virtue",
+              "Divine Toll"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-paladin-support",
+                "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Generate Holy Power and place short Beacon windows around larger healing events. Divine Toll supplies a powerful payoff when that setup is active.",
+        "play_this_if": "Play this if you like direct rescues with a resource-spending rhythm.",
+        "avoid_if": "Avoid if short Beacon windows and frequent resource decisions feel restrictive."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "proactive_vs_reactive": {
+            "value": "spot-healer",
+            "explanation": "Holy Shock and Holy Power spenders answer injured targets; the guide describes the baseline as reactive.",
+            "key_abilities": [
+              "Holy Shock",
+              "Holy Power"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-paladin-support",
+                "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "soft",
+            "explanation": "Beacon of Virtue creates a short preparation window; pairing Divine Toll with it spreads a much larger burst of healing.",
+            "key_abilities": [
+              "Beacon of Virtue",
+              "Divine Toll"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-paladin-support",
+                "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "direct",
+            "explanation": "Holy Shock and Eternal Flame provide direct responses; a Beacon of Virtue build still adds short setup windows.",
+            "key_abilities": [
+              "Holy Shock",
+              "Eternal Flame",
+              "Beacon of Virtue"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-paladin-support",
+                "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "healer_dps_expectation": {
+            "value": "moderate",
+            "explanation": "Judgment belongs on cooldown in Mythic+ and triggers Consecration; spend spare Holy Power on Shield of the Righteous when healing is unnecessary.",
+            "key_abilities": [
+              "Judgment",
+              "Consecration",
+              "Shield of the Righteous"
+            ],
+            "sources": [
+              {
+                "source_id": "method-holy-paladin-support",
+                "url": "https://www.method.gg/guides/holy-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          }
+        },
+        "feel_summary": "A reactive builder-spender healer with short combinations to optimize. Judgment and spare Holy Power give quiet healing moments a damage use.",
+        "play_this_if": "Play this if you like direct rescues with a resource-spending rhythm.",
+        "avoid_if": "Avoid if short Beacon windows and frequent resource decisions feel restrictive."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "mistweaver-monk",
+    "sources": [
+      {
+        "id": "method-mistweaver-monk-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-14T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "cooldown_style": {
+            "value": "rotation-of-smaller-cds",
+            "explanation": "Thunder Focus Tea returns throughout the fight, while Chi-Ji or Yu’lon windows should be staggered from Revival.",
+            "key_abilities": [
+              "Thunder Focus Tea",
+              "Invoke Chi-Ji, the Red Crane",
+              "Invoke Yu’lon, the Jade Serpent",
+              "Revival"
+            ],
+            "sources": [
+              {
+                "source_id": "method-mistweaver-monk-support",
+                "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "soft",
+            "explanation": "Prepare Thunder Focus Tea and Renewing Mist, then use Yu’lon with Enveloping Mist before extending those HoTs.",
+            "key_abilities": [
+              "Thunder Focus Tea",
+              "Renewing Mist",
+              "Invoke Yu’lon, the Jade Serpent",
+              "Enveloping Mist"
+            ],
+            "sources": [
+              {
+                "source_id": "method-mistweaver-monk-support",
+                "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Yu’lon and Enveloping Mist establish healing coverage that Rushing Wind Kick extends through Rising Mist.",
+            "key_abilities": [
+              "Invoke Yu’lon, the Jade Serpent",
+              "Enveloping Mist",
+              "Rushing Wind Kick",
+              "Rising Mist"
+            ],
+            "sources": [
+              {
+                "source_id": "method-mistweaver-monk-support",
+                "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Maintain mists, then use a prepared celestial sequence for heavier raid healing. You keep pressing damage abilities between healing decisions.",
+        "play_this_if": "Play this if you want an active healer that keeps attacking between heals.",
+        "avoid_if": "Avoid if you dislike melee uptime or short celestial setup sequences."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "cooldown_style": {
+            "value": "rotation-of-smaller-cds",
+            "explanation": "Thunder Focus Tea returns throughout the fight, while Chi-Ji or Yu’lon windows should be staggered from Revival.",
+            "key_abilities": [
+              "Thunder Focus Tea",
+              "Invoke Chi-Ji, the Red Crane",
+              "Invoke Yu’lon, the Jade Serpent",
+              "Revival"
+            ],
+            "sources": [
+              {
+                "source_id": "method-mistweaver-monk-support",
+                "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "soft",
+            "explanation": "Chi-Ji starts with Thunder Focus Tea and Enveloping Mist preparation, then melee attacks transfer healing.",
+            "key_abilities": [
+              "Invoke Chi-Ji, the Red Crane",
+              "Thunder Focus Tea",
+              "Enveloping Mist"
+            ],
+            "sources": [
+              {
+                "source_id": "method-mistweaver-monk-support",
+                "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "direct",
+            "explanation": "Sheilun’s Gift or Enveloping Mist can answer an injured ally directly; Chi-Ji adds a separate damage-to-healing window.",
+            "key_abilities": [
+              "Sheilun’s Gift",
+              "Enveloping Mist",
+              "Invoke Chi-Ji, the Red Crane"
+            ],
+            "sources": [
+              {
+                "source_id": "method-mistweaver-monk-support",
+                "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "healer_dps_expectation": {
+            "value": "high",
+            "explanation": "Rising Sun Kick, Blackout Kick and Tiger Palm fill the active loop, producing resets and healing interactions rather than optional idle filler.",
+            "key_abilities": [
+              "Rising Sun Kick",
+              "Blackout Kick",
+              "Tiger Palm"
+            ],
+            "sources": [
+              {
+                "source_id": "method-mistweaver-monk-support",
+                "url": "https://www.method.gg/guides/mistweaver-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Chi-Ji makes melee attacks part of the healing response, with direct heals available for emergencies. Revival is an immediate group recovery button.",
+        "play_this_if": "Play this if you want an active healer that keeps attacking between heals.",
+        "avoid_if": "Avoid if you dislike melee uptime or short celestial setup sequences."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "restoration-druid",
+    "sources": [
+      {
+        "id": "method-restoration-druid-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/restoration-druid/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Spread Rejuvenation before damage so Tranquility and Flourish can extend a useful HoT blanket.",
+            "key_abilities": [
+              "Rejuvenation",
+              "Tranquility",
+              "Flourish"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-druid-support",
+                "url": "https://www.method.gg/guides/restoration-druid/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "blanketer",
+            "explanation": "Maintain Lifebloom and Efflorescence while spreading Rejuvenation ahead of damage.",
+            "key_abilities": [
+              "Lifebloom",
+              "Efflorescence",
+              "Rejuvenation"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-druid-support",
+                "url": "https://www.method.gg/guides/restoration-druid/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "hard",
+            "explanation": "A large Rejuvenation blanket must be established before Tranquility to gain the HoT-extension payoff.",
+            "key_abilities": [
+              "Rejuvenation",
+              "Tranquility",
+              "Flourish"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-druid-support",
+                "url": "https://www.method.gg/guides/restoration-druid/playstyle-and-rotation",
+                "section": "Tranquility"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Prepare HoTs before the hit, then use the healing window to extend and amplify that work. Late preparation costs more than it does for a direct healer.",
+        "play_this_if": "Play this if you enjoy anticipating damage and watching a HoT blanket pay off.",
+        "avoid_if": "Avoid if you prefer to wait for damage before deciding whom to heal."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Spread Rejuvenation before damage so Tranquility and Flourish can extend a useful HoT blanket.",
+            "key_abilities": [
+              "Rejuvenation",
+              "Tranquility",
+              "Flourish"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-druid-support",
+                "url": "https://www.method.gg/guides/restoration-druid/playstyle-and-rotation",
+                "section": "Cooldown Usage"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "blanketer",
+            "explanation": "Maintain Lifebloom and Efflorescence while spreading Rejuvenation ahead of damage.",
+            "key_abilities": [
+              "Lifebloom",
+              "Efflorescence",
+              "Rejuvenation"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-druid-support",
+                "url": "https://www.method.gg/guides/restoration-druid/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "soft",
+            "explanation": "Rejuvenation and Lifebloom still reward preparation, but the smaller group needs less spreading than the raid-wide Tranquility setup.",
+            "key_abilities": [
+              "Rejuvenation",
+              "Lifebloom",
+              "Tranquility"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-druid-support",
+                "url": "https://www.method.gg/guides/restoration-druid/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Keep a smaller HoT blanket working before danger arrives. Swiftmend and Regrowth fit around that ongoing preparation.",
+        "play_this_if": "Play this if you enjoy anticipating damage and watching a HoT blanket pay off.",
+        "avoid_if": "Avoid if you prefer to wait for damage before deciding whom to heal."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "preservation-evoker",
+    "sources": [
+      {
+        "id": "method-preservation-evoker-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/preservation-evoker/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Echo duplicates the next valuable heal, so its placement determines how widely Dream Breath or Reversion pays off.",
+            "key_abilities": [
+              "Echo",
+              "Dream Breath",
+              "Reversion"
+            ],
+            "sources": [
+              {
+                "source_id": "method-preservation-evoker-support",
+                "url": "https://www.method.gg/guides/preservation-evoker/playstyle-and-rotation",
+                "section": "Core Gameplay Rules"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "blanketer",
+            "explanation": "Temporal Anomaly spreads Echo and Reversion coverage before predictable group damage.",
+            "key_abilities": [
+              "Temporal Anomaly",
+              "Echo",
+              "Reversion"
+            ],
+            "sources": [
+              {
+                "source_id": "method-preservation-evoker-support",
+                "url": "https://www.method.gg/guides/preservation-evoker/playstyle-and-rotation",
+                "section": "Core Gameplay Rules"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "hard",
+            "explanation": "Build a raid-wide Echo ramp before major damage, then cash it out with Dream Breath or another high-value follow-up.",
+            "key_abilities": [
+              "Echo",
+              "Dream Breath"
+            ],
+            "sources": [
+              {
+                "source_id": "method-preservation-evoker-support",
+                "url": "https://www.method.gg/guides/preservation-evoker/playstyle-and-rotation",
+                "section": "Raid Rotation"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Place Echoes in advance, then choose the heal that should be duplicated across the raid. Good sequencing turns a few spells into a large response.",
+        "play_this_if": "Play this if combining a few heals in the right order sounds rewarding.",
+        "avoid_if": "Avoid if you want to ignore setup until the group is already hurt."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "healing_model": {
+            "value": "setup-payoff",
+            "explanation": "Echo duplicates the next valuable heal, so its placement determines how widely Dream Breath or Reversion pays off.",
+            "key_abilities": [
+              "Echo",
+              "Dream Breath",
+              "Reversion"
+            ],
+            "sources": [
+              {
+                "source_id": "method-preservation-evoker-support",
+                "url": "https://www.method.gg/guides/preservation-evoker/playstyle-and-rotation",
+                "section": "Core Gameplay Rules"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "blanketer",
+            "explanation": "Temporal Anomaly spreads Echo and Reversion coverage before predictable group damage.",
+            "key_abilities": [
+              "Temporal Anomaly",
+              "Echo",
+              "Reversion"
+            ],
+            "sources": [
+              {
+                "source_id": "method-preservation-evoker-support",
+                "url": "https://www.method.gg/guides/preservation-evoker/playstyle-and-rotation",
+                "section": "Core Gameplay Rules"
+              }
+            ]
+          },
+          "ramp": {
+            "value": "soft",
+            "explanation": "Prepare the five-player Reversion blanket with Temporal Anomaly, then answer damage with Dream Breath; setup still matters between packs.",
+            "key_abilities": [
+              "Temporal Anomaly",
+              "Reversion",
+              "Dream Breath"
+            ],
+            "sources": [
+              {
+                "source_id": "method-preservation-evoker-support",
+                "url": "https://www.method.gg/guides/preservation-evoker/playstyle-and-rotation",
+                "section": "Mythic+ Rotation"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Maintain Reversion before pulls and prepare Dream Breath for the first damage. The group is smaller, but this is still a prepare-then-payoff healer.",
+        "play_this_if": "Play this if combining a few heals in the right order sounds rewarding.",
+        "avoid_if": "Avoid if you want to ignore setup until the group is already hurt."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "vengeance-demon-hunter",
+    "sources": [
+      {
+        "id": "method-vengeance-demon-hunter-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/vengeance-demon-hunter/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-14T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Keep rotational Immolation Aura usage moving and plan Fiery Brand or Demon Spikes before dangerous damage; delaying the loop also hurts mitigation.",
+            "key_abilities": [
+              "Immolation Aura",
+              "Fiery Brand",
+              "Demon Spikes"
+            ],
+            "sources": [
+              {
+                "source_id": "method-vengeance-demon-hunter-support",
+                "url": "https://www.method.gg/guides/vengeance-demon-hunter/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ]
+          },
+          "self_sustain": {
+            "value": "self-sufficient",
+            "explanation": "Fracture generates Soul Fragments that Soul Cleave and Spirit Bomb spend for healing as well as damage.",
+            "key_abilities": [
+              "Fracture",
+              "Soul Cleave",
+              "Spirit Bomb"
+            ],
+            "sources": [
+              {
+                "source_id": "method-vengeance-demon-hunter-support",
+                "url": "https://www.method.gg/guides/vengeance-demon-hunter/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "mobility_style": {
+            "value": "face-tanker",
+            "explanation": "The defensive loop needs nearby enemies: Fracture supplies resources for Soul Cleave recovery, so leaving melee also interrupts that engine.",
+            "key_abilities": [
+              "Fracture",
+              "Soul Cleave"
+            ],
+            "sources": [
+              {
+                "source_id": "method-vengeance-demon-hunter-support",
+                "url": "https://www.method.gg/guides/vengeance-demon-hunter/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          }
+        },
+        "feel_summary": "An aggressive resource loop ties damage and recovery together. Fiery Brand and Metamorphosis carry both offensive and defensive value.",
+        "play_this_if": "Play this if you want attacking to drive your tank’s recovery.",
+        "avoid_if": "Avoid if you prefer mitigation that works independently of staying in melee."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Keep rotational Immolation Aura usage moving and plan Fiery Brand or Demon Spikes before dangerous damage; delaying the loop also hurts mitigation.",
+            "key_abilities": [
+              "Immolation Aura",
+              "Fiery Brand",
+              "Demon Spikes"
+            ],
+            "sources": [
+              {
+                "source_id": "method-vengeance-demon-hunter-support",
+                "url": "https://www.method.gg/guides/vengeance-demon-hunter/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ]
+          },
+          "self_sustain": {
+            "value": "self-sufficient",
+            "explanation": "Fracture generates Soul Fragments that Soul Cleave and Spirit Bomb spend for healing as well as damage.",
+            "key_abilities": [
+              "Fracture",
+              "Soul Cleave",
+              "Spirit Bomb"
+            ],
+            "sources": [
+              {
+                "source_id": "method-vengeance-demon-hunter-support",
+                "url": "https://www.method.gg/guides/vengeance-demon-hunter/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "mobility_style": {
+            "value": "face-tanker",
+            "explanation": "The defensive loop needs nearby enemies: Fracture supplies resources for Soul Cleave recovery, so leaving melee also interrupts that engine.",
+            "key_abilities": [
+              "Fracture",
+              "Soul Cleave"
+            ],
+            "sources": [
+              {
+                "source_id": "method-vengeance-demon-hunter-support",
+                "url": "https://www.method.gg/guides/vengeance-demon-hunter/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Stay close enough to keep generating fragments and healing from them. Your defenses depend on continuing that loop through each pack.",
+        "play_this_if": "Play this if you want attacking to drive your tank’s recovery.",
+        "avoid_if": "Avoid if you prefer mitigation that works independently of staying in melee."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "guardian-druid",
+    "sources": [
+      {
+        "id": "method-guardian-druid-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/guardian-druid/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-14T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Spend Rage on Ironfur and maintain Moonfire and Thrash; their linked talents add damage reduction while you attack.",
+            "key_abilities": [
+              "Ironfur",
+              "Moonfire",
+              "Thrash"
+            ],
+            "sources": [
+              {
+                "source_id": "method-guardian-druid-support",
+                "url": "https://www.method.gg/guides/guardian-druid/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Barkskin, Survival Instincts, Incarnation and Lunar Beam layer over smaller rotational reductions.",
+            "key_abilities": [
+              "Barkskin",
+              "Survival Instincts",
+              "Incarnation",
+              "Lunar Beam"
+            ],
+            "sources": [
+              {
+                "source_id": "method-guardian-druid-support",
+                "url": "https://www.method.gg/guides/guardian-druid/playstyle-and-rotation",
+                "section": "Cooldowns and Defensive Usage"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Build Rage with familiar attacks and spend it on protection. Maintaining your normal damage loop also maintains several smaller defensive layers.",
+        "play_this_if": "Play this if you like steady defensive upkeep linked to a straightforward attack loop.",
+        "avoid_if": "Avoid if maintaining DoTs and choosing between Rage spenders feels tedious."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Spend Rage on Ironfur and maintain Moonfire and Thrash; their linked talents add damage reduction while you attack.",
+            "key_abilities": [
+              "Ironfur",
+              "Moonfire",
+              "Thrash"
+            ],
+            "sources": [
+              {
+                "source_id": "method-guardian-druid-support",
+                "url": "https://www.method.gg/guides/guardian-druid/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Barkskin, Survival Instincts, Incarnation and Lunar Beam layer over smaller rotational reductions.",
+            "key_abilities": [
+              "Barkskin",
+              "Survival Instincts",
+              "Incarnation",
+              "Lunar Beam"
+            ],
+            "sources": [
+              {
+                "source_id": "method-guardian-druid-support",
+                "url": "https://www.method.gg/guides/guardian-druid/playstyle-and-rotation",
+                "section": "Cooldowns and Defensive Usage"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Moonfire, Thrash and Ironfur make steady upkeep central to survival. Additional cooldowns cover the moments where that baseline is insufficient.",
+        "play_this_if": "Play this if you like steady defensive upkeep linked to a straightforward attack loop.",
+        "avoid_if": "Avoid if maintaining DoTs and choosing between Rage spenders feels tedious."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "brewmaster-monk",
+    "sources": [
+      {
+        "id": "method-brewmaster-monk-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/brewmaster-monk/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-14T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "reactive",
+            "explanation": "Stagger delays damage and Purifying Brew clears part of the accumulated amount; Shuffle still needs ongoing maintenance.",
+            "key_abilities": [
+              "Stagger",
+              "Purifying Brew",
+              "Shuffle"
+            ],
+            "sources": [
+              {
+                "source_id": "method-brewmaster-monk-support",
+                "url": "https://www.method.gg/guides/brewmaster-monk/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Purifying Brew has two charges and offensive attacks shorten Brew cooldowns; purification also strengthens Celestial Brew.",
+            "key_abilities": [
+              "Purifying Brew",
+              "Celestial Brew",
+              "Keg Smash",
+              "Tiger Palm"
+            ],
+            "sources": [
+              {
+                "source_id": "method-brewmaster-monk-support",
+                "url": "https://www.method.gg/guides/brewmaster-monk/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Damage is delayed into Stagger, giving you time to choose when to purify. Keeping the attack loop moving helps bring those Brews back.",
+        "play_this_if": "Play this if you like smoothing damage and choosing when to clear a delayed damage pool.",
+        "avoid_if": "Avoid if watching a separate Stagger meter and Brew charges feels like extra bookkeeping."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "reactive",
+            "explanation": "Stagger delays damage and Purifying Brew clears part of the accumulated amount; Shuffle still needs ongoing maintenance.",
+            "key_abilities": [
+              "Stagger",
+              "Purifying Brew",
+              "Shuffle"
+            ],
+            "sources": [
+              {
+                "source_id": "method-brewmaster-monk-support",
+                "url": "https://www.method.gg/guides/brewmaster-monk/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Purifying Brew has two charges and offensive attacks shorten Brew cooldowns; purification also strengthens Celestial Brew.",
+            "key_abilities": [
+              "Purifying Brew",
+              "Celestial Brew",
+              "Keg Smash",
+              "Tiger Palm"
+            ],
+            "sources": [
+              {
+                "source_id": "method-brewmaster-monk-support",
+                "url": "https://www.method.gg/guides/brewmaster-monk/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Watch accumulated Stagger while cycling attacks and Brews. Good purification and shielding smooth damage rather than replacing all incoming healing.",
+        "play_this_if": "Play this if you like smoothing damage and choosing when to clear a delayed damage pool.",
+        "avoid_if": "Avoid if watching a separate Stagger meter and Brew charges feels like extra bookkeeping."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "protection-paladin",
+    "sources": [
+      {
+        "id": "method-protection-paladin-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/protection-paladin/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-14T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Generate Holy Power and keep Shield of the Righteous active; it is the central defensive buff rather than an emergency-only response.",
+            "key_abilities": [
+              "Holy Power",
+              "Shield of the Righteous"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-paladin-support",
+                "url": "https://www.method.gg/guides/protection-paladin/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Shield of the Righteous and Avenger’s Shield provide layered protection, with Bulwark of Order adding an absorb to the shield cast.",
+            "key_abilities": [
+              "Shield of the Righteous",
+              "Avenger’s Shield",
+              "Bulwark of Order"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-paladin-support",
+                "url": "https://www.method.gg/guides/protection-paladin/playstyle-and-rotation",
+                "section": "Cooldowns and Defensive Usage"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Holy Power generation feeds nearly continuous active mitigation. Shield of the Righteous sits outside the normal global cooldown, keeping the pace busy.",
+        "play_this_if": "Play this if you enjoy fast resource spending that also keeps your defenses up.",
+        "avoid_if": "Avoid if you dislike maintaining an active mitigation buff throughout a pull."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Generate Holy Power and keep Shield of the Righteous active; it is the central defensive buff rather than an emergency-only response.",
+            "key_abilities": [
+              "Holy Power",
+              "Shield of the Righteous"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-paladin-support",
+                "url": "https://www.method.gg/guides/protection-paladin/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Shield of the Righteous and Avenger’s Shield provide layered protection, with Bulwark of Order adding an absorb to the shield cast.",
+            "key_abilities": [
+              "Shield of the Righteous",
+              "Avenger’s Shield",
+              "Bulwark of Order"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-paladin-support",
+                "url": "https://www.method.gg/guides/protection-paladin/playstyle-and-rotation",
+                "section": "Cooldowns and Defensive Usage"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Your attack loop keeps defensive layers active across the pull. Spare attention goes to shield casts, healing opportunities and other party tools.",
+        "play_this_if": "Play this if you enjoy fast resource spending that also keeps your defenses up.",
+        "avoid_if": "Avoid if you dislike maintaining an active mitigation buff throughout a pull."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  },
+  {
+    "spec_id": "protection-warrior",
+    "sources": [
+      {
+        "id": "method-protection-warrior-support",
+        "status": "success",
+        "url": "https://www.method.gg/guides/protection-warrior/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T21:36:04.419229Z",
+        "updated_at": "2026-10-14T00:00:00Z",
+        "reason": "Evidence reviewed at this timestamp from full current Method guide responses retrieved by Codex web research; supporting source, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Keep Shield Block active and spend Rage on Ignore Pain; starving the resource prevents both protective responses.",
+            "key_abilities": [
+              "Shield Block",
+              "Ignore Pain",
+              "Rage"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-warrior-support",
+                "url": "https://www.method.gg/guides/protection-warrior/playstyle-and-rotation",
+                "section": "Surviving as a Protection Warrior"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Rage spending shortens Shield Wall, while Spell Reflection and Spell Block offer additional frequent, planned responses.",
+            "key_abilities": [
+              "Shield Wall",
+              "Spell Reflection",
+              "Spell Block",
+              "Anger Management"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-warrior-support",
+                "url": "https://www.method.gg/guides/protection-warrior/playstyle-and-rotation",
+                "section": "Surviving as a Protection Warrior"
+              }
+            ]
+          },
+          "pull_profile": {
+            "value": "strong-on-pull",
+            "explanation": "The opener activates Shield Block with Charge and Avatar, putting upfront melee reduction in place before the full attack loop.",
+            "key_abilities": [
+              "Shield Block",
+              "Charge",
+              "Avatar"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-warrior-support",
+                "url": "https://www.method.gg/guides/protection-warrior/playstyle-and-rotation",
+                "section": "Openers"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Keep Shield Block rolling and turn Rage into absorbs and cooldown recovery. Strong upfront reduction rewards using your defenses early and often.",
+        "play_this_if": "Play this if you like reducing damage before it hits and sending defenses often.",
+        "avoid_if": "Avoid if you dislike maintaining Shield Block or managing Rage to avoid defensive gaps."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "proactive-maintenance",
+            "explanation": "Keep Shield Block active and spend Rage on Ignore Pain; starving the resource prevents both protective responses.",
+            "key_abilities": [
+              "Shield Block",
+              "Ignore Pain",
+              "Rage"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-warrior-support",
+                "url": "https://www.method.gg/guides/protection-warrior/playstyle-and-rotation",
+                "section": "Surviving as a Protection Warrior"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Rage spending shortens Shield Wall, while Spell Reflection and Spell Block offer additional frequent, planned responses.",
+            "key_abilities": [
+              "Shield Wall",
+              "Spell Reflection",
+              "Spell Block",
+              "Anger Management"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-warrior-support",
+                "url": "https://www.method.gg/guides/protection-warrior/playstyle-and-rotation",
+                "section": "Surviving as a Protection Warrior"
+              }
+            ]
+          },
+          "pull_profile": {
+            "value": "strong-on-pull",
+            "explanation": "The opener activates Shield Block with Charge and Avatar, putting upfront melee reduction in place before the full attack loop.",
+            "key_abilities": [
+              "Shield Block",
+              "Charge",
+              "Avatar"
+            ],
+            "sources": [
+              {
+                "source_id": "method-protection-warrior-support",
+                "url": "https://www.method.gg/guides/protection-warrior/playstyle-and-rotation",
+                "section": "Openers"
+              }
+            ]
+          }
+        },
+        "feel_summary": "Enter with Shield Block rather than waiting to recover lost health. Staying supplied with Rage keeps the protective loop running as the pack continues.",
+        "play_this_if": "Play this if you like reducing damage before it hits and sending defenses often.",
+        "avoid_if": "Avoid if you dislike maintaining Shield Block or managing Rage to avoid defensive gaps."
+      }
+    },
+    "coverage_gaps": [
+      "Supporting Method guide read by Codex; Wowhead primary retrieval unavailable in this environment.",
+      "No current quantitative representation, hero pick rates or YouTube transcript verified."
+    ],
+    "extraction_method": "codex-agent"
+  }
+]

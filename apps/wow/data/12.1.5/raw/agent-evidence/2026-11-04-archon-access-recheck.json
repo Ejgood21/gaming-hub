@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-11-04T14:30:14Z",
+  "purpose": "Bounded source access recheck after workspace recovery; separate from the October 27 collection.",
+  "source": "archon",
+  "proxy_connect_status": 200,
+  "origin_http_status": 403,
+  "document_title": "Attention Required! | Cloudflare",
+  "response_bytes": 4544,
+  "interpretation": "The permitted destination is reachable through the proxy, but origin Cloudflare access control still blocks source content. No quantitative evidence was captured.",
+  "collection_run_unchanged": "2026-10-27T05-00-41-763Z-360b0d78-6c4c-4a7d-8dc5-eb17e20d0f81",
+  "source_host": "www.archon.gg",
+  "request_path_note": "The saved response headers and body record the status and page title; the exact requested path is not recorded in these saved files. The selected collection retains each profile source URL separately."
+}

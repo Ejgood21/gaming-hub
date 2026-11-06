@@ -5,51 +5,15 @@
     <title>WoW Spec Playstyle Compass — Personal Gaming Hub</title>
     <meta
       name="description"
-      content="The future home of a personal World of Warcraft spec playstyle compass."
+      content="Find a World of Warcraft spec by how it feels to play. Compare raid and Mythic+ playstyles, follow the evidence, and make your next main feel right."
     />
+    {{wowStyles}}
   </head>
   <body>
     {{header}}
-    <main id="main" tabindex="-1" class="page app-page">
-      <a class="back-link" href="/">← Back to the hub</a>
-      <section class="app-intro">
-        <p class="eyebrow">THE TOOLBOX / WORLD OF WARCRAFT</p>
-        <div class="app-emblem" aria-hidden="true">{{compassIcon}}</div>
-        <span class="badge badge-shell">APP SHELL · FULL TOOL COMING SOON</span>
-        <h1>Find your kind<br />of <span>adventure.</span></h1>
-        <p class="app-lead">WoW Spec Playstyle Compass</p>
-        <p class="app-description">
-          Your next main should feel like you. This is the future home of a
-          compass for finding a spec by how it plays.
-        </p>
-        <a class="button-link" href="/#tools"
-          >Explore the toolbox
-          <span aria-hidden="true"
-            ><svg
-              class="direction-icon"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M4 12 12 4M4 4h8v8"
-                stroke="currentColor"
-                stroke-width="1.4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              /></svg></span
-        ></a>
-      </section>
-      <section class="expectation-panel" aria-labelledby="wow-status">
-        <p class="eyebrow">A PLACE TO START</p>
-        <h2 id="wow-status">The compass is taking shape.</h2>
-        <p>
-          The route and shared shell are ready. Spec profiles, comparisons, and
-          filters will arrive with the separate WoW build. No recommendations
-          are available yet.
-        </p>
-      </section>
+    <main id="main" tabindex="-1" class="page wow-page">
+      <div id="wow-root">{{wowApp}}</div>
     </main>
-    {{footer}}
+    {{footer}} {{wowScripts}}
   </body>
 </html>

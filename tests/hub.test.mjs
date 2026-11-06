@@ -4,6 +4,7 @@ import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { build, output, root, validateData } from "../scripts/build.mjs";
 import { createStaticServer } from "../scripts/serve.mjs";
+import { resolveLatestProfiles } from "../apps/wow/pipeline/validate.mjs";
 
 let server, base;
 const releases = JSON.parse(
@@ -70,7 +71,7 @@ test("home renders the current JSON as readable HTML, including status, notes, a
 
 test("every app route has the shared navigation and an honest current state", async () => {
   for (const [route, expected] of [
-    ["/wow/", "No recommendations are available yet."],
+    ["/wow/", "Find your next"],
     ["/placeholder/", "SLOT 03 / COMING SOON"],
   ]) {
     const response = await fetch(base + route);
@@ -101,7 +102,11 @@ test("local assets and app card destinations resolve; external browser dependenc
     "404.html",
   ]) {
     const html = await readFile(path.join(output, page), "utf8");
+    assert.doesNotMatch(html, /<(?:script|link|img)[^>]+(?:src|href)=["']https?:/i);
+    assert.doesNotMatch(html, /style="/);
     for (const [, url] of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
+      // Source citations are external navigation, never browser dependencies.
+      if (page === "wow/index.html" && /^https:\/\//.test(url)) continue;
       assert.ok(
         url.startsWith("/") || url.startsWith("#"),
         `External or relative dependency in ${page}: ${url}`,
@@ -129,7 +134,24 @@ test("local assets and app card destinations resolve; external browser dependenc
   );
 });
 
+test("WoW exports readable separate profiles and the single prompt, without its raw corpus", async () => {
+  const html = await (await fetch(base + "/wow/")).text();
+  const bundle = JSON.parse(await readFile(resolveLatestProfiles(), "utf8"));
+  assert.equal((html.match(/class="static-profile"/g) || []).length, bundle.profiles.length);
+  const readable = html.replace(/<!--[\s\S]*?-->/g, "");
+  assert.ok(readable.includes("Mythic+ Blood Death Knight"), "Missing readable M+ profile");
+  assert.ok(readable.includes("Raid Blood Death Knight"), "Missing readable raid profile");
+  assert.match(html, /Per-patch refresh prompt/);
+  const incomplete = bundle.profiles.some(profile => !profile.provenance.sources.some(source => source.id === "wowhead" && source.status === "success") || !profile.provenance.sources.some(source => source.kind === "quantitative" && source.status === "success"));
+  assert.ok(html.includes(incomplete ? "Provisional coverage" : "Source target met"));
+  const browserScript = await readFile(path.join(output, "wow/assets/compass.js"), "utf8");
+  assert.doesNotMatch(browserScript, /process\.env\.NODE_ENV/);
+  for (const route of ["/wow/data/12.1.5/raw/bundle.json", "/wow/pipeline/extract-playstyle.md", "/wow/scraper/youtube.mjs", "/.env"])
+    assert.equal((await fetch(base + route)).status, 404, route);
+});
+
 test("root-mode local preview retains legacy security headers", async () => {
+
   const response = await fetch(base + "/wow/");
   const csp = response.headers.get("content-security-policy");
   assert.match(csp, /default-src 'none'/);
@@ -238,6 +260,8 @@ test("Pages subpath resolves every page, asset and public data link without root
       assert.doesNotMatch(html, /{{\w+}}/);
       assert.match(html, /<meta name="robots" content="noindex, nofollow, noarchive">/);
       for (const [, url] of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
+        // Source citations navigate to evidence; they are not browser dependencies.
+        if (route === "wow/" && /^https:\/\//.test(url)) continue;
         if (url.startsWith("#")) {
           assert.ok(html.includes(`id="${url.slice(1)}"`), `${route}: missing ${url}`);
           continue;
@@ -251,6 +275,13 @@ test("Pages subpath resolves every page, asset and public data link without root
       }
       if (["", "wow/", "placeholder/"].includes(route))
         assert.ok(html.includes(`href="${basePath + route}" aria-current="page"`));
+      if (route === "wow/") {
+        const profiles = JSON.parse(await readFile(resolveLatestProfiles(), "utf8"));
+        assert.equal((html.match(/class="static-profile"/g) || []).length, profiles.profiles.length);
+        assert.match(html, /src="\/gaming-hub\/wow\/assets\/compass\.js"/);
+        assert.match(html, /href="\/gaming-hub\/wow\/assets\/[^"/]+\.css"/);
+        assert.doesNotMatch(html, /(?:src|href)="\/wow\/assets\//);
+      }
       // Pages ignores _headers; the mounted preview must not imply otherwise.
       for (const header of [
         "content-security-policy",
@@ -274,12 +305,21 @@ test("Pages subpath resolves every page, asset and public data link without root
       "/placeholder/",
       "/assets/site.css",
       "/data/releases.json",
+      "/wow/assets/compass.js",
+      "/wow/assets/compass.css",
     ])
       assert.equal((await fetch(origin + wrongRoot)).status, 404, wrongRoot);
     const missing = await fetch(origin + basePath + "not-an-app/");
     assert.equal(missing.status, 404);
     assert.match(await missing.text(), /OFF THE MAP/);
-    assert.equal((await fetch(origin + basePath + "wow/README.md")).status, 404);
+    for (const route of [
+      "wow/README.md",
+      "wow/data/12.1.5/raw/bundle.json",
+      "wow/pipeline/extract-playstyle.md",
+      "wow/scraper/youtube.mjs",
+      ".env",
+    ])
+      assert.equal((await fetch(origin + basePath + route)).status, 404, route);
     assert.deepEqual(
       await (await fetch(origin + basePath + "data/releases.json")).json(),
       releases,

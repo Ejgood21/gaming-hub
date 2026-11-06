@@ -1,0 +1,1809 @@
+[
+  {
+    "spec_id": "windwalker-monk",
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "rotation_stability": {
+            "value": 4,
+            "explanation": "Fists of Fury and the Chi engine stay central; packs raise Spinning Crane Kick above several single-target kicks. This is a shared priority with meaningful swaps.",
+            "key_abilities": [
+              "Fists of Fury",
+              "Spinning Crane Kick"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "aoe_setup": {
+            "value": "none",
+            "explanation": "Spinning Crane Kick is available directly; no separate cleave-enabling buff must be refreshed first.",
+            "key_abilities": [
+              "Spinning Crane Kick"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "resource_model": {
+            "value": "builder-spender",
+            "explanation": "Tiger Palm converts Energy into Chi for Fists of Fury and other spenders.",
+            "key_abilities": [
+              "Tiger Palm",
+              "Fists of Fury"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-windwalker-overview",
+                "url": "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
+                "section": "Windwalker Monk Overview"
+              }
+            ]
+          },
+          "cooldown_flexibility": {
+            "value": "flexible",
+            "explanation": "Spiritual Focus and Efficient Training shorten Zenith; guide timings range from 60–120 seconds by build.",
+            "key_abilities": [
+              "Zenith",
+              "Spiritual Focus",
+              "Efficient Training"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ],
+            "cooldowns": [
+              {
+                "name": "Zenith",
+                "duration_seconds": 120,
+                "explanation": "Build-dependent effective interval can fall to 60–90 seconds; not a fixed recharge."
+              }
+            ]
+          },
+          "movement": {
+            "value": "mobile",
+            "explanation": "Roll and Flying Serpent Kick quickly reconnect you with a moving pack.",
+            "key_abilities": [
+              "Roll",
+              "Flying Serpent Kick"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Mobility"
+              }
+            ]
+          },
+          "damage_profile": {
+            "value": "sustained",
+            "explanation": "Shado-Pan favors steady cleave; Conduit of the Celestials shifts damage toward burst windows.",
+            "key_abilities": [
+              "Shado-Pan",
+              "Celestial Conduit"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-windwalker-overview",
+                "url": "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
+                "section": "Windwalker Monk Overview"
+              }
+            ]
+          },
+          "complexity": {
+            "value": 4,
+            "explanation": "Avoid repeating abilities while tracking Chi, Energy, Dance of Chi-Ji and Fists of Fury priorities.",
+            "key_abilities": [
+              "Dance of Chi-Ji",
+              "Fists of Fury",
+              "Combo Strikes"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "The four-piece raises Spinning Crane Kick priority after Fists of Fury on multiple targets.",
+            "key_abilities": [
+              "Spinning Crane Kick",
+              "Fists of Fury"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Shado-Pan",
+            "playstyle_delta": {
+              "value": "steadier cleave",
+              "explanation": "Shado-Pan gives steadier AoE and a simpler Zenith sequence.",
+              "key_abilities": [
+                "Shado-Pan",
+                "Zenith"
+              ],
+              "sources": [
+                {
+                  "source_id": "icy-windwalker-overview",
+                  "url": "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
+                  "section": "Windwalker Monk Overview"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null,
+            "removes_annoyance": "Fewer extra cooldown interactions than Conduit."
+          },
+          {
+            "name": "Conduit of the Celestials",
+            "playstyle_delta": {
+              "value": "additional burst coordination",
+              "explanation": "Celestial Conduit adds burst planning around Heart of the Jade Serpent.",
+              "key_abilities": [
+                "Celestial Conduit",
+                "Heart of the Jade Serpent"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-windwalker-rotation",
+                  "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                  "section": "Hero Talents"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "A flowing melee priority with Energy and Chi to manage. Zenith timing is forgiving, while Conduit adds another burst sequence.",
+        "play_this_if": "Play this if you enjoy mobile melee and frequently available cooldowns.",
+        "avoid_if": "Avoid if juggling procs, resources and non-repeating attacks feels tiring."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "rotation_stability": {
+            "value": 4,
+            "explanation": "Fists of Fury and the Chi engine stay central; packs raise Spinning Crane Kick above several single-target kicks. This is a shared priority with meaningful swaps.",
+            "key_abilities": [
+              "Fists of Fury",
+              "Spinning Crane Kick"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "aoe_setup": {
+            "value": "none",
+            "explanation": "Spinning Crane Kick is available directly; no separate cleave-enabling buff must be refreshed first.",
+            "key_abilities": [
+              "Spinning Crane Kick"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "resource_model": {
+            "value": "builder-spender",
+            "explanation": "Tiger Palm converts Energy into Chi for Fists of Fury and other spenders.",
+            "key_abilities": [
+              "Tiger Palm",
+              "Fists of Fury"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-windwalker-overview",
+                "url": "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
+                "section": "Windwalker Monk Overview"
+              }
+            ]
+          },
+          "cooldown_flexibility": {
+            "value": "flexible",
+            "explanation": "Spiritual Focus and Efficient Training shorten Zenith; guide timings range from 60–120 seconds by build.",
+            "key_abilities": [
+              "Zenith",
+              "Spiritual Focus",
+              "Efficient Training"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ],
+            "cooldowns": [
+              {
+                "name": "Zenith",
+                "duration_seconds": 120,
+                "explanation": "Build-dependent effective interval can fall to 60–90 seconds; not a fixed recharge."
+              }
+            ]
+          },
+          "movement": {
+            "value": "mobile",
+            "explanation": "Roll and Flying Serpent Kick quickly reconnect you with a moving pack.",
+            "key_abilities": [
+              "Roll",
+              "Flying Serpent Kick"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Mobility"
+              }
+            ]
+          },
+          "damage_profile": {
+            "value": "sustained",
+            "explanation": "Shado-Pan favors steady cleave; Conduit of the Celestials shifts damage toward burst windows.",
+            "key_abilities": [
+              "Shado-Pan",
+              "Celestial Conduit"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-windwalker-overview",
+                "url": "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
+                "section": "Windwalker Monk Overview"
+              }
+            ]
+          },
+          "complexity": {
+            "value": 4,
+            "explanation": "Avoid repeating abilities while tracking Chi, Energy, Dance of Chi-Ji and Fists of Fury priorities.",
+            "key_abilities": [
+              "Dance of Chi-Ji",
+              "Fists of Fury",
+              "Combo Strikes"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "The four-piece raises Spinning Crane Kick priority after Fists of Fury on multiple targets.",
+            "key_abilities": [
+              "Spinning Crane Kick",
+              "Fists of Fury"
+            ],
+            "sources": [
+              {
+                "source_id": "method-windwalker-rotation",
+                "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Shado-Pan",
+            "playstyle_delta": {
+              "value": "steadier cleave",
+              "explanation": "Shado-Pan gives steadier AoE and a simpler Zenith sequence.",
+              "key_abilities": [
+                "Shado-Pan",
+                "Zenith"
+              ],
+              "sources": [
+                {
+                  "source_id": "icy-windwalker-overview",
+                  "url": "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
+                  "section": "Windwalker Monk Overview"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null,
+            "removes_annoyance": "Fewer extra cooldown interactions than Conduit."
+          },
+          {
+            "name": "Conduit of the Celestials",
+            "playstyle_delta": {
+              "value": "additional burst coordination",
+              "explanation": "Celestial Conduit adds burst planning around Heart of the Jade Serpent.",
+              "key_abilities": [
+                "Celestial Conduit",
+                "Heart of the Jade Serpent"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-windwalker-rotation",
+                  "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+                  "section": "Hero Talents"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "The same resource engine follows you into packs, where Spinning Crane Kick gets more attention. Shado-Pan offers steadier cleave and fewer burst interactions.",
+        "play_this_if": "Play this if you enjoy mobile melee and frequently available cooldowns.",
+        "avoid_if": "Avoid if juggling procs, resources and non-repeating attacks feels tiring."
+      }
+    },
+    "sources": [
+      {
+        "id": "method-windwalker-rotation",
+        "status": "success",
+        "url": "https://www.method.gg/guides/windwalker-monk/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-14T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "icy-windwalker-overview",
+        "status": "success",
+        "url": "https://www.icy-veins.com/wow/windwalker-monk-pve-dps-guide",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-12T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "coverage_gaps": [
+      "Wowhead direct guide retrieval returned a JavaScript bot challenge.",
+      "No quantitative representation or hero pick-rate data verified in web research.",
+      "No YouTube transcript verified; creator notes and timestamp links are unavailable."
+    ],
+    "extraction_method": "Codex read current supporting guides and applied evidence schema; primary-source coverage incomplete."
+  },
+  {
+    "spec_id": "retribution-paladin",
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "rotation_stability": {
+            "value": 4,
+            "explanation": "The generators and opener largely persist between targets; Divine Storm replaces Final Verdict for packs, with Divine Arbiter exceptions.",
+            "key_abilities": [
+              "Divine Storm",
+              "Final Verdict",
+              "Divine Arbiter"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "aoe_setup": {
+            "value": "none",
+            "explanation": "Divine Storm spends Holy Power directly; no separate AoE activation buff is required.",
+            "key_abilities": [
+              "Divine Storm",
+              "Holy Power"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "resource_model": {
+            "value": "builder-spender",
+            "explanation": "Blade of Justice and Judgment build Holy Power for Final Verdict or Divine Storm.",
+            "key_abilities": [
+              "Blade of Justice",
+              "Judgment",
+              "Final Verdict",
+              "Divine Storm"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "cooldown_flexibility": {
+            "value": "flexible",
+            "explanation": "Wake of Ashes returns every 30 seconds and Avenging Wrath every 60 seconds, giving frequent burst opportunities.",
+            "key_abilities": [
+              "Wake of Ashes",
+              "Avenging Wrath"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-retribution-overview",
+                "url": "https://www.icy-veins.com/wow/retribution-paladin-pve-dps-guide",
+                "section": "Retribution Paladin Overview"
+              }
+            ],
+            "cooldowns": [
+              {
+                "name": "Wake of Ashes",
+                "duration_seconds": 30
+              },
+              {
+                "name": "Avenging Wrath",
+                "duration_seconds": 60
+              }
+            ]
+          },
+          "movement": {
+            "value": "mixed",
+            "explanation": "Divine Steed supplies short movement bursts; repeated knockbacks and sustained repositioning remain awkward.",
+            "key_abilities": [
+              "Divine Steed"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-retribution-overview",
+                "url": "https://www.icy-veins.com/wow/retribution-paladin-pve-dps-guide",
+                "section": "Retribution Paladin Overview"
+              }
+            ]
+          },
+          "damage_profile": {
+            "value": "burst-windows",
+            "explanation": "Avenging Wrath and Execution Sentence reward packing Holy Power spending into their shared window.",
+            "key_abilities": [
+              "Avenging Wrath",
+              "Execution Sentence"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ]
+          },
+          "complexity": {
+            "value": 2,
+            "explanation": "A fairly simple priority becomes busier when Divine Arbiter changes your usual spender and Crusading Strikes threatens resource overcap.",
+            "key_abilities": [
+              "Divine Arbiter",
+              "Crusading Strikes"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "Divine Arbiter procs can reverse the normal Final Verdict versus Divine Storm choice; Tempest of the Lightbringer gains single-target value.",
+            "key_abilities": [
+              "Divine Arbiter",
+              "Tempest of the Lightbringer"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-talents",
+                "url": "https://www.method.gg/guides/retribution-paladin/talents",
+                "section": "Talent Builds"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Templar",
+            "playstyle_delta": {
+              "value": "shorter concentrated burst",
+              "explanation": "Hammer of Light makes Templar the more concentrated burst option.",
+              "key_abilities": [
+                "Hammer of Light"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-retribution-talents",
+                  "url": "https://www.method.gg/guides/retribution-paladin/talents",
+                  "section": "Talent Builds"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "Herald of the Sun",
+            "playstyle_delta": {
+              "value": "longer burst and cleave",
+              "explanation": "Herald of the Sun favors a longer burst window and sustained cleave; the guide recommends it for both modes, but that is not a measured pick rate.",
+              "key_abilities": [
+                "Herald of the Sun",
+                "Wake of Ashes"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-retribution-talents",
+                  "url": "https://www.method.gg/guides/retribution-paladin/talents",
+                  "section": "Talent Builds"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "Build Holy Power, then cash it out in frequent, compact burst windows. Raid cleave keeps much of the same priority instead of demanding another rotation.",
+        "play_this_if": "Play this if you want frequent melee burst with a familiar pack-to-boss rhythm.",
+        "avoid_if": "Avoid if you want dash-heavy movement or dislike tracking burst-window alignment."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "rotation_stability": {
+            "value": 4,
+            "explanation": "The generators and opener largely persist between targets; Divine Storm replaces Final Verdict for packs, with Divine Arbiter exceptions.",
+            "key_abilities": [
+              "Divine Storm",
+              "Final Verdict",
+              "Divine Arbiter"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "aoe_setup": {
+            "value": "none",
+            "explanation": "Divine Storm spends Holy Power directly; no separate AoE activation buff is required.",
+            "key_abilities": [
+              "Divine Storm",
+              "Holy Power"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "resource_model": {
+            "value": "builder-spender",
+            "explanation": "Blade of Justice and Judgment build Holy Power for Final Verdict or Divine Storm.",
+            "key_abilities": [
+              "Blade of Justice",
+              "Judgment",
+              "Final Verdict",
+              "Divine Storm"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "cooldown_flexibility": {
+            "value": "flexible",
+            "explanation": "Wake of Ashes returns every 30 seconds and Avenging Wrath every 60 seconds, giving frequent burst opportunities.",
+            "key_abilities": [
+              "Wake of Ashes",
+              "Avenging Wrath"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-retribution-overview",
+                "url": "https://www.icy-veins.com/wow/retribution-paladin-pve-dps-guide",
+                "section": "Retribution Paladin Overview"
+              }
+            ],
+            "cooldowns": [
+              {
+                "name": "Wake of Ashes",
+                "duration_seconds": 30
+              },
+              {
+                "name": "Avenging Wrath",
+                "duration_seconds": 60
+              }
+            ]
+          },
+          "movement": {
+            "value": "mixed",
+            "explanation": "Divine Steed supplies short movement bursts; repeated knockbacks and sustained repositioning remain awkward.",
+            "key_abilities": [
+              "Divine Steed"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-retribution-overview",
+                "url": "https://www.icy-veins.com/wow/retribution-paladin-pve-dps-guide",
+                "section": "Retribution Paladin Overview"
+              }
+            ]
+          },
+          "damage_profile": {
+            "value": "burst-windows",
+            "explanation": "Avenging Wrath and Execution Sentence reward packing Holy Power spending into their shared window.",
+            "key_abilities": [
+              "Avenging Wrath",
+              "Execution Sentence"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ]
+          },
+          "complexity": {
+            "value": 2,
+            "explanation": "A fairly simple priority becomes busier when Divine Arbiter changes your usual spender and Crusading Strikes threatens resource overcap.",
+            "key_abilities": [
+              "Divine Arbiter",
+              "Crusading Strikes"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-rotation",
+                "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "Divine Arbiter procs can reverse the normal Final Verdict versus Divine Storm choice; Tempest of the Lightbringer gains single-target value.",
+            "key_abilities": [
+              "Divine Arbiter",
+              "Tempest of the Lightbringer"
+            ],
+            "sources": [
+              {
+                "source_id": "method-retribution-talents",
+                "url": "https://www.method.gg/guides/retribution-paladin/talents",
+                "section": "Talent Builds"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Templar",
+            "playstyle_delta": {
+              "value": "shorter concentrated burst",
+              "explanation": "Hammer of Light makes Templar the more concentrated burst option.",
+              "key_abilities": [
+                "Hammer of Light"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-retribution-talents",
+                  "url": "https://www.method.gg/guides/retribution-paladin/talents",
+                  "section": "Talent Builds"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "Herald of the Sun",
+            "playstyle_delta": {
+              "value": "longer burst and cleave",
+              "explanation": "Herald of the Sun favors a longer burst window and sustained cleave; the guide recommends it for both modes, but that is not a measured pick rate.",
+              "key_abilities": [
+                "Herald of the Sun",
+                "Wake of Ashes"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-retribution-talents",
+                  "url": "https://www.method.gg/guides/retribution-paladin/talents",
+                  "section": "Talent Builds"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "A familiar builder-spender loop follows you from bosses into packs. Wake of Ashes is ready often, and Divine Storm handles much of the target-count switch.",
+        "play_this_if": "Play this if you want frequent melee burst with a familiar pack-to-boss rhythm.",
+        "avoid_if": "Avoid if you want dash-heavy movement or dislike tracking burst-window alignment."
+      }
+    },
+    "sources": [
+      {
+        "id": "method-retribution-rotation",
+        "status": "success",
+        "url": "https://www.method.gg/guides/retribution-paladin/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "method-retribution-talents",
+        "status": "success",
+        "url": "https://www.method.gg/guides/retribution-paladin/talents",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "icy-retribution-overview",
+        "status": "success",
+        "url": "https://www.icy-veins.com/wow/retribution-paladin-pve-dps-guide",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-12T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "coverage_gaps": [
+      "Wowhead direct guide retrieval returned a JavaScript bot challenge.",
+      "No quantitative representation or hero pick-rate data verified in web research.",
+      "No YouTube transcript verified; creator notes and timestamp links are unavailable."
+    ],
+    "extraction_method": "Codex read current supporting guides and applied evidence schema; primary-source coverage incomplete."
+  },
+  {
+    "spec_id": "beast-mastery-hunter",
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "rotation_stability": {
+            "value": 4,
+            "explanation": "Barbed Shot, Kill Command and Cobra Shot persist on packs; Wild Thrash joins the priority to keep pet cleave working.",
+            "key_abilities": [
+              "Barbed Shot",
+              "Kill Command",
+              "Cobra Shot",
+              "Wild Thrash"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "aoe_setup": {
+            "value": "manual",
+            "explanation": "Press Wild Thrash to apply Beast Cleave, then use it on cooldown; reapplying after Bestial Wrath also enables the newly spawned Apex pet.",
+            "key_abilities": [
+              "Wild Thrash",
+              "Beast Cleave",
+              "Bestial Wrath"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "Multi Target"
+              }
+            ]
+          },
+          "resource_model": {
+            "value": "cooldown-driven",
+            "explanation": "Barbed Shot and Kill Command charges drive the priority; avoid letting either sit capped.",
+            "key_abilities": [
+              "Barbed Shot",
+              "Kill Command"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "cooldown_flexibility": {
+            "value": "flexible",
+            "explanation": "Bestial Wrath runs on a 30-second cycle and should be used with little delay, while fitting Wild Thrash around it on packs.",
+            "key_abilities": [
+              "Bestial Wrath",
+              "Wild Thrash"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ],
+            "cooldowns": [
+              {
+                "name": "Bestial Wrath",
+                "duration_seconds": 30
+              }
+            ]
+          },
+          "movement": {
+            "value": "mobile",
+            "explanation": "Kill Command, Barbed Shot and Cobra Shot remain usable while moving, so raid mechanics need not interrupt the main loop.",
+            "key_abilities": [
+              "Kill Command",
+              "Barbed Shot",
+              "Cobra Shot"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-overview",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
+                "section": "Beast Mastery Hunter Overview"
+              }
+            ]
+          },
+          "damage_profile": {
+            "value": "sustained",
+            "explanation": "Bestial Wrath returns frequently; the guide describes a shallow 30-second burst profile rather than large infrequent spikes.",
+            "key_abilities": [
+              "Bestial Wrath"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-overview",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
+                "section": "Beast Mastery Hunter Overview"
+              }
+            ]
+          },
+          "complexity": {
+            "value": 2,
+            "explanation": "The core priority is approachable, with extra precision in Wild Thrash timing and keeping pets centered in a pack.",
+            "key_abilities": [
+              "Wild Thrash",
+              "Kill Command"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-overview",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
+                "section": "Beast Mastery Hunter Overview"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "Stomp grants Cobra Fang stacks, promoting Cobra Shot above filler priority; Beast Cleave changes that empowered shot into cleave.",
+            "key_abilities": [
+              "Stomp",
+              "Cobra Fang",
+              "Cobra Shot",
+              "Beast Cleave"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-rotation",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-rotation-cooldowns-abilities",
+                "section": "Midnight Season 2 Tier Set"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Pack Leader",
+            "playstyle_delta": {
+              "value": "pet summons through normal attacks",
+              "explanation": "Howl of the Pack Leader triggers empowered beasts through Kill Command and Bestial Wrath.",
+              "key_abilities": [
+                "Howl of the Pack Leader",
+                "Kill Command"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-beast-mastery-rotation",
+                  "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                  "section": "Pack Leader and Stampede"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "Dark Ranger",
+            "playstyle_delta": {
+              "value": "extra burst-window priorities",
+              "explanation": "Black Arrow and Wailing Arrow add priorities inside Bestial Wrath; Kill Command remains crucial for the Dark Hound.",
+              "key_abilities": [
+                "Black Arrow",
+                "Wailing Arrow",
+                "Withering Fire"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-beast-mastery-rotation",
+                  "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                  "section": "Dark Ranger and Black Arrow"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "A ranged pet rotation you can execute while moving. Charge management and frequent Bestial Wrath casts matter more than standing still for a big spell.",
+        "play_this_if": "Play this if you want ranged damage without stopping for most casts.",
+        "avoid_if": "Avoid if maintaining pet cleave or pet positioning feels like busywork."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "rotation_stability": {
+            "value": 4,
+            "explanation": "Barbed Shot, Kill Command and Cobra Shot persist on packs; Wild Thrash joins the priority to keep pet cleave working.",
+            "key_abilities": [
+              "Barbed Shot",
+              "Kill Command",
+              "Cobra Shot",
+              "Wild Thrash"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "aoe_setup": {
+            "value": "manual",
+            "explanation": "Press Wild Thrash to apply Beast Cleave, then use it on cooldown; reapplying after Bestial Wrath also enables the newly spawned Apex pet.",
+            "key_abilities": [
+              "Wild Thrash",
+              "Beast Cleave",
+              "Bestial Wrath"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "Multi Target"
+              }
+            ]
+          },
+          "resource_model": {
+            "value": "cooldown-driven",
+            "explanation": "Barbed Shot and Kill Command charges drive the priority; avoid letting either sit capped.",
+            "key_abilities": [
+              "Barbed Shot",
+              "Kill Command"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "General Playstyle"
+              }
+            ]
+          },
+          "cooldown_flexibility": {
+            "value": "flexible",
+            "explanation": "Bestial Wrath runs on a 30-second cycle and should be used with little delay, while fitting Wild Thrash around it on packs.",
+            "key_abilities": [
+              "Bestial Wrath",
+              "Wild Thrash"
+            ],
+            "sources": [
+              {
+                "source_id": "method-beast-mastery-rotation",
+                "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ],
+            "cooldowns": [
+              {
+                "name": "Bestial Wrath",
+                "duration_seconds": 30
+              }
+            ]
+          },
+          "movement": {
+            "value": "mobile",
+            "explanation": "Kill Command, Barbed Shot and Cobra Shot remain usable while moving, so raid mechanics need not interrupt the main loop.",
+            "key_abilities": [
+              "Kill Command",
+              "Barbed Shot",
+              "Cobra Shot"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-overview",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
+                "section": "Beast Mastery Hunter Overview"
+              }
+            ]
+          },
+          "damage_profile": {
+            "value": "sustained",
+            "explanation": "Bestial Wrath returns frequently; the guide describes a shallow 30-second burst profile rather than large infrequent spikes.",
+            "key_abilities": [
+              "Bestial Wrath"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-overview",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
+                "section": "Beast Mastery Hunter Overview"
+              }
+            ]
+          },
+          "complexity": {
+            "value": 2,
+            "explanation": "The core priority is approachable, with extra precision in Wild Thrash timing and keeping pets centered in a pack.",
+            "key_abilities": [
+              "Wild Thrash",
+              "Kill Command"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-overview",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
+                "section": "Beast Mastery Hunter Overview"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "Stomp grants Cobra Fang stacks, promoting Cobra Shot above filler priority; Beast Cleave changes that empowered shot into cleave.",
+            "key_abilities": [
+              "Stomp",
+              "Cobra Fang",
+              "Cobra Shot",
+              "Beast Cleave"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-beast-mastery-rotation",
+                "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-rotation-cooldowns-abilities",
+                "section": "Midnight Season 2 Tier Set"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Pack Leader",
+            "playstyle_delta": {
+              "value": "pet summons through normal attacks",
+              "explanation": "Howl of the Pack Leader triggers empowered beasts through Kill Command and Bestial Wrath.",
+              "key_abilities": [
+                "Howl of the Pack Leader",
+                "Kill Command"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-beast-mastery-rotation",
+                  "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                  "section": "Pack Leader and Stampede"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "Dark Ranger",
+            "playstyle_delta": {
+              "value": "extra burst-window priorities",
+              "explanation": "Black Arrow and Wailing Arrow add priorities inside Bestial Wrath; Kill Command remains crucial for the Dark Hound.",
+              "key_abilities": [
+                "Black Arrow",
+                "Wailing Arrow",
+                "Withering Fire"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-beast-mastery-rotation",
+                  "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+                  "section": "Dark Ranger and Black Arrow"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "Run freely while your pets do the work, but keep them centered in packs. Wild Thrash is the extra AoE button that maintains Beast Cleave.",
+        "play_this_if": "Play this if you want ranged damage without stopping for most casts.",
+        "avoid_if": "Avoid if maintaining pet cleave or pet positioning feels like busywork."
+      }
+    },
+    "sources": [
+      {
+        "id": "method-beast-mastery-rotation",
+        "status": "success",
+        "url": "https://www.method.gg/guides/beast-mastery-hunter/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "method-beast-mastery-talents",
+        "status": "success",
+        "url": "https://www.method.gg/guides/beast-mastery-hunter/talents",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "icy-beast-mastery-overview",
+        "status": "success",
+        "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-guide",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-12T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "icy-beast-mastery-rotation",
+        "status": "success",
+        "url": "https://www.icy-veins.com/wow/beast-mastery-hunter-pve-dps-rotation-cooldowns-abilities",
+        "scraped_at": "2026-10-26T21:36:30.435233Z",
+        "updated_at": "2026-10-12T16:30:00Z",
+        "reason": "Full tier-set section read via Codex web research; supporting evidence, not a primary pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "coverage_gaps": [
+      "Wowhead direct guide retrieval returned a JavaScript bot challenge.",
+      "No quantitative representation or hero pick-rate data verified in web research.",
+      "No YouTube transcript verified; creator notes and timestamp links are unavailable."
+    ],
+    "extraction_method": "Codex read current supporting guides and applied evidence schema; primary-source coverage incomplete."
+  },
+  {
+    "spec_id": "restoration-shaman",
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "ramp": {
+            "value": "soft",
+            "explanation": "Maintain Surging Totem and spread Riptide before pressure; Healing Wave or Chain Heal then fills immediate gaps.",
+            "key_abilities": [
+              "Surging Totem",
+              "Riptide",
+              "Healing Wave",
+              "Chain Heal"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "direct",
+            "explanation": "Healing Wave and Chain Heal answer missing health directly, supported by ongoing totems rather than a mandatory long conversion sequence.",
+            "key_abilities": [
+              "Healing Wave",
+              "Chain Heal",
+              "Healing Stream Totem"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "blanketer",
+            "explanation": "Spread Riptide and keep Healing Stream Totem active across the group, then choose direct fills based on who needs healing.",
+            "key_abilities": [
+              "Riptide",
+              "Healing Stream Totem"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "cooldown_style": {
+            "value": "one-button-raid-savers",
+            "explanation": "Spirit Link Totem, Healing Tide Totem and Ascendance are individual major responses; plan them instead of overlapping other healers.",
+            "key_abilities": [
+              "Spirit Link Totem",
+              "Healing Tide Totem",
+              "Ascendance"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Totemic",
+            "playstyle_delta": {
+              "value": "totem-led healing",
+              "explanation": "Surging Totem and Healing Stream Totem carry much of the healing; maintain Riptide and use empowered Chain Heal fills.",
+              "key_abilities": [
+                "Surging Totem",
+                "Healing Stream Totem",
+                "Riptide",
+                "Chain Heal"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-restoration-shaman-talents",
+                  "url": "https://www.method.gg/guides/restoration-shaman/talents",
+                  "section": "Talent Builds"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "Farseer",
+            "playstyle_delta": {
+              "value": "ancestor-supported direct casts",
+              "explanation": "Ancestral Swiftness and extra Riptides feed ancestor-assisted Healing Wave and Chain Heal sequences.",
+              "key_abilities": [
+                "Ancestral Swiftness",
+                "Riptide",
+                "Healing Wave",
+                "Chain Heal"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-restoration-shaman-rotation",
+                  "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                  "section": "Farseer Playstyle"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "Keep totems and Riptides working, then fill damage with direct heals. Spirit Link is a major planned answer when the raid can stack.",
+        "play_this_if": "Play this if you like direct healing backed by totems and powerful group responses.",
+        "avoid_if": "Avoid if ground placement, totem upkeep or frequent utility choices annoy you."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "ramp": {
+            "value": "none",
+            "explanation": "Healing Wave and Chain Heal can answer damage immediately; Riptide and totems still need routine upkeep, rather than a long raid-style ramp.",
+            "key_abilities": [
+              "Healing Wave",
+              "Chain Heal",
+              "Riptide"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-intro",
+                "url": "https://www.method.gg/guides/restoration-shaman/introduction",
+                "section": "Restoration Shaman Overview"
+              }
+            ]
+          },
+          "healing_model": {
+            "value": "direct",
+            "explanation": "Healing Wave and Chain Heal answer missing health directly, supported by ongoing totems rather than a mandatory long conversion sequence.",
+            "key_abilities": [
+              "Healing Wave",
+              "Chain Heal",
+              "Healing Stream Totem"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "proactive_vs_reactive": {
+            "value": "spot-healer",
+            "explanation": "Healing Wave handles a hurt player while Chain Heal covers several; Riptide and totems keep background healing rolling.",
+            "key_abilities": [
+              "Healing Wave",
+              "Chain Heal",
+              "Riptide"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "Playstyle & Rotation"
+              }
+            ]
+          },
+          "cooldown_style": {
+            "value": "one-button-raid-savers",
+            "explanation": "Spirit Link Totem, Healing Tide Totem and Ascendance are individual major responses; plan them instead of overlapping other healers.",
+            "key_abilities": [
+              "Spirit Link Totem",
+              "Healing Tide Totem",
+              "Ascendance"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "Cooldowns"
+              }
+            ]
+          },
+          "healer_dps_expectation": {
+            "value": "moderate",
+            "explanation": "Weave Lava Burst when healing permits; Flame Shock plus Lightning Bolt or Chain Lightning forms a small, separate damage priority.",
+            "key_abilities": [
+              "Lava Burst",
+              "Flame Shock",
+              "Lightning Bolt",
+              "Chain Lightning"
+            ],
+            "sources": [
+              {
+                "source_id": "method-restoration-shaman-rotation",
+                "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                "section": "DPS Opener"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Totemic",
+            "playstyle_delta": {
+              "value": "totem-led healing",
+              "explanation": "Surging Totem and Healing Stream Totem carry much of the healing; maintain Riptide and use empowered Chain Heal fills.",
+              "key_abilities": [
+                "Surging Totem",
+                "Healing Stream Totem",
+                "Riptide",
+                "Chain Heal"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-restoration-shaman-talents",
+                  "url": "https://www.method.gg/guides/restoration-shaman/talents",
+                  "section": "Talent Builds"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "Farseer",
+            "playstyle_delta": {
+              "value": "ancestor-supported direct casts",
+              "explanation": "Ancestral Swiftness and extra Riptides feed ancestor-assisted Healing Wave and Chain Heal sequences.",
+              "key_abilities": [
+                "Ancestral Swiftness",
+                "Riptide",
+                "Healing Wave",
+                "Chain Heal"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-restoration-shaman-rotation",
+                  "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+                  "section": "Farseer Playstyle"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "Respond to damage with direct heals while totems keep ticking. In quiet globals, a small elemental damage priority gives you something useful to weave in.",
+        "play_this_if": "Play this if you like direct healing backed by totems and powerful group responses.",
+        "avoid_if": "Avoid if ground placement, totem upkeep or frequent utility choices annoy you."
+      }
+    },
+    "sources": [
+      {
+        "id": "method-restoration-shaman-rotation",
+        "status": "success",
+        "url": "https://www.method.gg/guides/restoration-shaman/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-16T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "method-restoration-shaman-talents",
+        "status": "success",
+        "url": "https://www.method.gg/guides/restoration-shaman/talents",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-16T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "method-restoration-shaman-intro",
+        "status": "success",
+        "url": "https://www.method.gg/guides/restoration-shaman/introduction",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-16T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "coverage_gaps": [
+      "Wowhead direct guide retrieval returned a JavaScript bot challenge.",
+      "No quantitative representation or hero pick-rate data verified in web research.",
+      "No YouTube transcript verified; creator notes and timestamp links are unavailable."
+    ],
+    "extraction_method": "Codex read current supporting guides and applied evidence schema; primary-source coverage incomplete."
+  },
+  {
+    "spec_id": "blood-death-knight",
+    "profiles": {
+      "raid": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "reactive",
+            "explanation": "Death Strike heals after damage lands, while Bone Shield and Death and Decay still require proactive maintenance.",
+            "key_abilities": [
+              "Death Strike",
+              "Bone Shield",
+              "Death and Decay"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          },
+          "pull_profile": {
+            "value": "stable",
+            "explanation": "A planned raid opener pre-casts Death's Caress and starts Dancing Rune Weapon early; this assumes preparation and differs from an empty-resource dungeon gather.",
+            "key_abilities": [
+              "Death's Caress",
+              "Dancing Rune Weapon"
+            ],
+            "sources": [
+              {
+                "source_id": "method-blood-rotation",
+                "url": "https://www.method.gg/guides/blood-death-knight/playstyle-and-rotation",
+                "section": "San'layn Raid Opener"
+              }
+            ]
+          },
+          "self_sustain": {
+            "value": "self-sufficient",
+            "explanation": "Death Strike converts Runic Power into substantial reactive healing; resource starvation can still make that recovery unavailable.",
+            "key_abilities": [
+              "Death Strike",
+              "Runic Power"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Cycle Vampiric Blood and Anti-Magic Shell, with Dancing Rune Weapon and Icebound Fortitude covering additional damage patterns.",
+            "key_abilities": [
+              "Vampiric Blood",
+              "Anti-Magic Shell",
+              "Dancing Rune Weapon",
+              "Icebound Fortitude"
+            ],
+            "sources": [
+              {
+                "source_id": "method-blood-rotation",
+                "url": "https://www.method.gg/guides/blood-death-knight/playstyle-and-rotation",
+                "section": "Cooldowns and Defensive Usage"
+              }
+            ]
+          },
+          "mobility_style": {
+            "value": "face-tanker",
+            "explanation": "Gather into a plant point for Death and Decay and melee recovery; Death's Advance is movement help rather than repeated long-distance dashes.",
+            "key_abilities": [
+              "Death and Decay",
+              "Death's Advance"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "The four-piece supplies resources and a Strength buff, easing the opening slightly without removing San'layn's pull setup.",
+            "key_abilities": [
+              "Bone Shield",
+              "San'layn"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Deathbringer",
+            "playstyle_delta": {
+              "value": "mark-and-maintain loop",
+              "explanation": "Reaper's Mark and Exterminate add a separate priority while helping maintain Bone Shield.",
+              "key_abilities": [
+                "Reaper's Mark",
+                "Exterminate",
+                "Bone Shield"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-blood-rotation",
+                  "url": "https://www.method.gg/guides/blood-death-knight/playstyle-and-rotation",
+                  "section": "Deathbringer"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "San’layn",
+            "playstyle_delta": {
+              "value": "more involved pull setup",
+              "explanation": "Dancing Rune Weapon anchors Vampiric Strike windows; compared with Deathbringer, the guide warns of a harder pull setup.",
+              "key_abilities": [
+                "Dancing Rune Weapon",
+                "Vampiric Strike"
+              ],
+              "sources": [
+                {
+                  "source_id": "icy-blood-overview",
+                  "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                  "section": "Blood Death Knight Overview"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "Take damage, then spend Runic Power to recover with Death Strike. Planned openers and a broad defensive kit reward careful resource management.",
+        "play_this_if": "Play this if you enjoy controlling your own health through resource-aware self-healing.",
+        "avoid_if": "Avoid if you hate fragile opening seconds or watching your health swing sharply."
+      },
+      "mythic_plus": {
+        "dimensions": {
+          "mitigation_style": {
+            "value": "reactive",
+            "explanation": "Death Strike heals after damage lands, while Bone Shield and Death and Decay still require proactive maintenance.",
+            "key_abilities": [
+              "Death Strike",
+              "Bone Shield",
+              "Death and Decay"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          },
+          "pull_profile": {
+            "value": "weak-on-pull-ramps-up",
+            "explanation": "An empty-resource gather is dangerous: pre-cast Death's Caress, build Runic Power and use Vampiric Blood with Death Strike before settling into the pull.",
+            "key_abilities": [
+              "Death's Caress",
+              "Vampiric Blood",
+              "Death Strike"
+            ],
+            "sources": [
+              {
+                "source_id": "method-blood-rotation",
+                "url": "https://www.method.gg/guides/blood-death-knight/playstyle-and-rotation",
+                "section": "Mythic+ Opener"
+              }
+            ]
+          },
+          "self_sustain": {
+            "value": "self-sufficient",
+            "explanation": "Death Strike converts Runic Power into substantial reactive healing; resource starvation can still make that recovery unavailable.",
+            "key_abilities": [
+              "Death Strike",
+              "Runic Power"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          },
+          "defensive_toolkit": {
+            "value": "many-small-defensives",
+            "explanation": "Cycle Vampiric Blood and Anti-Magic Shell, with Dancing Rune Weapon and Icebound Fortitude covering additional damage patterns.",
+            "key_abilities": [
+              "Vampiric Blood",
+              "Anti-Magic Shell",
+              "Dancing Rune Weapon",
+              "Icebound Fortitude"
+            ],
+            "sources": [
+              {
+                "source_id": "method-blood-rotation",
+                "url": "https://www.method.gg/guides/blood-death-knight/playstyle-and-rotation",
+                "section": "Cooldowns and Defensive Usage"
+              }
+            ]
+          },
+          "mobility_style": {
+            "value": "face-tanker",
+            "explanation": "Gather into a plant point for Death and Decay and melee recovery; Death's Advance is movement help rather than repeated long-distance dashes.",
+            "key_abilities": [
+              "Death and Decay",
+              "Death's Advance"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          },
+          "tier_set_impact": {
+            "value": "tweaks",
+            "explanation": "The four-piece supplies resources and a Strength buff, easing the opening slightly without removing San'layn's pull setup.",
+            "key_abilities": [
+              "Bone Shield",
+              "San'layn"
+            ],
+            "sources": [
+              {
+                "source_id": "icy-blood-overview",
+                "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                "section": "Blood Death Knight Overview"
+              }
+            ]
+          }
+        },
+        "hero_talents": [
+          {
+            "name": "Deathbringer",
+            "playstyle_delta": {
+              "value": "mark-and-maintain loop",
+              "explanation": "Reaper's Mark and Exterminate add a separate priority while helping maintain Bone Shield.",
+              "key_abilities": [
+                "Reaper's Mark",
+                "Exterminate",
+                "Bone Shield"
+              ],
+              "sources": [
+                {
+                  "source_id": "method-blood-rotation",
+                  "url": "https://www.method.gg/guides/blood-death-knight/playstyle-and-rotation",
+                  "section": "Deathbringer"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          },
+          {
+            "name": "San’layn",
+            "playstyle_delta": {
+              "value": "more involved pull setup",
+              "explanation": "Dancing Rune Weapon anchors Vampiric Strike windows; compared with Deathbringer, the guide warns of a harder pull setup.",
+              "key_abilities": [
+                "Dancing Rune Weapon",
+                "Vampiric Strike"
+              ],
+              "sources": [
+                {
+                  "source_id": "icy-blood-overview",
+                  "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+                  "section": "Blood Death Knight Overview"
+                }
+              ]
+            },
+            "pick_rate": null,
+            "popular": null
+          }
+        ],
+        "feel_summary": "The first seconds of a gather deserve respect, especially as San’layn. Once Bone Shield, Runic Power and defensive windows are established, Death Strike supplies your own recovery.",
+        "play_this_if": "Play this if you enjoy controlling your own health through resource-aware self-healing.",
+        "avoid_if": "Avoid if you hate fragile opening seconds or watching your health swing sharply."
+      }
+    },
+    "sources": [
+      {
+        "id": "method-blood-rotation",
+        "status": "success",
+        "url": "https://www.method.gg/guides/blood-death-knight/playstyle-and-rotation",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-13T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      },
+      {
+        "id": "icy-blood-overview",
+        "status": "success",
+        "url": "https://www.icy-veins.com/wow/blood-death-knight-pve-tank-guide",
+        "scraped_at": "2026-10-26T17:15:00Z",
+        "updated_at": "2026-10-12T00:00:00Z",
+        "reason": "Retrieved by Codex via web research; supporting guide, not a successful primary-source pipeline scrape.",
+        "kind": "qualitative"
+      }
+    ],
+    "coverage_gaps": [
+      "Wowhead direct guide retrieval returned a JavaScript bot challenge.",
+      "No quantitative representation or hero pick-rate data verified in web research.",
+      "No YouTube transcript verified; creator notes and timestamp links are unavailable."
+    ],
+    "extraction_method": "Codex read current supporting guides and applied evidence schema; primary-source coverage incomplete."
+  }
+]

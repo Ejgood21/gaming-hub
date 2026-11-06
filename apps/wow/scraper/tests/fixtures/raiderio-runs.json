@@ -1,0 +1,34 @@
+{
+  "rankings": [
+    {
+      "rank": 1,
+      "run": {
+        "season": "season-mn-2",
+        "keystone_run_id": 900001,
+        "mythic_level": 20,
+        "roster": [
+          {"role": "tank", "character": {"id": 1, "spec": {"id": 250, "name": "Blood", "role": "tank"}}},
+          {"role": "healer", "character": {"id": 2, "spec": {"id": 270, "name": "Mistweaver", "role": "healer"}}},
+          {"role": "dps", "character": {"id": 3, "spec": {"id": 269, "name": "Windwalker", "role": "dps"}}},
+          {"role": "dps", "character": {"id": 4, "spec": {"id": 269, "name": "Windwalker", "role": "dps"}}},
+          {"role": "dps", "character": {"id": 5, "spec": {"id": 64, "name": "Frost", "role": "dps"}}}
+        ]
+      }
+    },
+    {
+      "rank": 2,
+      "run": {
+        "season": "season-mn-2",
+        "keystone_run_id": 900002,
+        "mythic_level": 19,
+        "roster": [
+          {"role": "tank", "character": {"id": 1, "spec": {"id": 250, "name": "Blood", "role": "tank"}}},
+          {"role": "healer", "character": {"id": 2, "spec": {"id": 270, "name": "Mistweaver", "role": "healer"}}},
+          {"role": "dps", "character": {"id": 3, "spec": {"id": 269, "name": "Windwalker", "role": "dps"}}},
+          {"role": "damage", "character": {"id": 5, "spec": {"id": 64, "name": "Frost", "role": "dps"}}},
+          {"role": "damager", "character": {"id": 6, "spec": {"id": 253, "name": "Beast Mastery", "role": "dps"}}}
+        ]
+      }
+    }
+  ]
+}
