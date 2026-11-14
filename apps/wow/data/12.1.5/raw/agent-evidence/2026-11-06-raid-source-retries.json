@@ -1,0 +1,1710 @@
+{
+  "audit_version": 1,
+  "generated_at": "2026-11-06T18:15:19.427961+00:00",
+  "base_head": "00a986e8af89a30e337ea77ef73502201d6d6cd7",
+  "candidate_patch": "12.1.5",
+  "candidate_raw_run": "2026-10-27T05-00-41-763Z-360b0d78-6c4c-4a7d-8dc5-eb17e20d0f81",
+  "result": "blocked_no_promotion",
+  "required_coverage": {
+    "supported": 40,
+    "total": 80,
+    "raid_closed_this_retry": 0,
+    "raid_still_gapped": 40,
+    "mythic_plus_preserved": 40
+  },
+  "retry_policy": {
+    "max_retries": 2,
+    "backoff_ms": [
+      2000,
+      4000
+    ],
+    "scope": "Representative source/endpoint probes, not per-profile scrapes. Retries are actual uncached curl processes. No redirect or policy bypass. Web errors are recorded separately from origin HTTP statuses."
+  },
+  "runtime_readiness": {
+    "observations_current": true,
+    "network_policy": {
+      "mode": "restricted",
+      "state": "enforced",
+      "allowed_hosts": [
+        "raider.io",
+        "us.version.battle.net",
+        "www.archon.gg",
+        "www.googleapis.com",
+        "www.warcraftlogs.com",
+        "www.wowhead.com",
+        "www.youtube.com",
+        "youtube.com"
+      ],
+      "presets": [],
+      "preset_allowed_hosts": [],
+      "effective_allowed_hosts": [
+        "archon.gg",
+        "raider.io",
+        "us.version.battle.net",
+        "warcraftlogs.com",
+        "wowhead.com",
+        "www.archon.gg",
+        "www.googleapis.com",
+        "www.raider.io",
+        "www.warcraftlogs.com",
+        "www.wowhead.com",
+        "www.www.googleapis.com",
+        "www.youtube.com",
+        "youtube.com"
+      ]
+    },
+    "runtime_variables": [
+      {
+        "environment_variable": "WCL_CLIENT_ID",
+        "optional": false,
+        "state": "ready"
+      },
+      {
+        "environment_variable": "WCL_CLIENT_SECRET",
+        "optional": false,
+        "state": "ready"
+      },
+      {
+        "environment_variable": "YOUTUBE_API_KEY",
+        "optional": false,
+        "state": "ready"
+      }
+    ],
+    "credential_values_recorded": false
+  },
+  "attempts": [
+    {
+      "source": "youtube-googleapis",
+      "url": "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=Blood+Death+Knight+raid+guide+Midnight+season+2+12.1.5&maxResults=12&order=viewCount&publishedAfter=2026-10-13T00%3A00%3A00Z&key=[redacted]",
+      "method": "GET",
+      "started_at": "2026-11-06T18:09:56.479Z",
+      "completed_at": "2026-11-06T18:09:56.493Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "youtube-googleapis",
+      "url": "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=Blood+Death+Knight+raid+guide+Midnight+season+2+12.1.5&maxResults=12&order=viewCount&publishedAfter=2026-10-13T00%3A00%3A00Z&key=[redacted]",
+      "method": "GET",
+      "started_at": "2026-11-06T18:09:58.498Z",
+      "completed_at": "2026-11-06T18:09:58.510Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "youtube-googleapis",
+      "url": "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=Blood+Death+Knight+raid+guide+Midnight+season+2+12.1.5&maxResults=12&order=viewCount&publishedAfter=2026-10-13T00%3A00%3A00Z&key=[redacted]",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:02.515Z",
+      "completed_at": "2026-11-06T18:10:02.530Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "youtube-public",
+      "url": "https://www.youtube.com/results?search_query=Blood+Death+Knight+raid+guide+12.1.5",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:02.531Z",
+      "completed_at": "2026-11-06T18:10:02.543Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "youtube-public",
+      "url": "https://www.youtube.com/results?search_query=Blood+Death+Knight+raid+guide+12.1.5",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:04.546Z",
+      "completed_at": "2026-11-06T18:10:04.557Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "youtube-public",
+      "url": "https://www.youtube.com/results?search_query=Blood+Death+Knight+raid+guide+12.1.5",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:08.559Z",
+      "completed_at": "2026-11-06T18:10:08.571Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "archon",
+      "url": "https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:08.572Z",
+      "completed_at": "2026-11-06T18:10:08.581Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "archon",
+      "url": "https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:10.584Z",
+      "completed_at": "2026-11-06T18:10:10.593Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "archon",
+      "url": "https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:14.595Z",
+      "completed_at": "2026-11-06T18:10:14.605Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "warcraftlogs-oauth",
+      "url": "https://www.warcraftlogs.com/oauth/token",
+      "method": "POST",
+      "started_at": "2026-11-06T18:10:14.606Z",
+      "completed_at": "2026-11-06T18:10:14.616Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "warcraftlogs-oauth",
+      "url": "https://www.warcraftlogs.com/oauth/token",
+      "method": "POST",
+      "started_at": "2026-11-06T18:10:16.619Z",
+      "completed_at": "2026-11-06T18:10:16.629Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "warcraftlogs-oauth",
+      "url": "https://www.warcraftlogs.com/oauth/token",
+      "method": "POST",
+      "started_at": "2026-11-06T18:10:20.632Z",
+      "completed_at": "2026-11-06T18:10:20.642Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-api-documentation",
+      "url": "https://raider.io/api",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:20.642Z",
+      "completed_at": "2026-11-06T18:10:20.650Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-api-documentation",
+      "url": "https://raider.io/api",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:22.653Z",
+      "completed_at": "2026-11-06T18:10:22.662Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-api-documentation",
+      "url": "https://raider.io/api",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:26.667Z",
+      "completed_at": "2026-11-06T18:10:26.676Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-static-data",
+      "url": "https://raider.io/api/v1/raiding/static-data?expansion_id=11",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:26.677Z",
+      "completed_at": "2026-11-06T18:10:26.685Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-static-data",
+      "url": "https://raider.io/api/v1/raiding/static-data?expansion_id=11",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:28.688Z",
+      "completed_at": "2026-11-06T18:10:28.701Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-static-data",
+      "url": "https://raider.io/api/v1/raiding/static-data?expansion_id=11",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:32.708Z",
+      "completed_at": "2026-11-06T18:10:32.719Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "battle-net-version",
+      "url": "https://us.version.battle.net/wow/versions",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:32.721Z",
+      "completed_at": "2026-11-06T18:10:32.731Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "battle-net-version",
+      "url": "https://us.version.battle.net/wow/versions",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:34.738Z",
+      "completed_at": "2026-11-06T18:10:34.758Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 1 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "battle-net-version",
+      "url": "https://us.version.battle.net/wow/versions",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:38.763Z",
+      "completed_at": "2026-11-06T18:10:38.773Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "wowhead",
+      "url": "https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:38.774Z",
+      "completed_at": "2026-11-06T18:10:38.783Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "wowhead",
+      "url": "https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:40.786Z",
+      "completed_at": "2026-11-06T18:10:40.797Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "wowhead",
+      "url": "https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns",
+      "method": "GET",
+      "started_at": "2026-11-06T18:10:44.801Z",
+      "completed_at": "2026-11-06T18:10:44.818Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-swagger",
+      "url": "https://raider.io/swagger.json",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:28.736Z",
+      "completed_at": "2026-11-06T18:13:28.753Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-swagger",
+      "url": "https://raider.io/swagger.json",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:30.758Z",
+      "completed_at": "2026-11-06T18:13:30.767Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-swagger",
+      "url": "https://raider.io/swagger.json",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:34.776Z",
+      "completed_at": "2026-11-06T18:13:34.788Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-discovery",
+      "url": "https://raider.io/api/v1/raiding/raid-rankings?raid=the-unbinding-of-kithix&difficulty=mythic&region=us&limit=3&page=0",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:34.789Z",
+      "completed_at": "2026-11-06T18:13:34.802Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-discovery",
+      "url": "https://raider.io/api/v1/raiding/raid-rankings?raid=the-unbinding-of-kithix&difficulty=mythic&region=us&limit=3&page=0",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:36.806Z",
+      "completed_at": "2026-11-06T18:13:36.815Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-discovery",
+      "url": "https://raider.io/api/v1/raiding/raid-rankings?raid=the-unbinding-of-kithix&difficulty=mythic&region=us&limit=3&page=0",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:40.820Z",
+      "completed_at": "2026-11-06T18:13:40.829Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-comps",
+      "url": "https://raider.io/api/v1/live-tracking/guild/raid-comps?raid=latest&difficulty=mythic&region=us&realm=illidan&guild=Liquid",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:40.830Z",
+      "completed_at": "2026-11-06T18:13:40.841Z",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-comps",
+      "url": "https://raider.io/api/v1/live-tracking/guild/raid-comps?raid=latest&difficulty=mythic&region=us&realm=illidan&guild=Liquid",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:42.842Z",
+      "completed_at": "2026-11-06T18:13:42.852Z",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "raiderio-raid-comps",
+      "url": "https://raider.io/api/v1/live-tracking/guild/raid-comps?raid=latest&difficulty=mythic&region=us&realm=illidan&guild=Liquid",
+      "method": "GET",
+      "started_at": "2026-11-06T18:13:46.856Z",
+      "completed_at": "2026-11-06T18:13:46.868Z",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "status": "failed",
+      "curl_exit_code": 7,
+      "http_status": null,
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server",
+      "body_bytes": 0,
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "web_attempts": [
+    {
+      "source": "youtube-public",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "observed_at": "2026-11-06 18:10:27 UTC",
+      "exact_errors": [
+        "Failed to fetch https://www.youtube.com/results?search_query=Blood+Death+Knight+raid+guide+12.1.5: Online fetch throttled"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "youtube-public",
+      "started_at": "2026-11-06 18:10:29 UTC",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "exact_errors": [
+        "Failed to fetch https://www.youtube.com/results?search_query=Blood+Death+Knight+raid+guide+12.1.5: Online fetch throttled"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "youtube-public",
+      "started_at": "2026-11-06 18:10:34 UTC",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "exact_errors": [
+        "Failed to fetch https://www.youtube.com/results?search_query=Blood+Death+Knight+raid+guide+12.1.5: Online fetch throttled"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "archon",
+      "started_at": "2026-11-06 18:10:41 UTC",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "exact_errors": [
+        "Failed to fetch https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses: (403) Forbidden"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "archon",
+      "started_at": "2026-11-06 18:10:44 UTC",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "exact_errors": [
+        "Failed to fetch https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses: (403) Forbidden"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "archon",
+      "started_at": "2026-11-06 18:10:48 UTC",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "exact_errors": [
+        "Failed to fetch https://www.archon.gg/wow/builds/blood/death-knight/raid/overview/mythic/all-bosses: (403) Forbidden"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "warcraftlogs-public-docs",
+      "started_at": "2026-11-06 18:11:15 UTC",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "exact_errors": [
+        "Failed to fetch https://www.warcraftlogs.com/v2-api-docs/warcraft/: (403) Forbidden"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "warcraftlogs-public-docs",
+      "started_at": "2026-11-06 18:11:31 UTC",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "exact_errors": [
+        "Failed to fetch https://www.warcraftlogs.com/v2-api-docs/warcraft/: (403) Forbidden"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "warcraftlogs-public-docs",
+      "started_at": "2026-11-06 18:11:35 UTC",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "exact_errors": [
+        "Failed to fetch https://www.warcraftlogs.com/v2-api-docs/warcraft/: (403) Forbidden"
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "raiderio-and-battle-net",
+      "started_at": "2026-11-06 18:11:35 UTC",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "exact_errors": [
+        "URL https://raider.io/api/v1/raiding/static-data?expansion_id=11 is not accessible via this tool.",
+        "URL https://us.version.battle.net/wow/versions is not accessible via this tool."
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "raiderio-and-battle-net",
+      "started_at": "2026-11-06 18:12:01 UTC",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "exact_errors": [
+        "URL https://raider.io/api/v1/raiding/static-data?expansion_id=11 is not accessible via this tool.",
+        "URL https://us.version.battle.net/wow/versions is not accessible via this tool."
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "raiderio-and-battle-net",
+      "started_at": "2026-11-06 18:12:06 UTC",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "exact_errors": [
+        "URL https://raider.io/api/v1/raiding/static-data?expansion_id=11 is not accessible via this tool.",
+        "URL https://us.version.battle.net/wow/versions is not accessible via this tool."
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "allowlisted-public-discovery",
+      "started_at": "2026-11-06 18:12:06 UTC",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "exact_errors": [
+        "URL https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns is not accessible via this tool."
+      ],
+      "status": "failed",
+      "finding": "Domain-restricted public search surfaced Raider.IO developer documentation and unrelated PTR achievements/items; no current-patch raid spec counts."
+    },
+    {
+      "source": "raiderio-swagger",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "url": "https://raider.io/swagger.json",
+      "status": "documentation_only",
+      "notes": "Public API v0.62.5 documents /api/v1/live-tracking/guild/raid-comps and /api/v1/live-tracking/guild/raid-pulls. Composition data is per pull and supplied by Desktop App uploads. Documentation is not a raid population sample; no rates derived.",
+      "recorded_at": "2026-11-06 18:13:20 UTC"
+    },
+    {
+      "source": "raiderio-raid-discovery",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "recorded_at": "2026-11-06 18:13:20 UTC",
+      "exact_errors": [
+        "URL https://raider.io/api/v1/raiding/raid-rankings?difficulty=mythic&limit=3&page=0&raid=the-unbinding-of-kithix&region=us is not accessible via this tool.",
+        "URL https://raider.io/api/v1/raiding/static-data?expansion_id=11 is not accessible via this tool."
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "raiderio-raid-comps",
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "recorded_at": "2026-11-06 18:13:20 UTC",
+      "exact_errors": [
+        "URL https://raider.io/api/v1/live-tracking/guild/raid-comps?difficulty=mythic&guild=Liquid&raid=latest&realm=illidan&region=us is not accessible via this tool."
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "raiderio-live-and-wowhead",
+      "started_at": "2026-11-06 18:13:22 UTC",
+      "attempt": 2,
+      "retry_count": 1,
+      "backoff_ms": 2000,
+      "exact_errors": [
+        "URL https://raider.io/api/v1/raiding/raid-rankings?difficulty=mythic&limit=3&page=0&raid=the-unbinding-of-kithix&region=us is not accessible via this tool.",
+        "URL https://raider.io/api/v1/live-tracking/guild/raid-comps?difficulty=mythic&guild=Liquid&raid=latest&realm=illidan&region=us is not accessible via this tool.",
+        "URL https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns is not accessible via this tool."
+      ],
+      "status": "failed"
+    },
+    {
+      "source": "raiderio-live-and-wowhead",
+      "started_at": "2026-11-06 18:13:27 UTC",
+      "attempt": 3,
+      "retry_count": 2,
+      "backoff_ms": 4000,
+      "exact_errors": [
+        "URL https://raider.io/api/v1/raiding/raid-rankings?difficulty=mythic&limit=3&page=0&raid=the-unbinding-of-kithix&region=us is not accessible via this tool.",
+        "URL https://raider.io/api/v1/live-tracking/guild/raid-comps?difficulty=mythic&guild=Liquid&raid=latest&realm=illidan&region=us is not accessible via this tool.",
+        "URL https://www.wowhead.com/guide/classes/death-knight/blood/rotation-cooldowns is not accessible via this tool."
+      ],
+      "status": "failed"
+    }
+  ],
+  "enabled_wcl_adapter_checks": [
+    {
+      "attempt": 1,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "enabled_for_attempt": true,
+      "source": "warcraftlogs",
+      "status": "failed",
+      "fetched_at": "2026-11-06T18:11:05.894Z",
+      "url": "https://www.warcraftlogs.com/api/v2/client",
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server"
+    },
+    {
+      "attempt": 2,
+      "retry_count": 0,
+      "backoff_ms": 0,
+      "enabled_in_config": true,
+      "source": "warcraftlogs",
+      "status": "failed",
+      "url": "https://www.warcraftlogs.com/api/v2/client",
+      "fetched_at": "2026-11-06T18:14:12.603Z",
+      "error": "curl: (7) Failed to connect to proxy port 8080 after 0 ms: Could not connect to server"
+    }
+  ],
+  "public_documentation_findings": [
+    {
+      "source": "raiderio",
+      "url": "https://raider.io/swagger.json",
+      "api_version": "0.62.5",
+      "endpoint": "/api/v1/live-tracking/guild/raid-comps",
+      "related_endpoint": "/api/v1/live-tracking/guild/raid-pulls",
+      "interpretation": "A public per-pull specialization roster API is documented. Desktop App uploads and guild/pull selectors are required. It is not an aggregate popularity endpoint. Current raid/date identity, sample selection and role-slot denominators would need verification before extraction. Documentation and failed probes supply no representation rates.",
+      "probe_selectors": "The documented example raid slug the-unbinding-of-kithix and exploratory us/illidan/Liquid selector are connectivity probes only; neither is asserted to be the target patch/season sample."
+    }
+  ],
+  "structural_limitations": [
+    "The enabled WarcraftLogs adapter checks expansion metadata only; it has no quantitative raid collector. A successful token or metadata request alone cannot count as coverage.",
+    "The strict gate currently accepts successful Archon or Raider.IO sources only. A future WCL implementation needs validated quantitative eligibility and provenance before the gate can recognize it; it must never accept metadata alone."
+  ],
+  "validation": {
+    "independent_python_schema": "passed",
+    "all_20_raw_parts_and_compressed_decoded_hashes": "passed",
+    "source_status_agreement": "passed for all 80 profiles",
+    "mythic_plus_metric_agreement": "passed for all 40 profiles",
+    "raid_values": "all 40 remain null",
+    "preserved_baseline_blobs": "passed",
+    "npm_test": "blocked: ERR_MODULE_NOT_FOUND for ajv and vite; 3 dependency-free test-file processes passed, 4 test-file processes failed to load",
+    "gaming_hub_build": "blocked: ERR_MODULE_NOT_FOUND for vite",
+    "strict_finalizer": "attempted without --allow-partial; could not load ajv, before publication; published data unchanged",
+    "ci": "Will be reported in PR #2 for the pushed head.",
+    "offline_dependency_install": "blocked: npm ci --offline --ignore-scripts returned ENOTCACHED; package downloads were not attempted outside the network allowlist."
+  },
+  "preserved_files": [
+    {
+      "path": "apps/wow/data/12.1.5/candidate-profiles.json.gz",
+      "bytes": 66722,
+      "sha256": "1fd6879b4adfa99f68d3d642b772c7e13a3ca88c8f1fde51119e9a71c432a1de",
+      "git_blob": "58eb15a75a7e1e5598790e378e176d3cfaa33cc7"
+    },
+    {
+      "path": "apps/wow/data/12.1.5/profiles.json",
+      "bytes": 791336,
+      "sha256": "4e05253970e889274d9295da1d758abf16b0d73e98980f7a9fd9dec5255cd1b4",
+      "git_blob": "dcede3a491525b1744fcd907fa7299ceb1346d64"
+    },
+    {
+      "path": "apps/wow/data/12.1.5/changes.json",
+      "bytes": 114,
+      "sha256": "01a1782d4ac1450bec7c65045d5623e059757de2dd9562ed4bacf23589c92247",
+      "git_blob": "a315da470dd6d67aac4726a30363c85688413c2f"
+    },
+    {
+      "path": "apps/wow/data/12.1.5/run.json",
+      "bytes": 5243,
+      "sha256": "b8c6b99085570a7afff65dffdab850f8ebc13cbd9a9f43355b6541004bdf14c2",
+      "git_blob": "d13aa9fdb77c6083ad43fe00f563bf0d013f71f7"
+    },
+    {
+      "path": "apps/wow/data/12.1.5/raw/bundle.json",
+      "bytes": 273927,
+      "sha256": "479ab92aff47d769133357481132873b40e7f14dff6ca1aca8cb91e4e2445163",
+      "git_blob": "f8513fbeb53dd88c5be3e3011c79af36c33a02dc"
+    },
+    {
+      "path": "apps/wow/data/12.1.5/raw/runs/2026-10-27T05-00-41-763Z-360b0d78-6c4c-4a7d-8dc5-eb17e20d0f81.json.gz.manifest.json",
+      "bytes": 4649,
+      "sha256": "d48422ad965b8110339403f7ce8ab891b1e0691dbe691eeaa307e7985fab2037",
+      "git_blob": "dac9fd7ee5de66fe87a76954b09b44745b6de68d"
+    },
+    {
+      "path": "apps/wow/data/latest.json",
+      "bytes": 104,
+      "sha256": "9bc8329949be9752a3ef86ff30b2d620ffb02791bf2e419464e1343f91fcb32a"
+    }
+  ],
+  "remaining_raid_profiles": [
+    {
+      "profile_id": "blood-death-knight:raid",
+      "spec_id": "blood-death-knight",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "frost-death-knight:raid",
+      "spec_id": "frost-death-knight",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "unholy-death-knight:raid",
+      "spec_id": "unholy-death-knight",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "havoc-demon-hunter:raid",
+      "spec_id": "havoc-demon-hunter",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "vengeance-demon-hunter:raid",
+      "spec_id": "vengeance-demon-hunter",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "devourer-demon-hunter:raid",
+      "spec_id": "devourer-demon-hunter",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "balance-druid:raid",
+      "spec_id": "balance-druid",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "feral-druid:raid",
+      "spec_id": "feral-druid",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "guardian-druid:raid",
+      "spec_id": "guardian-druid",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "restoration-druid:raid",
+      "spec_id": "restoration-druid",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "devastation-evoker:raid",
+      "spec_id": "devastation-evoker",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "preservation-evoker:raid",
+      "spec_id": "preservation-evoker",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "augmentation-evoker:raid",
+      "spec_id": "augmentation-evoker",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "beast-mastery-hunter:raid",
+      "spec_id": "beast-mastery-hunter",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "marksmanship-hunter:raid",
+      "spec_id": "marksmanship-hunter",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "survival-hunter:raid",
+      "spec_id": "survival-hunter",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "arcane-mage:raid",
+      "spec_id": "arcane-mage",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "fire-mage:raid",
+      "spec_id": "fire-mage",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "frost-mage:raid",
+      "spec_id": "frost-mage",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "brewmaster-monk:raid",
+      "spec_id": "brewmaster-monk",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "mistweaver-monk:raid",
+      "spec_id": "mistweaver-monk",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "windwalker-monk:raid",
+      "spec_id": "windwalker-monk",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "holy-paladin:raid",
+      "spec_id": "holy-paladin",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "protection-paladin:raid",
+      "spec_id": "protection-paladin",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "retribution-paladin:raid",
+      "spec_id": "retribution-paladin",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "discipline-priest:raid",
+      "spec_id": "discipline-priest",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "holy-priest:raid",
+      "spec_id": "holy-priest",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "shadow-priest:raid",
+      "spec_id": "shadow-priest",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "assassination-rogue:raid",
+      "spec_id": "assassination-rogue",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "outlaw-rogue:raid",
+      "spec_id": "outlaw-rogue",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "subtlety-rogue:raid",
+      "spec_id": "subtlety-rogue",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "elemental-shaman:raid",
+      "spec_id": "elemental-shaman",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "enhancement-shaman:raid",
+      "spec_id": "enhancement-shaman",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "restoration-shaman:raid",
+      "spec_id": "restoration-shaman",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "affliction-warlock:raid",
+      "spec_id": "affliction-warlock",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "demonology-warlock:raid",
+      "spec_id": "demonology-warlock",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "destruction-warlock:raid",
+      "spec_id": "destruction-warlock",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "arms-warrior:raid",
+      "spec_id": "arms-warrior",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "fury-warrior:raid",
+      "spec_id": "fury-warrior",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    },
+    {
+      "profile_id": "protection-warrior:raid",
+      "spec_id": "protection-warrior",
+      "content_type": "raid",
+      "wowhead_status": "success",
+      "quantitative_source": null,
+      "representation_percent": null,
+      "sample_size": null,
+      "gap_closed": false,
+      "collection_scope": "shared endpoint probes; not 40 independent profile scrapes",
+      "remaining_gap": "No verified raid specialization sample with current-patch identity and a valid denominator was returned.",
+      "source_failures": {
+        "youtube": "Google API search: proxy connection failed on all 3 attempts; public YouTube web fetch throttled on all 3 attempts; no transcript or representation evidence.",
+        "archon": "Proxy failed on all 3 attempts; public page web fetch returned HTTP 403 on all 3 attempts. Cloudflare body not exposed on this recheck.",
+        "warcraftlogs": "Enabled adapter with existing runtime credentials; OAuth proxy connection failed on all 3 attempts. No token, authenticated GraphQL response, zone or raid sample verified. Adapter itself currently collects metadata only.",
+        "raiderio": "Public Swagger documents raid-comps/pull rosters. API live requests failed through the proxy and were inaccessible through the web tool. No current-patch sample or raid representation determined. Guild rankings and M+ rates are not used.",
+        "battle_net": "Version endpoint proxy connection failed on all 3 attempts and web tool could not access it. No raid representation endpoint verified on this host.",
+        "wowhead": "Historical successful guides preserved; live guide proxy failed on all 3 attempts and web fetch was inaccessible. Public discovery yielded no usable current-patch spec representation sample."
+      }
+    }
+  ]
+}

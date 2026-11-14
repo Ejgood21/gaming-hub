@@ -9,3 +9,8 @@ coverage/
 playwright-report/
 test-results/
 .DS_Store
+
+!.env.example
+work/
+__pycache__/
+*.pyc

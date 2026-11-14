@@ -1,0 +1,722 @@
+[
+  {
+    "id": "blood-death-knight",
+    "name": "Blood",
+    "spec": "Blood",
+    "class": "Death Knight",
+    "class_name": "Death Knight",
+    "role": "tank",
+    "game_id": 250,
+    "wowhead_slug": "death-knight/blood",
+    "raiderio_class": "death-knight",
+    "raiderio_spec": "blood",
+    "icon": "spell_deathknight_bloodpresence",
+    "color": "#C41E3A",
+    "hero_talents": [
+      "Deathbringer",
+      "San’layn"
+    ]
+  },
+  {
+    "id": "frost-death-knight",
+    "name": "Frost",
+    "spec": "Frost",
+    "class": "Death Knight",
+    "class_name": "Death Knight",
+    "role": "dps",
+    "game_id": 251,
+    "wowhead_slug": "death-knight/frost",
+    "raiderio_class": "death-knight",
+    "raiderio_spec": "frost",
+    "icon": "spell_deathknight_frostpresence",
+    "color": "#C41E3A",
+    "hero_talents": [
+      "Deathbringer",
+      "Rider of the Apocalypse"
+    ]
+  },
+  {
+    "id": "unholy-death-knight",
+    "name": "Unholy",
+    "spec": "Unholy",
+    "class": "Death Knight",
+    "class_name": "Death Knight",
+    "role": "dps",
+    "game_id": 252,
+    "wowhead_slug": "death-knight/unholy",
+    "raiderio_class": "death-knight",
+    "raiderio_spec": "unholy",
+    "icon": "spell_deathknight_unholypresence",
+    "color": "#C41E3A",
+    "hero_talents": [
+      "Rider of the Apocalypse",
+      "San’layn"
+    ]
+  },
+  {
+    "id": "havoc-demon-hunter",
+    "name": "Havoc",
+    "spec": "Havoc",
+    "class": "Demon Hunter",
+    "class_name": "Demon Hunter",
+    "role": "dps",
+    "game_id": 577,
+    "wowhead_slug": "demon-hunter/havoc",
+    "raiderio_class": "demon-hunter",
+    "raiderio_spec": "havoc",
+    "icon": "ability_demonhunter_specdps",
+    "color": "#A330C9",
+    "hero_talents": [
+      "Aldrachi Reaver",
+      "Fel-Scarred"
+    ]
+  },
+  {
+    "id": "vengeance-demon-hunter",
+    "name": "Vengeance",
+    "spec": "Vengeance",
+    "class": "Demon Hunter",
+    "class_name": "Demon Hunter",
+    "role": "tank",
+    "game_id": 581,
+    "wowhead_slug": "demon-hunter/vengeance",
+    "raiderio_class": "demon-hunter",
+    "raiderio_spec": "vengeance",
+    "icon": "ability_demonhunter_spectank",
+    "color": "#A330C9",
+    "hero_talents": [
+      "Aldrachi Reaver",
+      "Annihilator"
+    ]
+  },
+  {
+    "id": "devourer-demon-hunter",
+    "name": "Devourer",
+    "spec": "Devourer",
+    "class": "Demon Hunter",
+    "class_name": "Demon Hunter",
+    "role": "dps",
+    "game_id": 1480,
+    "wowhead_slug": "demon-hunter/devourer",
+    "raiderio_class": "demon-hunter",
+    "raiderio_spec": "devourer",
+    "icon": "classicon_demonhunter",
+    "color": "#A330C9",
+    "hero_talents": [
+      "Annihilator",
+      "Void-Scarred"
+    ]
+  },
+  {
+    "id": "balance-druid",
+    "name": "Balance",
+    "spec": "Balance",
+    "class": "Druid",
+    "class_name": "Druid",
+    "role": "dps",
+    "game_id": 102,
+    "wowhead_slug": "druid/balance",
+    "raiderio_class": "druid",
+    "raiderio_spec": "balance",
+    "icon": "spell_nature_starfall",
+    "color": "#FF7C0A",
+    "hero_talents": [
+      "Elune’s Chosen",
+      "Keeper of the Grove"
+    ]
+  },
+  {
+    "id": "feral-druid",
+    "name": "Feral",
+    "spec": "Feral",
+    "class": "Druid",
+    "class_name": "Druid",
+    "role": "dps",
+    "game_id": 103,
+    "wowhead_slug": "druid/feral",
+    "raiderio_class": "druid",
+    "raiderio_spec": "feral",
+    "icon": "ability_druid_catform",
+    "color": "#FF7C0A",
+    "hero_talents": [
+      "Druid of the Claw",
+      "Wildstalker"
+    ]
+  },
+  {
+    "id": "guardian-druid",
+    "name": "Guardian",
+    "spec": "Guardian",
+    "class": "Druid",
+    "class_name": "Druid",
+    "role": "tank",
+    "game_id": 104,
+    "wowhead_slug": "druid/guardian",
+    "raiderio_class": "druid",
+    "raiderio_spec": "guardian",
+    "icon": "ability_racial_bearform",
+    "color": "#FF7C0A",
+    "hero_talents": [
+      "Druid of the Claw",
+      "Elune’s Chosen"
+    ]
+  },
+  {
+    "id": "restoration-druid",
+    "name": "Restoration",
+    "spec": "Restoration",
+    "class": "Druid",
+    "class_name": "Druid",
+    "role": "healer",
+    "game_id": 105,
+    "wowhead_slug": "druid/restoration",
+    "raiderio_class": "druid",
+    "raiderio_spec": "restoration",
+    "icon": "spell_nature_healingtouch",
+    "color": "#FF7C0A",
+    "hero_talents": [
+      "Keeper of the Grove",
+      "Wildstalker"
+    ]
+  },
+  {
+    "id": "devastation-evoker",
+    "name": "Devastation",
+    "spec": "Devastation",
+    "class": "Evoker",
+    "class_name": "Evoker",
+    "role": "dps",
+    "game_id": 1467,
+    "wowhead_slug": "evoker/devastation",
+    "raiderio_class": "evoker",
+    "raiderio_spec": "devastation",
+    "icon": "classicon_evoker_devastation",
+    "color": "#33937F",
+    "hero_talents": [
+      "Flameshaper",
+      "Scalecommander"
+    ]
+  },
+  {
+    "id": "preservation-evoker",
+    "name": "Preservation",
+    "spec": "Preservation",
+    "class": "Evoker",
+    "class_name": "Evoker",
+    "role": "healer",
+    "game_id": 1468,
+    "wowhead_slug": "evoker/preservation",
+    "raiderio_class": "evoker",
+    "raiderio_spec": "preservation",
+    "icon": "classicon_evoker_preservation",
+    "color": "#33937F",
+    "hero_talents": [
+      "Chronowarden",
+      "Flameshaper"
+    ]
+  },
+  {
+    "id": "augmentation-evoker",
+    "name": "Augmentation",
+    "spec": "Augmentation",
+    "class": "Evoker",
+    "class_name": "Evoker",
+    "role": "dps",
+    "game_id": 1473,
+    "wowhead_slug": "evoker/augmentation",
+    "raiderio_class": "evoker",
+    "raiderio_spec": "augmentation",
+    "icon": "classicon_evoker_augmentation",
+    "color": "#33937F",
+    "hero_talents": [
+      "Chronowarden",
+      "Scalecommander"
+    ]
+  },
+  {
+    "id": "beast-mastery-hunter",
+    "name": "Beast Mastery",
+    "spec": "Beast Mastery",
+    "class": "Hunter",
+    "class_name": "Hunter",
+    "role": "dps",
+    "game_id": 253,
+    "wowhead_slug": "hunter/beast-mastery",
+    "raiderio_class": "hunter",
+    "raiderio_spec": "beast-mastery",
+    "icon": "ability_hunter_bestialdiscipline",
+    "color": "#AAD372",
+    "hero_talents": [
+      "Dark Ranger",
+      "Pack Leader"
+    ]
+  },
+  {
+    "id": "marksmanship-hunter",
+    "name": "Marksmanship",
+    "spec": "Marksmanship",
+    "class": "Hunter",
+    "class_name": "Hunter",
+    "role": "dps",
+    "game_id": 254,
+    "wowhead_slug": "hunter/marksmanship",
+    "raiderio_class": "hunter",
+    "raiderio_spec": "marksmanship",
+    "icon": "ability_hunter_focusedaim",
+    "color": "#AAD372",
+    "hero_talents": [
+      "Dark Ranger",
+      "Sentinel"
+    ]
+  },
+  {
+    "id": "survival-hunter",
+    "name": "Survival",
+    "spec": "Survival",
+    "class": "Hunter",
+    "class_name": "Hunter",
+    "role": "dps",
+    "game_id": 255,
+    "wowhead_slug": "hunter/survival",
+    "raiderio_class": "hunter",
+    "raiderio_spec": "survival",
+    "icon": "ability_hunter_camouflage",
+    "color": "#AAD372",
+    "hero_talents": [
+      "Pack Leader",
+      "Sentinel"
+    ]
+  },
+  {
+    "id": "arcane-mage",
+    "name": "Arcane",
+    "spec": "Arcane",
+    "class": "Mage",
+    "class_name": "Mage",
+    "role": "dps",
+    "game_id": 62,
+    "wowhead_slug": "mage/arcane",
+    "raiderio_class": "mage",
+    "raiderio_spec": "arcane",
+    "icon": "spell_holy_magicalsentry",
+    "color": "#3FC7EB",
+    "hero_talents": [
+      "Spellslinger",
+      "Sunfury"
+    ]
+  },
+  {
+    "id": "fire-mage",
+    "name": "Fire",
+    "spec": "Fire",
+    "class": "Mage",
+    "class_name": "Mage",
+    "role": "dps",
+    "game_id": 63,
+    "wowhead_slug": "mage/fire",
+    "raiderio_class": "mage",
+    "raiderio_spec": "fire",
+    "icon": "spell_fire_firebolt02",
+    "color": "#3FC7EB",
+    "hero_talents": [
+      "Frostfire",
+      "Sunfury"
+    ]
+  },
+  {
+    "id": "frost-mage",
+    "name": "Frost",
+    "spec": "Frost",
+    "class": "Mage",
+    "class_name": "Mage",
+    "role": "dps",
+    "game_id": 64,
+    "wowhead_slug": "mage/frost",
+    "raiderio_class": "mage",
+    "raiderio_spec": "frost",
+    "icon": "spell_frost_frostbolt02",
+    "color": "#3FC7EB",
+    "hero_talents": [
+      "Frostfire",
+      "Spellslinger"
+    ]
+  },
+  {
+    "id": "brewmaster-monk",
+    "name": "Brewmaster",
+    "spec": "Brewmaster",
+    "class": "Monk",
+    "class_name": "Monk",
+    "role": "tank",
+    "game_id": 268,
+    "wowhead_slug": "monk/brewmaster",
+    "raiderio_class": "monk",
+    "raiderio_spec": "brewmaster",
+    "icon": "spell_monk_brewmaster_spec",
+    "color": "#00FF98",
+    "hero_talents": [
+      "Master of Harmony",
+      "Shado-Pan"
+    ]
+  },
+  {
+    "id": "mistweaver-monk",
+    "name": "Mistweaver",
+    "spec": "Mistweaver",
+    "class": "Monk",
+    "class_name": "Monk",
+    "role": "healer",
+    "game_id": 270,
+    "wowhead_slug": "monk/mistweaver",
+    "raiderio_class": "monk",
+    "raiderio_spec": "mistweaver",
+    "icon": "spell_monk_mistweaver_spec",
+    "color": "#00FF98",
+    "hero_talents": [
+      "Conduit of the Celestials",
+      "Master of Harmony"
+    ]
+  },
+  {
+    "id": "windwalker-monk",
+    "name": "Windwalker",
+    "spec": "Windwalker",
+    "class": "Monk",
+    "class_name": "Monk",
+    "role": "dps",
+    "game_id": 269,
+    "wowhead_slug": "monk/windwalker",
+    "raiderio_class": "monk",
+    "raiderio_spec": "windwalker",
+    "icon": "spell_monk_windwalker_spec",
+    "color": "#00FF98",
+    "hero_talents": [
+      "Conduit of the Celestials",
+      "Shado-Pan"
+    ]
+  },
+  {
+    "id": "holy-paladin",
+    "name": "Holy",
+    "spec": "Holy",
+    "class": "Paladin",
+    "class_name": "Paladin",
+    "role": "healer",
+    "game_id": 65,
+    "wowhead_slug": "paladin/holy",
+    "raiderio_class": "paladin",
+    "raiderio_spec": "holy",
+    "icon": "spell_holy_holybolt",
+    "color": "#F48CBA",
+    "hero_talents": [
+      "Herald of the Sun",
+      "Lightsmith"
+    ]
+  },
+  {
+    "id": "protection-paladin",
+    "name": "Protection",
+    "spec": "Protection",
+    "class": "Paladin",
+    "class_name": "Paladin",
+    "role": "tank",
+    "game_id": 66,
+    "wowhead_slug": "paladin/protection",
+    "raiderio_class": "paladin",
+    "raiderio_spec": "protection",
+    "icon": "ability_paladin_shieldofthetemplar",
+    "color": "#F48CBA",
+    "hero_talents": [
+      "Lightsmith",
+      "Templar"
+    ]
+  },
+  {
+    "id": "retribution-paladin",
+    "name": "Retribution",
+    "spec": "Retribution",
+    "class": "Paladin",
+    "class_name": "Paladin",
+    "role": "dps",
+    "game_id": 70,
+    "wowhead_slug": "paladin/retribution",
+    "raiderio_class": "paladin",
+    "raiderio_spec": "retribution",
+    "icon": "spell_holy_auraoflight",
+    "color": "#F48CBA",
+    "hero_talents": [
+      "Herald of the Sun",
+      "Templar"
+    ]
+  },
+  {
+    "id": "discipline-priest",
+    "name": "Discipline",
+    "spec": "Discipline",
+    "class": "Priest",
+    "class_name": "Priest",
+    "role": "healer",
+    "game_id": 256,
+    "wowhead_slug": "priest/discipline",
+    "raiderio_class": "priest",
+    "raiderio_spec": "discipline",
+    "icon": "spell_holy_powerwordshield",
+    "color": "#FFFFFF",
+    "hero_talents": [
+      "Oracle",
+      "Voidweaver"
+    ]
+  },
+  {
+    "id": "holy-priest",
+    "name": "Holy",
+    "spec": "Holy",
+    "class": "Priest",
+    "class_name": "Priest",
+    "role": "healer",
+    "game_id": 257,
+    "wowhead_slug": "priest/holy",
+    "raiderio_class": "priest",
+    "raiderio_spec": "holy",
+    "icon": "spell_holy_guardianspirit",
+    "color": "#FFFFFF",
+    "hero_talents": [
+      "Archon",
+      "Oracle"
+    ]
+  },
+  {
+    "id": "shadow-priest",
+    "name": "Shadow",
+    "spec": "Shadow",
+    "class": "Priest",
+    "class_name": "Priest",
+    "role": "dps",
+    "game_id": 258,
+    "wowhead_slug": "priest/shadow",
+    "raiderio_class": "priest",
+    "raiderio_spec": "shadow",
+    "icon": "spell_shadow_shadowwordpain",
+    "color": "#FFFFFF",
+    "hero_talents": [
+      "Archon",
+      "Voidweaver"
+    ]
+  },
+  {
+    "id": "assassination-rogue",
+    "name": "Assassination",
+    "spec": "Assassination",
+    "class": "Rogue",
+    "class_name": "Rogue",
+    "role": "dps",
+    "game_id": 259,
+    "wowhead_slug": "rogue/assassination",
+    "raiderio_class": "rogue",
+    "raiderio_spec": "assassination",
+    "icon": "ability_rogue_deadlybrew",
+    "color": "#FFF468",
+    "hero_talents": [
+      "Deathstalker",
+      "Fatebound"
+    ]
+  },
+  {
+    "id": "outlaw-rogue",
+    "name": "Outlaw",
+    "spec": "Outlaw",
+    "class": "Rogue",
+    "class_name": "Rogue",
+    "role": "dps",
+    "game_id": 260,
+    "wowhead_slug": "rogue/outlaw",
+    "raiderio_class": "rogue",
+    "raiderio_spec": "outlaw",
+    "icon": "ability_rogue_waylay",
+    "color": "#FFF468",
+    "hero_talents": [
+      "Fatebound",
+      "Trickster"
+    ]
+  },
+  {
+    "id": "subtlety-rogue",
+    "name": "Subtlety",
+    "spec": "Subtlety",
+    "class": "Rogue",
+    "class_name": "Rogue",
+    "role": "dps",
+    "game_id": 261,
+    "wowhead_slug": "rogue/subtlety",
+    "raiderio_class": "rogue",
+    "raiderio_spec": "subtlety",
+    "icon": "ability_stealth",
+    "color": "#FFF468",
+    "hero_talents": [
+      "Deathstalker",
+      "Trickster"
+    ]
+  },
+  {
+    "id": "elemental-shaman",
+    "name": "Elemental",
+    "spec": "Elemental",
+    "class": "Shaman",
+    "class_name": "Shaman",
+    "role": "dps",
+    "game_id": 262,
+    "wowhead_slug": "shaman/elemental",
+    "raiderio_class": "shaman",
+    "raiderio_spec": "elemental",
+    "icon": "spell_nature_lightning",
+    "color": "#0070DD",
+    "hero_talents": [
+      "Farseer",
+      "Stormbringer"
+    ]
+  },
+  {
+    "id": "enhancement-shaman",
+    "name": "Enhancement",
+    "spec": "Enhancement",
+    "class": "Shaman",
+    "class_name": "Shaman",
+    "role": "dps",
+    "game_id": 263,
+    "wowhead_slug": "shaman/enhancement",
+    "raiderio_class": "shaman",
+    "raiderio_spec": "enhancement",
+    "icon": "spell_shaman_improvedstormstrike",
+    "color": "#0070DD",
+    "hero_talents": [
+      "Stormbringer",
+      "Totemic"
+    ]
+  },
+  {
+    "id": "restoration-shaman",
+    "name": "Restoration",
+    "spec": "Restoration",
+    "class": "Shaman",
+    "class_name": "Shaman",
+    "role": "healer",
+    "game_id": 264,
+    "wowhead_slug": "shaman/restoration",
+    "raiderio_class": "shaman",
+    "raiderio_spec": "restoration",
+    "icon": "spell_nature_magicimmunity",
+    "color": "#0070DD",
+    "hero_talents": [
+      "Farseer",
+      "Totemic"
+    ]
+  },
+  {
+    "id": "affliction-warlock",
+    "name": "Affliction",
+    "spec": "Affliction",
+    "class": "Warlock",
+    "class_name": "Warlock",
+    "role": "dps",
+    "game_id": 265,
+    "wowhead_slug": "warlock/affliction",
+    "raiderio_class": "warlock",
+    "raiderio_spec": "affliction",
+    "icon": "spell_shadow_deathcoil",
+    "color": "#8788EE",
+    "hero_talents": [
+      "Hellcaller",
+      "Soul Harvester"
+    ]
+  },
+  {
+    "id": "demonology-warlock",
+    "name": "Demonology",
+    "spec": "Demonology",
+    "class": "Warlock",
+    "class_name": "Warlock",
+    "role": "dps",
+    "game_id": 266,
+    "wowhead_slug": "warlock/demonology",
+    "raiderio_class": "warlock",
+    "raiderio_spec": "demonology",
+    "icon": "spell_shadow_metamorphosis",
+    "color": "#8788EE",
+    "hero_talents": [
+      "Diabolist",
+      "Soul Harvester"
+    ]
+  },
+  {
+    "id": "destruction-warlock",
+    "name": "Destruction",
+    "spec": "Destruction",
+    "class": "Warlock",
+    "class_name": "Warlock",
+    "role": "dps",
+    "game_id": 267,
+    "wowhead_slug": "warlock/destruction",
+    "raiderio_class": "warlock",
+    "raiderio_spec": "destruction",
+    "icon": "spell_shadow_rainoffire",
+    "color": "#8788EE",
+    "hero_talents": [
+      "Diabolist",
+      "Hellcaller"
+    ]
+  },
+  {
+    "id": "arms-warrior",
+    "name": "Arms",
+    "spec": "Arms",
+    "class": "Warrior",
+    "class_name": "Warrior",
+    "role": "dps",
+    "game_id": 71,
+    "wowhead_slug": "warrior/arms",
+    "raiderio_class": "warrior",
+    "raiderio_spec": "arms",
+    "icon": "ability_warrior_savageblow",
+    "color": "#C69B6D",
+    "hero_talents": [
+      "Colossus",
+      "Slayer"
+    ]
+  },
+  {
+    "id": "fury-warrior",
+    "name": "Fury",
+    "spec": "Fury",
+    "class": "Warrior",
+    "class_name": "Warrior",
+    "role": "dps",
+    "game_id": 72,
+    "wowhead_slug": "warrior/fury",
+    "raiderio_class": "warrior",
+    "raiderio_spec": "fury",
+    "icon": "ability_warrior_innerrage",
+    "color": "#C69B6D",
+    "hero_talents": [
+      "Mountain Thane",
+      "Slayer"
+    ]
+  },
+  {
+    "id": "protection-warrior",
+    "name": "Protection",
+    "spec": "Protection",
+    "class": "Warrior",
+    "class_name": "Warrior",
+    "role": "tank",
+    "game_id": 73,
+    "wowhead_slug": "warrior/protection",
+    "raiderio_class": "warrior",
+    "raiderio_spec": "protection",
+    "icon": "ability_warrior_defensivestance",
+    "color": "#C69B6D",
+    "hero_talents": [
+      "Colossus",
+      "Mountain Thane"
+    ]
+  }
+]
