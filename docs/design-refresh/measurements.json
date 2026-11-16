@@ -1,0 +1,82 @@
+{
+  "desktopBeforeGridLanding": {
+    "viewport": "1440×900",
+    "fullyVisible": 0,
+    "intersecting": 3,
+    "cardHeight": {
+      "min": 543.2,
+      "max": 585.5
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 9101,
+    "gridHeight": 8057.9,
+    "firstCardTop": 803.8,
+    "scrollY": 0
+  },
+  "desktopBeforeGridScan": {
+    "viewport": "1440×900",
+    "fullyVisible": 3,
+    "intersecting": 6,
+    "cardHeight": {
+      "min": 543.2,
+      "max": 585.5
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 9101,
+    "gridHeight": 8057.9,
+    "firstCardTop": 217.8,
+    "scrollY": 586
+  },
+  "desktopBeforeHome": {
+    "viewport": "1440×900",
+    "fullyVisible": 0,
+    "intersecting": 4,
+    "cardHeight": {
+      "min": 335.5,
+      "max": 335.5
+    },
+    "averageWordsPerCard": 21.5,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 1609,
+    "gridHeight": 335.5,
+    "firstCardTop": 689.9,
+    "scrollY": 0
+  },
+  "desktopAfterGridLanding": {
+    "viewport": "1440×900",
+    "fullyVisible": 12,
+    "intersecting": 16,
+    "cardHeight": {
+      "min": 138,
+      "max": 138
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 2000,
+    "gridHeight": 1452,
+    "firstCardTop": 425.2,
+    "scrollY": 0
+  },
+  "desktopAfterGridScan": {
+    "viewport": "1440×900",
+    "fullyVisible": 20,
+    "intersecting": 24,
+    "cardHeight": {
+      "min": 138,
+      "max": 138
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 2000,
+    "gridHeight": 1452,
+    "firstCardTop": 136.2,
+    "scrollY": 289
+  }
+}
