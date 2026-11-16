@@ -26,7 +26,29 @@ npm run validate # validate the current versioned WoW profiles
 
 `package-lock.json` pins the dependencies. The static hub builder uses an isolated Vite build in `apps/wow/build.mjs` to render and hydrate the React dashboard inside the shared shell. React, React DOM, Lucide, YAML, Ajv/Ajv Formats, and Undici are pinned dependencies; Vite is a build dependency. No runtime API service or browsing credentials are required.
 
-The build renders the release cards and all 80 WoW content profiles into real HTML for reading **without JavaScript**. Browser JavaScript adds release filters and the WoW filters, detail/comparison controls, copy action, and browser-local taste/shortlist preferences. It does not fetch profile data or contact another host. The theme uses local CSS, system fonts, and SVG artwork.
+The build renders the release cards and all 80 WoW content profiles into real HTML for reading **without JavaScript**. Browser JavaScript adds release filters and the WoW filters, detail/comparison controls, copy action, and browser-local taste/shortlist preferences. It does not fetch profile data. The theme uses local CSS and system fonts. Blizzard icons are cached in the repository; if a cached file fails to load, the UI retries the same artwork on the Wowhead CDN and then uses its readable identity label.
+
+## Compact explorer and original icon art
+
+The home release tracker and WoW explorer share the same dark shell and uniform rows. WoW cards show a spec, class, role art, up to three verified trait badges, and a feel summary capped at 80 characters. Open a spec for the full raid and Mythic+ profiles, taste explanations, dimensions, sources, and comparison. Hover or focus a badge/summary to read more; tap or press Enter to expand it on touch or keyboard. Coverage is collapsed under **About coverage**, with the current **40/80** source target and raid gaps kept explicit.
+
+The sticky toolbar combines search, class, role, and feel filters. **Compact list** reduces row height; **Group by class** reveals class jumps and collapsible groups. Taste ranking, saved specs, comparison, and prompt copying remain available.
+
+Original Blizzard artwork comes from `https://wow.zamimg.com/images/wow/icons/large/`. `apps/wow/config/icons.json` records all 40 spec/game-ID mappings, 13 classes, 3 roles, Wowhead references, and SHA-256 checksums. The spec mappings were checked against the linked Wowhead Spec Basics guides, including Devourer's distinct `classicon_demonhunter_void` texture. The three role symbols use Blizzard's shield, healing, and sword art. Artwork belongs to Blizzard Entertainment; this fan tool is unaffiliated.
+
+`npm test` independently checks spec identities, complete/distinct class and role mappings, cached JPEGs, and checksums. A missing or changed cached icon also fails `npm run build`. Normal tests and builds use the committed cache. To deliberately re-download the exact recorded art, run `node scripts/cache-wow-icons.mjs`; changed upstream bytes require review.
+
+For the Chromium acceptance check, install Playwright separately (it is not a site dependency), serve the built Pages path, and run:
+
+```sh
+# In a separate terminal: BASE_PATH=/gaming-hub/ npm run preview
+npm install --prefix /tmp/hub-browser --ignore-scripts --no-package-lock playwright@1.56.1
+node /tmp/hub-browser/node_modules/playwright/cli.js install chromium
+PLAYWRIGHT_MODULE=/tmp/hub-browser/node_modules/playwright/index.mjs \
+CHROMIUM_PATH=/path/to/chromium npm run check:visual
+```
+
+Set `BASELINE_URL` to a separately served checkout of `92e160a` to reproduce the before/after measurements, or omit it to check the refreshed UI. `UI_URL` defaults to `http://127.0.0.1:4173/gaming-hub/`; screenshots and measurements go to `work/visual-check/` unless `UI_OUTPUT` is set. The check covers 1440×900 desktop and 390×844 touch layouts, every card icon, filters, disclosure behavior, class grouping/jumps, details, comparison, taste persistence, release filtering, and prompt copying.
 
 ## Repository layout
 

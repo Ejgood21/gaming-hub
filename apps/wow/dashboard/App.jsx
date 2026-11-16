@@ -48,6 +48,11 @@ const data = datasets.find((item) => item.patch === pointers[0]?.patch) ||
   datasets.sort(
     (a, b) => new Date(b.generated_at) - new Date(a.generated_at),
   )[0] || { patch: "Pending", season: {}, profiles: [] };
+// The audited candidate and the preserved published snapshot are separate.
+// Read the existing audit for display; never publish or rewrite candidate data.
+const coverageAudit = Object.values(import.meta.glob("../data/*/live-coverage.json", {
+  eager: true, import: "default",
+})).find((audit) => audit.patch === data.patch);
 const defaults = parse(tasteText) || {};
 const DEFAULT_MUST = defaults.must_haves ||
   defaults.must || ["stable-rotation", "always-send-cds", "no-ramp"];
@@ -848,10 +853,11 @@ export default function App() {
               <span className="season-label">{data.season.expansion || "Retail WoW"} · {data.season.name || "Season unverified"} · Patch {data.patch}</span>
             </div>
             <details className="about-coverage">
-              <summary>About coverage · {sourceTarget}/{data.profiles.length}</summary>
+              <summary>About coverage · {coverageAudit?.required_coverage_passed ?? sourceTarget}/{data.profiles.length}{coverageAudit ? " audited" : " published"}</summary>
               <div>
                 <p>Find a spec by how it feels to play. Taste ranks evidence-backed matches; unknown evidence never counts.</p>
-                <p><strong>{sourceTarget === data.profiles.length ? "Source target met" : "Provisional coverage"}: {sourceTarget}/{data.profiles.length} profiles meet the Wowhead + quantitative target.</strong> {evidenced} have guide observations. All {catalog.length} specs have separate Raid and Mythic+ profiles.</p>
+                {coverageAudit && <p><strong>Collected-source audit: {coverageAudit.required_coverage_passed}/{coverageAudit.profiles.length} meet the required source target.</strong> Mythic+: {coverageAudit.by_content.mythic_plus.required_coverage_passed}/{coverageAudit.by_content.mythic_plus.profiles}. Raid: {coverageAudit.by_content.raid.required_coverage_passed}/{coverageAudit.by_content.raid.profiles}. Candidate publication remains blocked by {coverageAudit.required_coverage_missing} required-source gaps.</p>}
+                <p><strong>Published snapshot · {sourceTarget === data.profiles.length ? "Source target met" : "Provisional coverage"}: {sourceTarget}/{data.profiles.length} meet the Wowhead + quantitative target.</strong> These published profiles are unchanged. {evidenced} have guide observations. All {catalog.length} specs retain separate Raid and Mythic+ profiles.</p>
                 <p>Raid gaps remain explicit. Missing observations and pick rates stay unknown; no data is invented. {seasonFallback ? "Season auto-detection is pending. " : ""}{(data.season.coverage_gaps || []).join(" ")}</p>
                 <p>Current taste: {must.map(title).join(" · ") || "None"}. <button onClick={() => navigate("taste")}>Edit taste</button></p>
                 <button onClick={() => navigate("processing")}>Inspect all sources & coverage</button>

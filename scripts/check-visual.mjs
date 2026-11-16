@@ -200,4 +200,7 @@ try {
   await writeFile(path.join(out,'measurements.json'), JSON.stringify(metrics,null,2)+'\n');
   console.log(JSON.stringify(metrics,null,2));
   console.log('Visual acceptance passed: desktop + touch, 40 specs, icons, density, filters, grouping, details, compare, taste, prompt, and releases.');
-} finally { await browser.close(); }
+} finally {
+  await writeFile(path.join(out,'measurements.json'),JSON.stringify(metrics,null,2)+'\n');
+  await browser.close();
+}
