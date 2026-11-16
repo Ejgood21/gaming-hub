@@ -78,5 +78,37 @@
     "gridHeight": 1452,
     "firstCardTop": 136.2,
     "scrollY": 289
+  },
+  "desktopAfterListLanding": {
+    "viewport": "1440×900",
+    "fullyVisible": 7,
+    "intersecting": 8,
+    "cardHeight": {
+      "min": 58,
+      "max": 58
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 3063,
+    "gridHeight": 2515,
+    "firstCardTop": 425.2,
+    "scrollY": 0
+  },
+  "desktopAfterListScan": {
+    "viewport": "1440×900",
+    "fullyVisible": 12,
+    "intersecting": 13,
+    "cardHeight": {
+      "min": 58,
+      "max": 58
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 3063,
+    "gridHeight": 2515,
+    "firstCardTop": 136.2,
+    "scrollY": 289
   }
 }
