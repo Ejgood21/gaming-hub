@@ -64,24 +64,11 @@ const escape = (value) =>
       ],
   );
 const statusLabels = { firm: "FIRM", tba: "TBA", unconfirmed: "UNCONFIRMED" };
-const artwork = {
-  moon: '<circle cx="155" cy="52" r="30" fill="currentColor"/><circle cx="169" cy="43" r="28" fill="#263a39"/><path d="m0 126 43-48 22 21 36-53 57 80m-40 0 57-64 32 39 33-15 40 40" fill="#192e2e"/><path d="M120 126V83h17V63h12v20h18v43" fill="#122727"/>',
-  sunset:
-    '<circle cx="140" cy="62" r="34" fill="#f5d6a3"/><path d="M0 97h280v29H0z" fill="#a16860"/><path d="M0 106h280M0 114h280" stroke="#e4ac87"/><path d="M52 126c10-36 11-59 7-82m0 2c-21-14-29-7-33-1m33 0c5-20 20-25 32-16M59 46c13-6 24-1 29 8M59 45c-10-19-23-22-33-18" fill="none" stroke="currentColor" stroke-width="4"/><path d="M236 126c-6-25-8-40-4-57m0 0c10-15 23-15 28-12m-28 12c-16-7-24-2-29 4m29-4c-1-13-8-19-17-20" fill="none" stroke="currentColor" stroke-width="3"/>',
-  crystal:
-    '<circle cx="140" cy="69" r="45" fill="none" stroke="#687e96"/><circle cx="140" cy="69" r="34" fill="none" stroke="#687e96"/><path d="m140 27 24 35-24 48-24-48z" fill="currentColor"/><path d="m140 27 3 41-27-6m27 6-3 42 24-48z" fill="#dae0d8"/><path d="m140 27 3 41 21-6z" fill="#7c9aac"/><path d="M80 71h12m96 0h12M140 8v8m-73 10 7 7m132-7-7 7" stroke="#8da1b6"/>',
-  arch: '<circle cx="140" cy="62" r="43" fill="#e0dcc0"/><path d="M93 126V72a47 47 0 0 1 94 0v54h-15V72a32 32 0 0 0-64 0v54z" fill="currentColor"/><path d="m129 126 8-34 8-15 7 18 13 31" fill="#eae2c8"/><path d="M0 126V76l17 19 17-35 25 66m151 0 17-48 18 21 15-40 20 67" fill="#798a5c"/><path d="m0 126 30-16 30 11 28-9 23 14m63 0 26-17 29 13 31-14 20 18" fill="#566b47"/>',
-};
-const artNames = {
-  moon: "INTO THE UNKNOWN",
-  sunset: "A DIFFERENT KIND OF HEAT",
-  crystal: "FIND YOUR PARTY",
-  arch: "BACK TO ALBION",
-};
+const artwork = Object.fromEntries(["moon", "sunset", "crystal", "arch"].map(name => [name, true]));
 const compass =
-  '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="32" r="25" stroke="currentColor" stroke-width="1.5"/><circle cx="32" cy="32" r="20" stroke="currentColor" stroke-width=".6"/><path d="m43 20-6 18-17 6 6-18z" fill="currentColor"/><path d="m43 20-11 12 5 6z" fill="#e9eddf"/><path d="M32 3v9m0 40v9M3 32h9m40 0h9" stroke="currentColor" stroke-width="1.5"/></svg>';
+  '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="32" r="25" stroke="currentColor" stroke-width="1.5"/><circle cx="32" cy="32" r="20" stroke="currentColor" stroke-width=".6"/><path d="m43 20-6 18-17 6 6-18z" fill="currentColor"/><path d="m43 20-11 12 5 6z" fill="#d8e8ff"/><path d="M32 3v9m0 40v9M3 32h9m40 0h9" stroke="currentColor" stroke-width="1.5"/></svg>';
 const head =
-  '<meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <meta name="robots" content="noindex, nofollow, noarchive">\n  <meta name="theme-color" content="#f7f5ef">\n  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">\n  <link rel="stylesheet" href="/assets/site.css">';
+  '<meta charset="utf-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <meta name="robots" content="noindex, nofollow, noarchive">\n  <meta name="theme-color" content="#0b0e14">\n  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">\n  <link rel="stylesheet" href="/assets/site.css">';
 const header = (route) => `<a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="header-inner">
   <a class="brand" href="/" aria-label="Personal Gaming Hub home"><img class="brand-mark" src="/assets/favicon.svg" alt="" width="39" height="39"><span class="brand-name">gaming<span>hub</span><span aria-hidden="true">.</span></span></a>
@@ -89,10 +76,10 @@ const header = (route) => `<a class="skip-link" href="#main">Skip to content</a>
     <a href="/"${route === "/" ? ' aria-current="page"' : ""}>The hub</a>
     <a href="/wow/"${route === "/wow/" ? ' aria-current="page"' : ""}>WoW compass</a>
     <a href="/placeholder/"${route === "/placeholder/" ? ' aria-current="page"' : ""}>Coming soon</a>
-  </nav><span class="header-note">PERSONAL PLAYSPACE</span>
+  </nav><span class="header-note">YOUR NEXT SESSION</span>
 </div></header>`;
 const footer =
-  '<footer class="site-footer"><div class="footer-inner"><a class="footer-brand" href="/">Personal Gaming Hub</a><div class="footer-note">Built for the love of the game.<span aria-hidden="true">/</span>No ads. No tracking. Just play.</div></div></footer>';
+  '<footer class="site-footer"><div class="footer-inner"><a class="footer-brand" href="/">Personal Gaming Hub</a><div class="footer-note">No ads. No tracking.</div></div></footer>';
 const validDate = (s) =>
   typeof s === "string" &&
   /^\d{4}-\d{2}-\d{2}$/.test(s) &&
@@ -185,8 +172,7 @@ function releaseCard(item) {
     ? `<time datetime="${escape(item.date)}">${escape(item.window)}</time>`
     : escape(item.window);
   return `<article class="release-card" data-release-status="${item.status}" aria-labelledby="release-${item.id}">
-  <div class="release-art art-${item.art}" aria-hidden="true"><svg viewBox="0 0 280 126" preserveAspectRatio="xMidYMid slice">${artwork[item.art]}</svg><span class="art-caption">${artNames[item.art]}</span></div>
-  <div class="release-content"><span class="badge badge-${item.status}">${statusLabels[item.status]}</span><h3 id="release-${item.id}">${escape(item.title)}</h3><p class="platform">${escape(item.platform)}</p><p class="release-date">${date}</p><p class="release-note">${escape(item.note)}</p></div>
+  <div class="release-content"><span class="badge badge-${item.status}">${statusLabels[item.status]}</span><h3 id="release-${item.id}">${escape(item.title)}</h3><p class="platform">${escape(item.platform)}</p><p class="release-date">${date}</p><details class="release-note"><summary>${escape(item.note)}</summary><div>${escape(item.note)}</div></details></div>
 </article>`;
 }
 function appCard(item) {
@@ -197,7 +183,7 @@ function appCard(item) {
   }[item.status];
   return `<a class="tool-card ${item.status === "coming-soon" ? "future" : "featured"}" href="${escape(item.href)}" aria-labelledby="app-${item.id}">
   <div class="tool-top"><span class="tool-icon icon-${item.icon}" aria-hidden="true">${item.icon === "compass" ? compass : "+"}</span><span class="badge ${item.status === "coming-soon" ? "badge-soon" : "badge-shell"}">${label}</span></div>
-  <h3 id="app-${item.id}">${escape(item.title)}</h3><p>${escape(item.description)}</p><div class="tool-meta"><span>Last updated <time datetime="${item.updated}">${formatDate(item.updated)}</time></span><span class="tool-arrow" aria-hidden="true"><svg class="direction-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12 12 4M4 4h8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+  <h3 id="app-${item.id}">${escape(item.title)}</h3><p title="${escape(item.description)}">${escape(item.description)}</p><div class="tool-meta"><span>Last updated <time datetime="${item.updated}">${formatDate(item.updated)}</time></span><span class="tool-arrow" aria-hidden="true"><svg class="direction-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12 12 4M4 4h8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
 </a>`;
 }
 export async function build({

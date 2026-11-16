@@ -1,0 +1,258 @@
+{
+  "mobileBeforeGridLanding": {
+    "viewport": "390×844",
+    "fullyVisible": 0,
+    "intersecting": 0,
+    "cardHeight": {
+      "min": 620.9,
+      "max": 704.4
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 27654,
+    "gridHeight": 26465.2,
+    "firstCardTop": 923.3,
+    "scrollY": 0
+  },
+  "mobileBeforeGridScan": {
+    "viewport": "390×844",
+    "fullyVisible": 0,
+    "intersecting": 1,
+    "cardHeight": {
+      "min": 620.9,
+      "max": 704.4
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 27654,
+    "gridHeight": 26465.2,
+    "firstCardTop": 299.3,
+    "scrollY": 624
+  },
+  "mobileBeforeHome": {
+    "viewport": "390×844",
+    "fullyVisible": 0,
+    "intersecting": 0,
+    "cardHeight": {
+      "min": 314,
+      "max": 331
+    },
+    "averageWordsPerCard": 21.5,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 2366,
+    "gridHeight": 658,
+    "firstCardTop": 922.4,
+    "scrollY": 0
+  },
+  "mobileAfterGridLanding": {
+    "viewport": "390×844",
+    "fullyVisible": 2,
+    "intersecting": 3,
+    "cardHeight": {
+      "min": 132,
+      "max": 132
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 6244,
+    "gridHeight": 5553,
+    "firstCardTop": 564.9,
+    "scrollY": 0
+  },
+  "mobileAfterGridScan": {
+    "viewport": "390×844",
+    "fullyVisible": 4,
+    "intersecting": 5,
+    "cardHeight": {
+      "min": 132,
+      "max": 132
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 6244,
+    "gridHeight": 5553,
+    "firstCardTop": 204.9,
+    "scrollY": 360
+  },
+  "mobileAfterListLanding": {
+    "viewport": "390×844",
+    "fullyVisible": 2,
+    "intersecting": 3,
+    "cardHeight": {
+      "min": 112,
+      "max": 112
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 5444,
+    "gridHeight": 4753,
+    "firstCardTop": 564.9,
+    "scrollY": 0
+  },
+  "mobileAfterListScan": {
+    "viewport": "390×844",
+    "fullyVisible": 5,
+    "intersecting": 6,
+    "cardHeight": {
+      "min": 112,
+      "max": 112
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 5444,
+    "gridHeight": 4753,
+    "firstCardTop": 204.9,
+    "scrollY": 360
+  },
+  "mobileAfterHome": {
+    "viewport": "390×844",
+    "fullyVisible": 4,
+    "intersecting": 4,
+    "cardHeight": {
+      "min": 176,
+      "max": 176
+    },
+    "averageWordsPerCard": 18,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 1391,
+    "gridHeight": 360,
+    "firstCardTop": 372.2,
+    "scrollY": 0
+  },
+  "desktopBeforeGridLanding": {
+    "viewport": "1440×900",
+    "fullyVisible": 0,
+    "intersecting": 3,
+    "cardHeight": {
+      "min": 543.2,
+      "max": 585.5
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 9101,
+    "gridHeight": 8057.9,
+    "firstCardTop": 803.8,
+    "scrollY": 0
+  },
+  "desktopBeforeGridScan": {
+    "viewport": "1440×900",
+    "fullyVisible": 3,
+    "intersecting": 6,
+    "cardHeight": {
+      "min": 543.2,
+      "max": 585.5
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 9101,
+    "gridHeight": 8057.9,
+    "firstCardTop": 217.8,
+    "scrollY": 586
+  },
+  "desktopBeforeHome": {
+    "viewport": "1440×900",
+    "fullyVisible": 0,
+    "intersecting": 4,
+    "cardHeight": {
+      "min": 335.5,
+      "max": 335.5
+    },
+    "averageWordsPerCard": 21.5,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 1609,
+    "gridHeight": 335.5,
+    "firstCardTop": 689.9,
+    "scrollY": 0
+  },
+  "desktopAfterGridLanding": {
+    "viewport": "1440×900",
+    "fullyVisible": 12,
+    "intersecting": 16,
+    "cardHeight": {
+      "min": 138,
+      "max": 138
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 2000,
+    "gridHeight": 1452,
+    "firstCardTop": 425.2,
+    "scrollY": 0
+  },
+  "desktopAfterGridScan": {
+    "viewport": "1440×900",
+    "fullyVisible": 20,
+    "intersecting": 24,
+    "cardHeight": {
+      "min": 138,
+      "max": 138
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 2000,
+    "gridHeight": 1452,
+    "firstCardTop": 136.2,
+    "scrollY": 289
+  },
+  "desktopAfterListLanding": {
+    "viewport": "1440×900",
+    "fullyVisible": 7,
+    "intersecting": 8,
+    "cardHeight": {
+      "min": 58,
+      "max": 58
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 3063,
+    "gridHeight": 2515,
+    "firstCardTop": 425.2,
+    "scrollY": 0
+  },
+  "desktopAfterListScan": {
+    "viewport": "1440×900",
+    "fullyVisible": 12,
+    "intersecting": 13,
+    "cardHeight": {
+      "min": 58,
+      "max": 58
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 3063,
+    "gridHeight": 2515,
+    "firstCardTop": 136.2,
+    "scrollY": 289
+  },
+  "desktopAfterHome": {
+    "viewport": "1440×900",
+    "fullyVisible": 4,
+    "intersecting": 4,
+    "cardHeight": {
+      "min": 182,
+      "max": 182
+    },
+    "averageWordsPerCard": 18,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 908,
+    "gridHeight": 182,
+    "firstCardTop": 343.9,
+    "scrollY": 0
+  }
+}

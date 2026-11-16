@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   Activity,
   ArrowRight,
@@ -10,33 +10,24 @@ import {
   ChevronDown,
   Compass,
   Copy,
-  Eye,
-  Flame,
-  Heart,
   Info,
   Layers,
-  LayoutGrid,
-  Leaf,
   Minus,
   Plus,
   RefreshCw,
   Search,
   Shield,
-  Skull,
   SlidersHorizontal,
-  Snowflake,
   Sparkles,
   Swords,
-  Target,
   TriangleAlert,
-  Wind,
   X,
-  Zap,
 } from "lucide-react";
 import { parse } from "yaml";
 import prompt from "../per-patch-prompt.md?raw";
 import tasteText from "../taste.yaml?raw";
 import catalog from "../config/specs.json";
+import iconMap from "../config/icons.json";
 import {
   DIMENSION_LABELS,
   TAG_RULES,
@@ -57,6 +48,8 @@ const data = datasets.find((item) => item.patch === pointers[0]?.patch) ||
   datasets.sort(
     (a, b) => new Date(b.generated_at) - new Date(a.generated_at),
   )[0] || { patch: "Pending", season: {}, profiles: [] };
+// The build injects the existing audit's counts without shipping its raw corpus.
+const coverageAudit = __WOW_COVERAGE_AUDIT__;
 const defaults = parse(tasteText) || {};
 const DEFAULT_MUST = defaults.must_haves ||
   defaults.must || ["stable-rotation", "always-send-cds", "no-ramp"];
@@ -74,27 +67,38 @@ const LABELS = {
   "low-complexity": "Low complexity",
   "proactive-mitigation": "Proactive mitigation",
 };
-const FEATURE_DIMS = {
-  dps: ["rotation_stability", "cooldown_flexibility", "movement"],
-  healer: ["ramp", "healing_model", "cooldown_style"],
-  tank: ["pull_profile", "self_sustain", "mitigation_style"],
-};
-const ICONS = {
-  "Death Knight": Skull,
-  "Demon Hunter": Eye,
-  Druid: Leaf,
-  Evoker: Flame,
-  Hunter: Target,
-  Mage: Snowflake,
-  Monk: Wind,
-  Paladin: Shield,
-  Priest: Sparkles,
-  Rogue: Swords,
-  Shaman: Zap,
-  Warlock: Flame,
-  Warrior: Swords,
-};
-const ROLE_ICONS = { dps: Swords, healer: Heart, tank: Shield };
+const CLASSES = [...new Set(catalog.map((spec) => spec.class))];
+const shortFeel = (text) => text.length > 80 ? `${text.slice(0, 79).trimEnd()}…` : text;
+function GameIcon({ kind, name, label, decorative = false, className = "" }) {
+  const icon = iconMap[kind][name].icon;
+  const [cdn, setCdn] = useState(false), [failed, setFailed] = useState(false);
+  const identity = label || (name === "dps" ? "DPS" : name);
+  const imageRef = useRef(null);
+  useEffect(() => {
+    // An SSR image can fail before hydration attaches its error handler.
+    const image = imageRef.current;
+    if (image?.complete && !image.naturalWidth) cdn ? setFailed(true) : setCdn(true);
+  }, [cdn]);
+  if (failed && decorative) return null;
+  if (failed) return <span className={`game-icon icon-label ${className}`} role="img" aria-label={identity}>{identity}</span>;
+  return <img ref={imageRef} className={`game-icon ${className}`}
+    src={cdn ? `${iconMap.cdn}${icon}.jpg` : `${import.meta.env.BASE_URL}icons/${icon}.jpg`}
+    alt={decorative ? "" : identity} width="32" height="32"
+    onError={() => cdn ? setFailed(true) : setCdn(true)} />;
+}
+function Peek({ label, children, className = "" }) {
+  const [pinned, setPinned] = useState(false), [hovered, setHovered] = useState(false), [focused, setFocused] = useState(false);
+  const id = useId(), expanded = pinned || hovered || focused;
+  return <div className={`peek ${className} ${expanded ? "is-expanded" : ""}`}
+    onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true); }}
+    onPointerLeave={() => setHovered(false)}
+    onKeyDown={(event) => { if (event.key === "Escape") {setPinned(false); setHovered(false); setFocused(false);} }}>
+    <button type="button" className="peek-trigger" aria-expanded={expanded} aria-controls={id}
+      onFocus={(event) => setFocused(event.currentTarget.matches(":focus-visible"))}
+      onBlur={() => setFocused(false)} onClick={() => setPinned(!pinned)}>{children}</button>
+    <div className="peek-content" id={id} role="tooltip" hidden={!expanded}>{label}</div>
+  </div>;
+}
 const PRIMARY_TAGS = [
   "stable-rotation",
   "always-send-cds",
@@ -551,7 +555,7 @@ function Processing() {
               className={`processing-row ${classSlug(spec)}`}
             >
               <summary>
-                <span className="small-class-dot" />
+                <GameIcon kind="specs" name={spec.id} label={`${spec.name} ${spec.class}`} />
                 <span>
                   <strong>{spec.name}</strong>
                   <small>{spec.class}</small>
@@ -657,7 +661,11 @@ export default function App() {
     [role, setRole] = useState("all"),
     [query, setQuery] = useState(""),
     [tags, setTags] = useState([]),
-    [sort, setSort] = useState("taste");
+    [sort, setSort] = useState("taste"),
+    [classFilter, setClassFilter] = useState("all"),
+    [layout, setLayout] = useState("grid"),
+    [grouped, setGrouped] = useState(false),
+    [collapsed, setCollapsed] = useState([]);
   const [must, setMust] = useState(DEFAULT_MUST),
     [avoid, setAvoid] = useState(DEFAULT_AVOID),
     [saved, setSaved] = useState([]),
@@ -702,6 +710,7 @@ export default function App() {
           : [current(spec.id)];
       return (
         (role === "all" || spec.role === role) &&
+        (classFilter === "all" || spec.class === classFilter) &&
         `${spec.name} ${spec.class}`
           .toLowerCase()
           .includes(query.toLowerCase()) &&
@@ -780,154 +789,30 @@ export default function App() {
   function card(spec) {
     const profile = current(spec.id);
     if (!profile) return null;
-    const match = tasteMatch(profile, taste),
-      Icon = ICONS[spec.class] || Swords,
-      RoleIcon = ROLE_ICONS[spec.role];
     return (
-      <article className={`spec-card ${classSlug(spec)}`} key={spec.id}>
-        <div className="card-top">
-          <div className="spec-icon">
-            <Icon size={24} strokeWidth={1.5} />
-          </div>
-          <span className="spec-role">
-            <RoleIcon size={12} />
-            {spec.role === "dps" ? "DPS" : title(spec.role)}
-          </span>
-          <span className="card-content-label">
-            {content === "compare" ? "Raid & Mythic+" : contentLabel(content)}
-          </span>
-          <button
-            className={`icon-button bookmark requires-js ${saved.includes(spec.id) ? "saved" : ""}`}
-            onClick={() => toggle(saved, setSaved, spec.id)}
-            aria-pressed={saved.includes(spec.id)}
-            aria-label={`${saved.includes(spec.id) ? "Unsave" : "Save"} ${spec.name} ${spec.class}`}
-          >
-            <Bookmark
-              size={17}
-              fill={saved.includes(spec.id) ? "currentColor" : "none"}
-            />
-          </button>
-        </div>
+      <article className={`spec-card ${classSlug(spec)}`} key={spec.id} data-spec={spec.id}>
+        <GameIcon kind="specs" name={spec.id} label={`${spec.name} ${spec.class}`} className="spec-art" />
         <div className="spec-heading">
-          <span className="class-name">{spec.class}</span>
-          <h3>
-            <button className="requires-js" onClick={() => setDetail(spec.id)}>
-              {spec.name}
-              <ArrowUpRight size={18} />
-            </button>
-            <span className="no-js-name">{spec.name}</span>
-          </h3>
+          <h3><button className="requires-js" onClick={() => setDetail(spec.id)}>{spec.name}</button>
+          <span className="no-js-name">{spec.name}</span></h3>
+          <span className="class-name"><GameIcon kind="classes" name={spec.class} decorative />{spec.class}</span>
         </div>
-        {content !== "compare" ? (
-          <>
-            <p className="feel-summary">{profile.feel_summary}</p>
-            <div className="card-tags">
-              {profile.tags.slice(0, 3).map((tag) => (
-                <TagEvidence key={tag} profile={profile} tag={tag} />
-              ))}
-              {!profile.tags.length && (
-                <span className="muted-tag">
-                  <Info size={11} />
-                  Playstyle evidence pending
-                </span>
-              )}
-            </div>
-            <div className="card-dimensions">
-              {FEATURE_DIMS[spec.role].map((name) => (
-                <Dimension
-                  key={name}
-                  name={name}
-                  dimension={profile.dimensions[name]}
-                  compact
-                  changed={profile.changes?.some(
-                    (change) => change.dimension === name,
-                  )}
-                />
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="content-compare">
-            {["raid", "mythic_plus"].map((type) => {
-              const item = BY_SPEC[spec.id][type],
-                fit = tasteMatch(item, taste);
-              return (
-                <section key={type}>
-                  <div className="compare-profile-label">
-                    <strong>{contentLabel(type)}</strong>
-                    <span>
-                      {fit.total
-                        ? `${fit.matched}/${fit.total} match`
-                        : "Taste not set for role"}
-                    </span>
-                  </div>
-                  <p>{item.feel_summary}</p>
-                  {FEATURE_DIMS[spec.role].map((name) => (
-                    <Dimension
-                      key={name}
-                      name={name}
-                      dimension={item.dimensions[name]}
-                      compact
-                      changed={item.changes?.some(
-                        (change) => change.dimension === name,
-                      )}
-                    />
-                  ))}
-                  <Coverage profile={item} />
-                </section>
-              );
-            })}
-          </div>
-        )}
-        <div className="card-footer">
-          <button
-            className="match-score requires-js"
-            onClick={() => setDetail(spec.id)}
-          >
-            <span className="match-dots">
-              {match.details
-                .filter((item) => item.applicable)
-                .map((item) => (
-                  <i className={item.matched ? "filled" : ""} key={item.tag} />
-                ))}
-            </span>
-            <strong>
-              {match.total ? `${match.matched}/${match.total}` : "—"}
-            </strong>{" "}
-            {match.total
-              ? content === "compare"
-                ? "M+ taste match"
-                : "taste match"
-              : "no applicable taste"}
-          </button>
-          <Coverage profile={profile} />
+        <GameIcon kind="roles" name={spec.role} label={title(spec.role)} className="role-art" />
+        <div className="quick-actions requires-js">
+          <button className={`icon-button ${saved.includes(spec.id) ? "selected" : ""}`}
+            aria-label={`${saved.includes(spec.id) ? "Unsave" : "Save"} ${spec.name} ${spec.class}`}
+            aria-pressed={saved.includes(spec.id)} onClick={() => toggle(saved, setSaved, spec.id)}>
+            <Bookmark size={14} /></button>
+          <button className={`icon-button ${compare.includes(spec.id) ? "selected" : ""}`}
+            aria-label={`Compare ${spec.name} ${spec.class}`} aria-pressed={compare.includes(spec.id)}
+            onClick={() => toggle(compare, setCompare, spec.id)}><Layers size={14} /></button>
         </div>
-        {match.warnings.length > 0 && (
-          <p className="card-warning">
-            <TriangleAlert size={12} />
-            {content === "compare" ? "Mythic+: " : ""}
-            {match.warnings.map(title).join(" · ")} · a warning, never a ban
-          </p>
-        )}
-        <div className="card-actions requires-js">
-          <button className="text-button" onClick={() => setDetail(spec.id)}>
-            Explore playstyle
-            <ArrowRight size={13} />
-          </button>
-          <button
-            className={`compare-pick ${compare.includes(spec.id) ? "selected" : ""}`}
-            onClick={() => toggle(compare, setCompare, spec.id)}
-            aria-pressed={compare.includes(spec.id)}
-            aria-label={`Compare ${spec.name} ${spec.class}`}
-          >
-            {compare.includes(spec.id) ? (
-              <Check size={12} />
-            ) : (
-              <Plus size={12} />
-            )}
-            Compare
-          </button>
+        <div className="card-tags">
+          {profile.tags.slice(0, 3).map((tag) => <Peek key={tag} label={`${title(tag)}. ${(profile.tag_evidence?.[tag] || []).map((name) => profile.dimensions[name]?.explanation).filter(Boolean).join(" ")}`}>
+            {title(tag)}
+          </Peek>)}
         </div>
+        <Peek className="feel-summary" label={profile.feel_summary}>{shortFeel(profile.feel_summary)}</Peek>
       </article>
     );
   }
@@ -944,7 +829,7 @@ export default function App() {
           onClick={() => navigate("prompt")}
         >
           <RefreshCw size={14} />
-          New patch? Refresh data
+          Refresh prompt
         </button>
       </div>
       <nav className="page-nav requires-js" aria-label="WoW dashboard">
@@ -974,65 +859,21 @@ export default function App() {
       {view === "explore" && (
         <>
           <section className="intro">
-            <div>
-              <div className="eyebrow">
-                <span />
-                LESS RESEARCH. MORE PLAYING.
+            <div><h1>Find your next <em>main.</em></h1>
+              <span className="season-label">{data.season.expansion || "Retail WoW"} · {data.season.name || "Season unverified"} · Patch {data.patch}</span>
+            </div>
+            <details className="about-coverage">
+              <summary>About coverage · {coverageAudit?.required_coverage_passed ?? sourceTarget}/{data.profiles.length}{coverageAudit ? " audited" : " published"}</summary>
+              <div>
+                <p>Find a spec by how it feels to play. Taste ranks evidence-backed matches; unknown evidence never counts.</p>
+                {coverageAudit && <p><strong>Collected-source audit: {coverageAudit.required_coverage_passed}/{coverageAudit.total_profiles} meet the required source target.</strong> Mythic+: {coverageAudit.by_content.mythic_plus.required_coverage_passed}/{coverageAudit.by_content.mythic_plus.profiles}. Raid: {coverageAudit.by_content.raid.required_coverage_passed}/{coverageAudit.by_content.raid.profiles}. Candidate publication remains blocked by {coverageAudit.required_coverage_missing} required-source gaps.</p>}
+                <p><strong>Published snapshot · {sourceTarget === data.profiles.length ? "Source target met" : "Provisional coverage"}: {sourceTarget}/{data.profiles.length} meet the Wowhead + quantitative target.</strong> These published profiles are unchanged. {evidenced} have guide observations. All {catalog.length} specs retain separate Raid and Mythic+ profiles.</p>
+                <p>Raid gaps remain explicit. Missing observations and pick rates stay unknown; no data is invented. {seasonFallback ? "Season auto-detection is pending. " : ""}{(data.season.coverage_gaps || []).join(" ")}</p>
+                <p>Current taste: {must.map(title).join(" · ") || "None"}. <button onClick={() => navigate("taste")}>Edit taste</button></p>
+                <button onClick={() => navigate("processing")}>Inspect all sources & coverage</button>
+                <p>Blizzard icon artwork © Blizzard Entertainment, served by Wowhead. Unaffiliated fan tool.</p>
               </div>
-              <h1>
-                Find your next <em>main.</em>
-              </h1>
-              <p>
-                Strong is a stat. <strong>Fun is personal.</strong>
-                <br className="mobile-break" /> Find the spec that plays the way
-                you like.
-              </p>
-              <div className="season-label">
-                <span className="live-dot" />
-                {data.season.expansion || "Retail WoW"} <span>/</span>{" "}
-                {data.season.name || "Season unverified"}
-                <span className="patch-label">Patch {data.patch}</span>
-                {seasonFallback && (
-                  <span
-                    className="season-fallback"
-                    title={(data.season.coverage_gaps || []).join(" ")}
-                  >
-                    Season auto-detection pending
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="compass-art" aria-hidden="true">
-              <div className="compass-ring ring-one" />
-              <div className="compass-ring ring-two" />
-              <span className="north">N</span>
-              <span className="east">E</span>
-              <span className="south">S</span>
-              <span className="west">W</span>
-              <Compass strokeWidth={0.6} />
-              <div className="compass-coordinate">YOUR PLAYSTYLE, MAPPED</div>
-            </div>
-          </section>
-          <section className="taste-strip">
-            <div className="taste-strip-icon">
-              <Sparkles size={18} />
-            </div>
-            <div className="taste-strip-heading">
-              <strong>Built around your taste</strong>
-              <span>Your must-haves, front and center.</span>
-            </div>
-            <div className="taste-strip-tags">
-              {must.map((tag) => (
-                <span key={tag}>
-                  <Check size={11} />
-                  {title(tag)}
-                </span>
-              ))}
-            </div>
-            <button className="requires-js" onClick={() => navigate("taste")}>
-              Edit my taste
-              <ArrowUpRight size={13} />
-            </button>
+            </details>
           </section>
           <section className="explore-toolbar requires-js">
             <div className="toolbar-heading">
@@ -1060,7 +901,6 @@ export default function App() {
             <div className="filter-main">
               <div className="role-tabs" aria-label="Role filter">
                 {["all", "dps", "healer", "tank"].map((key) => {
-                  const Icon = ROLE_ICONS[key] || LayoutGrid;
                   return (
                     <button
                       key={key}
@@ -1068,7 +908,7 @@ export default function App() {
                       aria-pressed={role === key}
                       onClick={() => setRole(key)}
                     >
-                      <Icon size={13} />
+                      {key !== "all" && <GameIcon kind="roles" name={key} label={title(key)} decorative />}
                       {key === "all"
                         ? "All roles"
                         : key === "dps"
@@ -1078,6 +918,9 @@ export default function App() {
                   );
                 })}
               </div>
+              <select aria-label="Filter by class" value={classFilter} onChange={(event) => setClassFilter(event.target.value)}>
+                <option value="all">All classes</option>{CLASSES.map((name) => <option key={name}>{name}</option>)}
+              </select>
               <div className="search-box">
                 <Search size={15} />
                 <input
@@ -1097,10 +940,7 @@ export default function App() {
               </div>
             </div>
             <div className="feel-filters">
-              <span>
-                <SlidersHorizontal size={13} />
-                Filter by feel
-              </span>
+
               {PRIMARY_TAGS.map(tagChip)}
               <button
                 className={`more-filter ${showFilters ? "active" : ""}`}
@@ -1125,36 +965,34 @@ export default function App() {
             )}
           </section>
           <div className="results-heading">
-            <p role="status">
-              Showing <strong>{filtered.length}</strong> specs<span>·</span>
-              {content === "compare" ? "Raid & Mythic+" : contentLabel(content)}
-              <span>·</span>
-              <span className="coverage-note">
-                {sourceTarget === data.profiles.length && sourceTarget
-                  ? "Source target met"
-                  : "Provisional coverage"}
-              </span>
-            </p>
-            <label className="requires-js">
-              Sort by
-              <select
-                aria-label="Sort specs"
-                value={sort}
-                onChange={(event) => setSort(event.target.value)}
-              >
-                <option value="taste">
-                  {content === "compare" ? "Taste match (M+)" : "Taste match"}
-                </option>
-                <option value="name">Class & name</option>
-                <option value="saved">Saved first</option>
-              </select>
-            </label>
+            <p role="status"><strong>{filtered.length}</strong> specs · {content === "compare" ? "Raid & Mythic+ · open a spec to compare" : contentLabel(content)}</p>
+            <div className="view-controls requires-js">
+              <button aria-pressed={grouped} onClick={() => setGrouped(!grouped)}>Group by class</button>
+              <div role="group" aria-label="View layout">
+                <button aria-pressed={layout === "grid"} onClick={() => setLayout("grid")}>Grid</button>
+                <button aria-pressed={layout === "list"} onClick={() => setLayout("list")}>Compact list</button>
+              </div>
+              <label>Sort <select aria-label="Sort specs" value={sort} onChange={(event) => setSort(event.target.value)}>
+                <option value="taste">Taste match</option><option value="name">Class & name</option><option value="saved">Saved first</option>
+              </select></label>
+            </div>
           </div>
-          <div
-            className={`spec-grid ${content === "compare" ? "content-side-by-side" : ""}`}
-          >
-            {filtered.map(card)}
-          </div>
+          {grouped && <nav className="class-jump requires-js" aria-label="Jump to class">
+            {CLASSES.filter((name) => filtered.some((spec) => spec.class === name)).map((name) => <button key={name} onClick={() => {
+              setCollapsed(collapsed.filter((item) => item !== name));
+              requestAnimationFrame(() => document.getElementById(`group-${name.replaceAll(" ", "-")}`)?.scrollIntoView({ behavior: "smooth" }));
+            }}><GameIcon kind="classes" name={name} decorative />{name}</button>)}
+          </nav>}
+          {grouped ? CLASSES.map((name) => {
+            const specs = filtered.filter((spec) => spec.class === name);
+            return specs.length > 0 && <section className="class-group" id={`group-${name.replaceAll(" ", "-")}`} key={name}>
+              <button className="group-heading" aria-expanded={!collapsed.includes(name)} onClick={() => toggle(collapsed, setCollapsed, name)}>
+                <GameIcon kind="classes" name={name} decorative />{name}<span>{specs.length}</span><ChevronDown size={14} />
+              </button>
+              {!collapsed.includes(name) && <div className={`spec-grid layout-${layout}`}>{specs.map(card)}</div>}
+            </section>;
+          }) : <div className={`spec-grid layout-${layout}`}>{filtered.map(card)}</div>}
+          <a className="back-to-top" href="#main" onClick={(event) => {event.preventDefault(); window.scrollTo({top: 0, behavior: "smooth"});}}>↑ Top</a>
           {!filtered.length && (
             <div className="empty-state">
               <Compass size={32} />
@@ -1168,6 +1006,7 @@ export default function App() {
                   setTags([]);
                   setQuery("");
                   setRole("all");
+                  setClassFilter("all");
                 }}
               >
                 Reset filters
@@ -1175,24 +1014,6 @@ export default function App() {
               </button>
             </div>
           )}
-          <div className="evidence-footer">
-            <BookOpen size={15} />
-            <p>
-              Feel comes first. Evidence stays close.
-              <span>
-                {evidenced} of {data.profiles.length} profiles have guide
-                observations. {sourceTarget}/{data.profiles.length} meet the
-                Wowhead plus quantitative coverage target.
-              </span>
-            </p>
-            <button
-              className="requires-js"
-              onClick={() => navigate("processing")}
-            >
-              Inspect coverage
-              <ArrowUpRight size={13} />
-            </button>
-          </div>
           <noscript>
             <section className="no-script-reading">
               <p>
