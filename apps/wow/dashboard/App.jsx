@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   Activity,
   ArrowRight,
@@ -48,11 +48,8 @@ const data = datasets.find((item) => item.patch === pointers[0]?.patch) ||
   datasets.sort(
     (a, b) => new Date(b.generated_at) - new Date(a.generated_at),
   )[0] || { patch: "Pending", season: {}, profiles: [] };
-// The audited candidate and the preserved published snapshot are separate.
-// Read the existing audit for display; never publish or rewrite candidate data.
-const coverageAudit = Object.values(import.meta.glob("../data/*/live-coverage.json", {
-  eager: true, import: "default",
-})).find((audit) => audit.patch === data.patch);
+// The build injects the existing audit's counts without shipping its raw corpus.
+const coverageAudit = __WOW_COVERAGE_AUDIT__;
 const defaults = parse(tasteText) || {};
 const DEFAULT_MUST = defaults.must_haves ||
   defaults.must || ["stable-rotation", "always-send-cds", "no-ramp"];
@@ -84,10 +81,17 @@ function GameIcon({ kind, name, label, decorative = false, className = "" }) {
     onError={() => cdn ? setFailed(true) : setCdn(true)} />;
 }
 function Peek({ label, children, className = "" }) {
-  return <details className={`peek ${className}`}>
-    <summary>{children}</summary>
-    <div className="peek-content" role="tooltip">{label}</div>
-  </details>;
+  const [pinned, setPinned] = useState(false), [hovered, setHovered] = useState(false), [focused, setFocused] = useState(false);
+  const id = useId(), expanded = pinned || hovered || focused;
+  return <div className={`peek ${className} ${expanded ? "is-expanded" : ""}`}
+    onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(true); }}
+    onPointerLeave={() => setHovered(false)}
+    onKeyDown={(event) => { if (event.key === "Escape") {setPinned(false); setHovered(false); setFocused(false);} }}>
+    <button type="button" className="peek-trigger" aria-expanded={expanded} aria-controls={id}
+      onFocus={(event) => setFocused(event.currentTarget.matches(":focus-visible"))}
+      onBlur={() => setFocused(false)} onClick={() => setPinned(!pinned)}>{children}</button>
+    <div className="peek-content" id={id} role="tooltip" hidden={!expanded}>{label}</div>
+  </div>;
 }
 const PRIMARY_TAGS = [
   "stable-rotation",
@@ -856,7 +860,7 @@ export default function App() {
               <summary>About coverage · {coverageAudit?.required_coverage_passed ?? sourceTarget}/{data.profiles.length}{coverageAudit ? " audited" : " published"}</summary>
               <div>
                 <p>Find a spec by how it feels to play. Taste ranks evidence-backed matches; unknown evidence never counts.</p>
-                {coverageAudit && <p><strong>Collected-source audit: {coverageAudit.required_coverage_passed}/{coverageAudit.profiles.length} meet the required source target.</strong> Mythic+: {coverageAudit.by_content.mythic_plus.required_coverage_passed}/{coverageAudit.by_content.mythic_plus.profiles}. Raid: {coverageAudit.by_content.raid.required_coverage_passed}/{coverageAudit.by_content.raid.profiles}. Candidate publication remains blocked by {coverageAudit.required_coverage_missing} required-source gaps.</p>}
+                {coverageAudit && <p><strong>Collected-source audit: {coverageAudit.required_coverage_passed}/{coverageAudit.total_profiles} meet the required source target.</strong> Mythic+: {coverageAudit.by_content.mythic_plus.required_coverage_passed}/{coverageAudit.by_content.mythic_plus.profiles}. Raid: {coverageAudit.by_content.raid.required_coverage_passed}/{coverageAudit.by_content.raid.profiles}. Candidate publication remains blocked by {coverageAudit.required_coverage_missing} required-source gaps.</p>}
                 <p><strong>Published snapshot · {sourceTarget === data.profiles.length ? "Source target met" : "Provisional coverage"}: {sourceTarget}/{data.profiles.length} meet the Wowhead + quantitative target.</strong> These published profiles are unchanged. {evidenced} have guide observations. All {catalog.length} specs retain separate Raid and Mythic+ profiles.</p>
                 <p>Raid gaps remain explicit. Missing observations and pick rates stay unknown; no data is invented. {seasonFallback ? "Season auto-detection is pending. " : ""}{(data.season.coverage_gaps || []).join(" ")}</p>
                 <p>Current taste: {must.map(title).join(" · ") || "None"}. <button onClick={() => navigate("taste")}>Edit taste</button></p>

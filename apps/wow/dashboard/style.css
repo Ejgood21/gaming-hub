@@ -394,7 +394,7 @@
   color:#b5c5dc;
   max-width:100%;
 }
-.wow-app .peek>summary {
+.wow-app .peek>.peek-trigger {
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -404,7 +404,7 @@
   border-radius:3px;
   padding:3px 6px;
 }
-.wow-app .peek>summary::-webkit-details-marker {
+.wow-app .peek>.peek-trigger::-webkit-details-marker {
   display:none;
 }
 .wow-app .peek-content {
@@ -429,7 +429,7 @@
   max-height:260px;
   overflow-y:auto;
 }
-.wow-app .peek[open]>.peek-content,.wow-app .peek:has(summary:focus-visible)>.peek-content {
+.wow-app .peek.is-expanded>.peek-content {
   display:block;
 }
 .wow-app .card-tags .peek:nth-child(2) .peek-content {
@@ -445,7 +445,7 @@
   color:var(--muted);
   font-size:11px;
 }
-.wow-app .feel-summary>summary {
+.wow-app .feel-summary>.peek-trigger {
   padding:0;
   line-height:22px;
   border:0;
@@ -1087,11 +1087,6 @@
 .wow-app .class-warrior {
   --class-color:#C69B6D;
 }
-@media(hover:hover) and (pointer:fine) {
-  .wow-app .peek:hover>.peek-content {
-    display:block;
-  }
-}
 @media(max-width:1200px) {
   .wow-app .spec-grid {
     grid-template-columns:repeat(3,minmax(0,1fr));
@@ -1312,10 +1307,10 @@
   .wow-app .peek {
     font-size:10px;
   }
-  .wow-app .peek>summary {
+  .wow-app .peek>.peek-trigger {
     padding:5px 7px;
   }
-  .wow-app .feel-summary>summary {
+  .wow-app .feel-summary>.peek-trigger {
     padding:0;
   }
   .wow-app .quick-actions button {
@@ -1436,4 +1431,21 @@
 .wow-app .class-name {
   border-left:2px solid var(--class-color);
   padding-left:5px;
+}
+.wow-app .peek>.peek-trigger {
+  display:block;
+  max-width:100%;
+  font:inherit;
+  text-align:left;
+  color:inherit;
+}
+.wow-app .peek.is-expanded>.peek-content {
+  display:block;
+}
+.wow-app .icon-label {
+  font-size:7px;
+  line-height:1.1;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+  color:var(--muted);
 }

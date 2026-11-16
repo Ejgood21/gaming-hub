@@ -18,15 +18,6 @@ jobs:
         with:
           node-version-file: .node-version
       - run: npm ci --ignore-scripts
-      - name: Check original Blizzard role texture availability
-        run: |
-          node --input-type=module - <<'JS'
-          for (const icon of ['ui_lfg_roleicon-tank','ui_lfg_roleicon-healer','ui_lfg_roleicon-dps','roleicon_tank','roleicon_healer','roleicon_dps']) {
-            const r=await fetch(`https://wow.zamimg.com/images/wow/icons/large/${icon}.jpg`); console.log('ROLE_TEXTURE',icon,r.status);
-          }
-          const css=await (await fetch('https://wow.zamimg.com/css/standard/global.css')).text();
-          console.log('ROLE_STYLES', [...css.matchAll(/.{0,120}(?:roleicon|icon-role|role-icon).{0,220}/g)].map(x=>x[0]).join('\n'));
-          JS
       - name: Cache and verify original icon art
         run: node scripts/cache-wow-icons.mjs
       - run: npm test

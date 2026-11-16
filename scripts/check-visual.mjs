@@ -102,27 +102,30 @@ try {
     const badge = page.locator('.spec-card .card-tags .peek').first();
     const feel = page.locator('.spec-card .feel-summary').first();
     if (name === 'desktop') {
-      await badge.locator('summary').hover();
-      assert.ok(await badge.locator('.peek-content').isVisible());
+      await badge.locator('.peek-trigger').hover();
+      await badge.locator('.peek-content').waitFor({state:'visible'});
       await shot(page,'desktop-trait-tooltip');
       await page.mouse.move(0,0);
-      await feel.locator('summary').hover();
-      assert.ok(await feel.locator('.peek-content').isVisible());
+      await feel.locator('.peek-trigger').hover();
+      await feel.locator('.peek-content').waitFor({state:'visible'});
       await page.mouse.move(0,0);
-      await badge.locator('summary').focus();
-      assert.ok(await badge.locator('.peek-content').isVisible());
+      await badge.locator('.peek-trigger').focus();
+      await page.keyboard.press('Enter');
+      await badge.locator('.peek-content').waitFor({state:'visible'});
+      await page.keyboard.press('Escape');
+      await badge.locator('.peek-content').waitFor({state:'hidden'});
       await page.locator('.search-box input').focus();
     } else {
-      await badge.locator('summary').tap();
-      assert.notEqual(await badge.getAttribute('open'),null);
-      assert.ok(await badge.locator('.peek-content').isVisible());
+      await badge.locator('.peek-trigger').tap();
+      assert.equal(await badge.locator('.peek-trigger').getAttribute('aria-expanded'),'true');
+      await badge.locator('.peek-content').waitFor({state:'visible'});
       await shot(page,'mobile-trait-expanded');
-      await badge.locator('summary').tap();
-      assert.equal(await badge.getAttribute('open'),null);
-      await feel.locator('summary').tap();
-      assert.ok(await feel.locator('.peek-content').isVisible());
+      await badge.locator('.peek-trigger').tap();
+      assert.equal(await badge.locator('.peek-trigger').getAttribute('aria-expanded'),'false');
+      await feel.locator('.peek-trigger').tap();
+      await feel.locator('.peek-content').waitFor({state:'visible'});
       await shot(page,'mobile-summary-expanded');
-      await feel.locator('summary').tap();
+      await feel.locator('.peek-trigger').tap();
     }
     await page.getByLabel('Filter by class',{exact:true}).selectOption('Druid');
     await count(page,4);
@@ -166,11 +169,15 @@ try {
     await page.getByRole('navigation',{name:'Jump to class'}).getByRole('button',{name:'Death Knight',exact:true}).click();
     await count(page,40);
     await page.getByRole('navigation',{name:'Jump to class'}).getByRole('button',{name:'Warrior',exact:true}).click();
-    await page.waitForFunction(() => document.querySelector('.explore-toolbar').getBoundingClientRect().top === 0);
+    await page.waitForFunction(() => {
+      const bar=document.querySelector('.explore-toolbar').getBoundingClientRect();
+      const target=document.querySelector('#group-Warrior').getBoundingClientRect();
+      return bar.top === 0 && target.top >= bar.bottom && target.top < bar.bottom + 100;
+    });
     assert.ok(await page.locator('#group-Warrior').evaluate(el => el.getBoundingClientRect().top >= document.querySelector('.explore-toolbar').getBoundingClientRect().bottom));
     await shot(page,`${name}-class-navigation`);
     await page.getByRole('link',{name:'↑ Top',exact:true}).click();
-    assert.equal(await page.evaluate(() => scrollY),0);
+    await page.waitForFunction(() => scrollY === 0);
     await page.getByRole('button',{name:'My taste',exact:false}).click();
     await page.locator('.taste-options').first().getByRole('button',{name:'Direct healing',exact:true}).click();
     assert.ok(await page.evaluate(() => JSON.parse(localStorage.getItem('wow-taste-must')).includes('direct-healing')));

@@ -30,7 +30,7 @@ The build renders the release cards and all 80 WoW content profiles into real HT
 
 ## Compact explorer and original icon art
 
-The home release tracker and WoW explorer share the same dark shell and uniform rows. WoW cards show a spec, class, role art, up to three verified trait badges, and a feel summary capped at 80 characters. Open a spec for the full raid and Mythic+ profiles, taste explanations, dimensions, sources, and comparison. Hover or focus a badge/summary to read more; tap or press Enter to expand it on touch or keyboard. Coverage is collapsed under **About coverage**, with the current **40/80** source target and raid gaps kept explicit.
+The home release tracker and WoW explorer share the same dark shell and uniform rows. WoW cards show a spec, class, role art, up to three verified trait badges, and a feel summary capped at 80 characters. Open a spec for the full raid and Mythic+ profiles, taste explanations, dimensions, sources, and comparison. Hover or focus a badge/summary to read more; tap or press Enter to expand it on touch or keyboard. Coverage is collapsed under **About coverage**, with the collected-source audit at **40/80** and raid gaps kept explicit. The preserved published snapshot is labeled separately at **0/80**; this refresh does not publish the blocked candidate.
 
 The sticky toolbar combines search, class, role, and feel filters. **Compact list** reduces row height; **Group by class** reveals class jumps and collapsible groups. Taste ranking, saved specs, comparison, and prompt copying remain available.
 
