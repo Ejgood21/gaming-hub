@@ -110,5 +110,21 @@
     "gridHeight": 2515,
     "firstCardTop": 136.2,
     "scrollY": 289
+  },
+  "desktopAfterHome": {
+    "viewport": "1440×900",
+    "fullyVisible": 4,
+    "intersecting": 4,
+    "cardHeight": {
+      "min": 182,
+      "max": 182
+    },
+    "averageWordsPerCard": 18,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 908,
+    "gridHeight": 182,
+    "firstCardTop": 343.9,
+    "scrollY": 0
   }
 }
