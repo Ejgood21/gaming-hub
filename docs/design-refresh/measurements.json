@@ -1,4 +1,132 @@
 {
+  "mobileBeforeGridLanding": {
+    "viewport": "390×844",
+    "fullyVisible": 0,
+    "intersecting": 0,
+    "cardHeight": {
+      "min": 620.9,
+      "max": 704.4
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 27654,
+    "gridHeight": 26465.2,
+    "firstCardTop": 923.3,
+    "scrollY": 0
+  },
+  "mobileBeforeGridScan": {
+    "viewport": "390×844",
+    "fullyVisible": 0,
+    "intersecting": 1,
+    "cardHeight": {
+      "min": 620.9,
+      "max": 704.4
+    },
+    "averageWordsPerCard": 103.4,
+    "averageSummaryCharacters": 124.5,
+    "maxSummaryCharacters": 180,
+    "documentHeight": 27654,
+    "gridHeight": 26465.2,
+    "firstCardTop": 299.3,
+    "scrollY": 624
+  },
+  "mobileBeforeHome": {
+    "viewport": "390×844",
+    "fullyVisible": 0,
+    "intersecting": 0,
+    "cardHeight": {
+      "min": 314,
+      "max": 331
+    },
+    "averageWordsPerCard": 21.5,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 2366,
+    "gridHeight": 658,
+    "firstCardTop": 922.4,
+    "scrollY": 0
+  },
+  "mobileAfterGridLanding": {
+    "viewport": "390×844",
+    "fullyVisible": 2,
+    "intersecting": 3,
+    "cardHeight": {
+      "min": 132,
+      "max": 132
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 6244,
+    "gridHeight": 5553,
+    "firstCardTop": 564.9,
+    "scrollY": 0
+  },
+  "mobileAfterGridScan": {
+    "viewport": "390×844",
+    "fullyVisible": 4,
+    "intersecting": 5,
+    "cardHeight": {
+      "min": 132,
+      "max": 132
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 6244,
+    "gridHeight": 5553,
+    "firstCardTop": 204.9,
+    "scrollY": 360
+  },
+  "mobileAfterListLanding": {
+    "viewport": "390×844",
+    "fullyVisible": 2,
+    "intersecting": 3,
+    "cardHeight": {
+      "min": 112,
+      "max": 112
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 5444,
+    "gridHeight": 4753,
+    "firstCardTop": 564.9,
+    "scrollY": 0
+  },
+  "mobileAfterListScan": {
+    "viewport": "390×844",
+    "fullyVisible": 5,
+    "intersecting": 6,
+    "cardHeight": {
+      "min": 112,
+      "max": 112
+    },
+    "averageWordsPerCard": 17.1,
+    "averageSummaryCharacters": 79.8,
+    "maxSummaryCharacters": 80,
+    "documentHeight": 5444,
+    "gridHeight": 4753,
+    "firstCardTop": 204.9,
+    "scrollY": 360
+  },
+  "mobileAfterHome": {
+    "viewport": "492×1065",
+    "fullyVisible": 4,
+    "intersecting": 4,
+    "cardHeight": {
+      "min": 176,
+      "max": 176
+    },
+    "averageWordsPerCard": 18,
+    "averageSummaryCharacters": 0,
+    "maxSummaryCharacters": 0,
+    "documentHeight": 1391,
+    "gridHeight": 360,
+    "firstCardTop": 372.2,
+    "scrollY": 0
+  },
   "desktopBeforeGridLanding": {
     "viewport": "1440×900",
     "fullyVisible": 0,
