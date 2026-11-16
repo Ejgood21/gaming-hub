@@ -42,7 +42,7 @@ jobs:
           node --input-type=module -e 'const {createStaticServer}=await import("/tmp/hub-baseline/scripts/serve.mjs"); createStaticServer({basePath:"/gaming-hub/"}).listen(4174,"127.0.0.1");' &
           export PLAYWRIGHT_MODULE=/tmp/hub-browser/node_modules/playwright/index.mjs
           export CHROMIUM_PATH="$(node --input-type=module -e 'import {chromium} from "/tmp/hub-browser/node_modules/playwright/index.mjs"; console.log(chromium.executablePath())')"
-          BASELINE_URL=http://127.0.0.1:4174/gaming-hub/ UI_OUTPUT=docs/design-refresh npm run check:visual
+          CHECK_ICON_FALLBACK=1 BASELINE_URL=http://127.0.0.1:4174/gaming-hub/ UI_OUTPUT=docs/design-refresh npm run check:visual
       - uses: actions/upload-artifact@v4
         if: always()
         with:

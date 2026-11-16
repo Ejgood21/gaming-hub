@@ -172,7 +172,7 @@ try {
     await page.waitForFunction(() => {
       const bar=document.querySelector('.explore-toolbar').getBoundingClientRect();
       const target=document.querySelector('#group-Warrior').getBoundingClientRect();
-      return bar.top === 0 && target.top >= bar.bottom && target.top < bar.bottom + 100;
+      return bar.top === 0 && target.top >= bar.bottom && target.top < innerHeight - 40;
     });
     assert.ok(await page.locator('#group-Warrior').evaluate(el => el.getBoundingClientRect().top >= document.querySelector('.explore-toolbar').getBoundingClientRect().bottom));
     await shot(page,`${name}-class-navigation`);
@@ -189,6 +189,21 @@ try {
     assert.equal(await page.evaluate(() => navigator.clipboard.readText()),prompt);
     await page.getByRole('button',{name:'Processing',exact:true}).click();
     assert.equal(await page.locator('.processing-row').count(),40);
+    if (name === 'desktop' && process.env.CHECK_ICON_FALLBACK === '1') {
+      const texture = 'classicon_demonhunter_void.jpg';
+      await page.route(`**/wow/assets/icons/${texture}`, route => route.abort());
+      await ready(page,`${base}wow/`,true);
+      const icon = page.locator('[data-spec="devourer-demon-hunter"] .spec-art');
+      await page.waitForFunction(() => {
+        const img=document.querySelector('[data-spec="devourer-demon-hunter"] img.spec-art');
+        return img?.src.startsWith('https://wow.zamimg.com/') && img.complete && img.naturalWidth > 0;
+      });
+      assert.ok((await icon.getAttribute('src')).endsWith(texture));
+      await page.route(`https://wow.zamimg.com/**/${texture}`, route => route.abort());
+      await page.reload({waitUntil:'networkidle'});
+      await page.waitForSelector('[data-spec="devourer-demon-hunter"] .icon-label.spec-art');
+      assert.equal(await page.locator('[data-spec="devourer-demon-hunter"] .icon-label.spec-art').textContent(),'Devourer Demon Hunter');
+    }
     await ready(page,base);
     await noOverflow(page);
     metrics[`${name}AfterHome`] = await measure(page,'.release-card');

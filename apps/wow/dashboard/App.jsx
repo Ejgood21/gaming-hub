@@ -73,9 +73,15 @@ function GameIcon({ kind, name, label, decorative = false, className = "" }) {
   const icon = iconMap[kind][name].icon;
   const [cdn, setCdn] = useState(false), [failed, setFailed] = useState(false);
   const identity = label || (name === "dps" ? "DPS" : name);
+  const imageRef = useRef(null);
+  useEffect(() => {
+    // An SSR image can fail before hydration attaches its error handler.
+    const image = imageRef.current;
+    if (image?.complete && !image.naturalWidth) cdn ? setFailed(true) : setCdn(true);
+  }, [cdn]);
   if (failed && decorative) return null;
   if (failed) return <span className={`game-icon icon-label ${className}`} role="img" aria-label={identity}>{identity}</span>;
-  return <img className={`game-icon ${className}`}
+  return <img ref={imageRef} className={`game-icon ${className}`}
     src={cdn ? `${iconMap.cdn}${icon}.jpg` : `${import.meta.env.BASE_URL}icons/${icon}.jpg`}
     alt={decorative ? "" : identity} width="32" height="32"
     onError={() => cdn ? setFailed(true) : setCdn(true)} />;
