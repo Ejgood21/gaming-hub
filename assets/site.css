@@ -262,6 +262,8 @@ h1 span,h1 em {
   position:relative;
 }
 .release-content {
+  min-width:0;
+  grid-template-columns:minmax(0,1fr);
   padding:16px;
   display:grid;
   gap:7px;
@@ -306,6 +308,7 @@ h1 span,h1 em {
   border-color:#63513a;
 }
 .release-note {
+  min-width:0;
   font-size:11px;
   color:var(--muted);
   position:relative;

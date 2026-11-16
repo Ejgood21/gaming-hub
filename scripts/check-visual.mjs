@@ -58,7 +58,10 @@ async function measure(page, selector, scan = false) {
   }, selector);
 }
 async function noOverflow(page) {
-  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Horizontal overflow');
+  const viewport = page.viewportSize();
+  const geometry = await page.evaluate(() => ({width:innerWidth,client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
+  assert.equal(geometry.width,viewport.width,'The mobile viewport must not expand to hide overflow');
+  assert.ok(geometry.scroll <= geometry.client, `Horizontal overflow: ${JSON.stringify(geometry)}`);
 }
 try {
   for (const [name, viewport] of Object.entries({ mobile:{width:390,height:844}, desktop:{width:1440,height:900} })) {
