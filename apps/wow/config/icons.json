@@ -1,278 +1,334 @@
 {
   "cdn": "https://wow.zamimg.com/images/wow/icons/large/",
-  "attribution": "Icon artwork \u00a9 Blizzard Entertainment. Distributed by Wowhead; used for identification by an unaffiliated fan tool.",
+  "attribution": "Icon artwork © Blizzard Entertainment. Distributed by Wowhead; used for identification by an unaffiliated fan tool.",
   "verified_on": "2026-11-14",
   "specs": {
     "blood-death-knight": {
       "game_id": 250,
       "icon": "spell_deathknight_bloodpresence",
-      "source": "https://www.wowhead.com/guide/classes/death-knight/blood/overview-pve-tank"
+      "source": "https://www.wowhead.com/guide/classes/death-knight/blood/overview-pve-tank",
+      "sha256": "c714b840da1016e163c8e0f3c3250081a33de4594425124bf21b5360a5606268"
     },
     "frost-death-knight": {
       "game_id": 251,
       "icon": "spell_deathknight_frostpresence",
-      "source": "https://www.wowhead.com/guide/classes/death-knight/frost/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/death-knight/frost/overview-pve-dps",
+      "sha256": "665e255a86af290e317a5b0a2009e49a209da717eb348fe50fd55953cef0bddc"
     },
     "unholy-death-knight": {
       "game_id": 252,
       "icon": "spell_deathknight_unholypresence",
-      "source": "https://www.wowhead.com/guide/classes/death-knight/unholy/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/death-knight/unholy/overview-pve-dps",
+      "sha256": "956c29fa2941e1785aa15077aca85e2ed03cb7ec418c88d97a18e935b7c439cf"
     },
     "havoc-demon-hunter": {
       "game_id": 577,
       "icon": "ability_demonhunter_specdps",
-      "source": "https://www.wowhead.com/guide/classes/demon-hunter/havoc/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/demon-hunter/havoc/overview-pve-dps",
+      "sha256": "77d539a326fea7e18220e2bd5dce5308a852aa2f374576f8227689c31ab0006c"
     },
     "vengeance-demon-hunter": {
       "game_id": 581,
       "icon": "ability_demonhunter_spectank",
-      "source": "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/overview-pve-tank"
+      "source": "https://www.wowhead.com/guide/classes/demon-hunter/vengeance/overview-pve-tank",
+      "sha256": "afd91680c06e279b313688789f07b60c4174f6080abca4b9b7a17c53e034eccb"
     },
     "devourer-demon-hunter": {
       "game_id": 1480,
       "icon": "classicon_demonhunter_void",
-      "source": "https://www.wowhead.com/guide/classes/demon-hunter/devourer/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/demon-hunter/devourer/overview-pve-dps",
+      "sha256": "181a2b1975cdc132631365c2e4f21c0aee12f336c2389fb1d56d76984a414c87"
     },
     "balance-druid": {
       "game_id": 102,
       "icon": "spell_nature_starfall",
-      "source": "https://www.wowhead.com/guide/classes/druid/balance/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/druid/balance/overview-pve-dps",
+      "sha256": "82d18428ab4ce8f23af1f7180e028b69913a405dcd2e924ea78f24e8408fc9f8"
     },
     "feral-druid": {
       "game_id": 103,
       "icon": "ability_druid_catform",
-      "source": "https://www.wowhead.com/guide/classes/druid/feral/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/druid/feral/overview-pve-dps",
+      "sha256": "6b291740003679b302325d281ee70807b9430890fb6a5201a39fb081b5dadbcc"
     },
     "guardian-druid": {
       "game_id": 104,
       "icon": "ability_racial_bearform",
-      "source": "https://www.wowhead.com/guide/classes/druid/guardian/overview-pve-tank"
+      "source": "https://www.wowhead.com/guide/classes/druid/guardian/overview-pve-tank",
+      "sha256": "1021a85689bddb50cd690567030c2b9cc3644ee32f9d64c2f636036c33417261"
     },
     "restoration-druid": {
       "game_id": 105,
       "icon": "spell_nature_healingtouch",
-      "source": "https://www.wowhead.com/guide/classes/druid/restoration/overview-pve-healer"
+      "source": "https://www.wowhead.com/guide/classes/druid/restoration/overview-pve-healer",
+      "sha256": "18769de0e3eb3ff5fc6ef61815ec015f85cb7a2782079a04cbe8ecea3c11792a"
     },
     "devastation-evoker": {
       "game_id": 1467,
       "icon": "classicon_evoker_devastation",
-      "source": "https://www.wowhead.com/guide/classes/evoker/devastation/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/evoker/devastation/overview-pve-dps",
+      "sha256": "9ecd5f5e1c46ea8c678a8190a01f8e22783de5af1d23a3614d548517fe7ab600"
     },
     "preservation-evoker": {
       "game_id": 1468,
       "icon": "classicon_evoker_preservation",
-      "source": "https://www.wowhead.com/guide/classes/evoker/preservation/overview-pve-healer"
+      "source": "https://www.wowhead.com/guide/classes/evoker/preservation/overview-pve-healer",
+      "sha256": "40b291eb2368faca33feefb323e5a2bfc6c95d46e9205af77f3ccf57ce21c2e7"
     },
     "augmentation-evoker": {
       "game_id": 1473,
       "icon": "classicon_evoker_augmentation",
-      "source": "https://www.wowhead.com/guide/classes/evoker/augmentation/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/evoker/augmentation/overview-pve-dps",
+      "sha256": "3b191226cb1f6988581d78924502399d1d0994ccaf2680cc1dfab8f58b0b4f02"
     },
     "beast-mastery-hunter": {
       "game_id": 253,
       "icon": "ability_hunter_bestialdiscipline",
-      "source": "https://www.wowhead.com/guide/classes/hunter/beast-mastery/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/hunter/beast-mastery/overview-pve-dps",
+      "sha256": "74e1d4c6a8077201bb1539ffdfc3912d6872f611eb0fc4a91abd8bb5eb73d28f"
     },
     "marksmanship-hunter": {
       "game_id": 254,
       "icon": "ability_hunter_focusedaim",
-      "source": "https://www.wowhead.com/guide/classes/hunter/marksmanship/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/hunter/marksmanship/overview-pve-dps",
+      "sha256": "f285f8ba5b5c303fe0ff68883f250e480a6baac3a65bae20a56ffb2f3c5f0f01"
     },
     "survival-hunter": {
       "game_id": 255,
       "icon": "ability_hunter_camouflage",
-      "source": "https://www.wowhead.com/guide/classes/hunter/survival/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/hunter/survival/overview-pve-dps",
+      "sha256": "4f7c7d42bd566d21de8e6009bc167ccd21f979ea8f7195532ac3c80ec6858391"
     },
     "arcane-mage": {
       "game_id": 62,
       "icon": "spell_holy_magicalsentry",
-      "source": "https://www.wowhead.com/guide/classes/mage/arcane/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/mage/arcane/overview-pve-dps",
+      "sha256": "797c3c98369ae79f9c755ed20db767596e712927e2beb7fdb970a4e53b80f32b"
     },
     "fire-mage": {
       "game_id": 63,
       "icon": "spell_fire_firebolt02",
-      "source": "https://www.wowhead.com/guide/classes/mage/fire/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/mage/fire/overview-pve-dps",
+      "sha256": "c307fece0e3663bf5374cf59fb17800a30f50478702007ac01a1bfd102e31968"
     },
     "frost-mage": {
       "game_id": 64,
       "icon": "spell_frost_frostbolt02",
-      "source": "https://www.wowhead.com/guide/classes/mage/frost/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/mage/frost/overview-pve-dps",
+      "sha256": "b3869170e4accfe7c5c44f0bfa41ad479311da1db83ddbc65bcee97a58cc9663"
     },
     "brewmaster-monk": {
       "game_id": 268,
       "icon": "spell_monk_brewmaster_spec",
-      "source": "https://www.wowhead.com/guide/classes/monk/brewmaster/overview-pve-tank"
+      "source": "https://www.wowhead.com/guide/classes/monk/brewmaster/overview-pve-tank",
+      "sha256": "654f5e379a45347ab1362f27d178c5db5065eb54c2993c785eb2e7039e57acf8"
     },
     "mistweaver-monk": {
       "game_id": 270,
       "icon": "spell_monk_mistweaver_spec",
-      "source": "https://www.wowhead.com/guide/classes/monk/mistweaver/overview-pve-healer"
+      "source": "https://www.wowhead.com/guide/classes/monk/mistweaver/overview-pve-healer",
+      "sha256": "3c3b01e669b2c205fc5a22578f33b9c7c23fae442f6f14497e8def305c723a48"
     },
     "windwalker-monk": {
       "game_id": 269,
       "icon": "spell_monk_windwalker_spec",
-      "source": "https://www.wowhead.com/guide/classes/monk/windwalker/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/monk/windwalker/overview-pve-dps",
+      "sha256": "e4ed0c21b69aad8d5034e0c2ea014fdf3adc4a1ff5a674b973ef84d71b7ccd7d"
     },
     "holy-paladin": {
       "game_id": 65,
       "icon": "spell_holy_holybolt",
-      "source": "https://www.wowhead.com/guide/classes/paladin/holy/overview-pve-healer"
+      "source": "https://www.wowhead.com/guide/classes/paladin/holy/overview-pve-healer",
+      "sha256": "17ed0cfa107cdc451f5b4ac3bb328ed0854e55b3c1030ff07128a37e7a5589f1"
     },
     "protection-paladin": {
       "game_id": 66,
       "icon": "ability_paladin_shieldofthetemplar",
-      "source": "https://www.wowhead.com/guide/classes/paladin/protection/overview-pve-tank"
+      "source": "https://www.wowhead.com/guide/classes/paladin/protection/overview-pve-tank",
+      "sha256": "b623a2afe87a5bad5094dc927b0441368be4f48e5898a6849ef82100a157dae9"
     },
     "retribution-paladin": {
       "game_id": 70,
       "icon": "spell_holy_auraoflight",
-      "source": "https://www.wowhead.com/guide/classes/paladin/retribution/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/paladin/retribution/overview-pve-dps",
+      "sha256": "f28e7f4ed2a9f17ee9ca4fc19450ba149fc3c3dc6216bc33153f53fea1cd807d"
     },
     "discipline-priest": {
       "game_id": 256,
       "icon": "spell_holy_powerwordshield",
-      "source": "https://www.wowhead.com/guide/classes/priest/discipline/overview-pve-healer"
+      "source": "https://www.wowhead.com/guide/classes/priest/discipline/overview-pve-healer",
+      "sha256": "214e4195468b270cbfef381cd5029d88ba93d9d42d93ac4e235d9522dcb3adaf"
     },
     "holy-priest": {
       "game_id": 257,
       "icon": "spell_holy_guardianspirit",
-      "source": "https://www.wowhead.com/guide/classes/priest/holy/overview-pve-healer"
+      "source": "https://www.wowhead.com/guide/classes/priest/holy/overview-pve-healer",
+      "sha256": "f151fd656d54600c744d5a8079dfbdaf4e33999f93ef78954cc28ddcc20c0784"
     },
     "shadow-priest": {
       "game_id": 258,
       "icon": "spell_shadow_shadowwordpain",
-      "source": "https://www.wowhead.com/guide/classes/priest/shadow/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/priest/shadow/overview-pve-dps",
+      "sha256": "dcaf27c0d9486bf1d068c4ca1f1c18c4cbb4cb8883ab069053119cf78ab15fa2"
     },
     "assassination-rogue": {
       "game_id": 259,
       "icon": "ability_rogue_deadlybrew",
-      "source": "https://www.wowhead.com/guide/classes/rogue/assassination/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/rogue/assassination/overview-pve-dps",
+      "sha256": "d5b9ce466bd1f9e88e6d52d88925babf6991166543040e8aa8f34c1d21045666"
     },
     "outlaw-rogue": {
       "game_id": 260,
       "icon": "ability_rogue_waylay",
-      "source": "https://www.wowhead.com/guide/classes/rogue/outlaw/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/rogue/outlaw/overview-pve-dps",
+      "sha256": "564c1dc90a7f9c68c7817cced353cd9f286d60958becabf90bacf2b8c0cbede0"
     },
     "subtlety-rogue": {
       "game_id": 261,
       "icon": "ability_stealth",
-      "source": "https://www.wowhead.com/guide/classes/rogue/subtlety/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/rogue/subtlety/overview-pve-dps",
+      "sha256": "011391b8305f32c81be883966024cccb6cb02fef9b25fde5211c56fe12c30daf"
     },
     "elemental-shaman": {
       "game_id": 262,
       "icon": "spell_nature_lightning",
-      "source": "https://www.wowhead.com/guide/classes/shaman/elemental/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/shaman/elemental/overview-pve-dps",
+      "sha256": "32b03501d89d266eaf29914a6b9e42cf8aed8735de632156e91b6dd7b7d66af2"
     },
     "enhancement-shaman": {
       "game_id": 263,
       "icon": "spell_shaman_improvedstormstrike",
-      "source": "https://www.wowhead.com/guide/classes/shaman/enhancement/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/shaman/enhancement/overview-pve-dps",
+      "sha256": "d98dcbf394cdbad1203ee869d8b22d084e2c11ed1f098d1b34bd01964a224d80"
     },
     "restoration-shaman": {
       "game_id": 264,
       "icon": "spell_nature_magicimmunity",
-      "source": "https://www.wowhead.com/guide/classes/shaman/restoration/overview-pve-healer"
+      "source": "https://www.wowhead.com/guide/classes/shaman/restoration/overview-pve-healer",
+      "sha256": "7926814311bb33a33661e141ec8a5fcc9651dc16d804f9998072ff8204ec7ac7"
     },
     "affliction-warlock": {
       "game_id": 265,
       "icon": "spell_shadow_deathcoil",
-      "source": "https://www.wowhead.com/guide/classes/warlock/affliction/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/warlock/affliction/overview-pve-dps",
+      "sha256": "5eec751a3c96bf36744759f4ecc8062793344b7198aff515c4bd38f75c809a6b"
     },
     "demonology-warlock": {
       "game_id": 266,
       "icon": "spell_shadow_metamorphosis",
-      "source": "https://www.wowhead.com/guide/classes/warlock/demonology/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/warlock/demonology/overview-pve-dps",
+      "sha256": "2fc85b00cb420b198742d7196b34edeb678b91c17819bbb96562c0044e623772"
     },
     "destruction-warlock": {
       "game_id": 267,
       "icon": "spell_shadow_rainoffire",
-      "source": "https://www.wowhead.com/guide/classes/warlock/destruction/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/warlock/destruction/overview-pve-dps",
+      "sha256": "cd35d889374e96ebb7afd753d6bf2aeb383e24ed68f657ee9a8459fd7eeccb7d"
     },
     "arms-warrior": {
       "game_id": 71,
       "icon": "ability_warrior_savageblow",
-      "source": "https://www.wowhead.com/guide/classes/warrior/arms/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/warrior/arms/overview-pve-dps",
+      "sha256": "acd1260800366349f03ae8ed85a5398a69e81562499c07ebff2bd1beb64d3566"
     },
     "fury-warrior": {
       "game_id": 72,
       "icon": "ability_warrior_innerrage",
-      "source": "https://www.wowhead.com/guide/classes/warrior/fury/overview-pve-dps"
+      "source": "https://www.wowhead.com/guide/classes/warrior/fury/overview-pve-dps",
+      "sha256": "e6a8b2cd3ea2a3fe68d8f3d73afcba9202c11498d304b9150122a5848a86569c"
     },
     "protection-warrior": {
       "game_id": 73,
       "icon": "ability_warrior_defensivestance",
-      "source": "https://www.wowhead.com/guide/classes/warrior/protection/overview-pve-tank"
+      "source": "https://www.wowhead.com/guide/classes/warrior/protection/overview-pve-tank",
+      "sha256": "4f68d5dc8edaed51c9d1498c107b188b6d05b81910161e3fd91d8e42cf53d3c3"
     }
   },
   "classes": {
     "Death Knight": {
       "icon": "classicon_deathknight",
-      "source": "https://www.wowhead.com/class=6"
+      "source": "https://www.wowhead.com/class=6",
+      "sha256": "e1aef1a2765acb6d855bedc62bb5419ac1f608fb5dbb2486ff81f1a368a8a327"
     },
     "Demon Hunter": {
       "icon": "classicon_demonhunter",
-      "source": "https://www.wowhead.com/class=12"
+      "source": "https://www.wowhead.com/class=12",
+      "sha256": "bd5a8b33929794eca6348ced69be88ff0979a32d93fb928abda3b3cd95e25a84"
     },
     "Druid": {
       "icon": "classicon_druid",
-      "source": "https://www.wowhead.com/class=11"
+      "source": "https://www.wowhead.com/class=11",
+      "sha256": "a7bebda84d39cfd12de138c3db3d0b277772c9dfed17f9f3e402e3915bb6f2fb"
     },
     "Evoker": {
       "icon": "classicon_evoker",
-      "source": "https://www.wowhead.com/class=13"
+      "source": "https://www.wowhead.com/class=13",
+      "sha256": "8cbe759c92b48f6e0fe0a7c370fe10b5fed7a071275e32aef43994cab15f4cfd"
     },
     "Hunter": {
       "icon": "classicon_hunter",
-      "source": "https://www.wowhead.com/class=3"
+      "source": "https://www.wowhead.com/class=3",
+      "sha256": "679c0815b6bab133ddcfea880cfe8d8063164ca9a68f09edb9656ec28d8f02ac"
     },
     "Mage": {
       "icon": "classicon_mage",
-      "source": "https://www.wowhead.com/class=8"
+      "source": "https://www.wowhead.com/class=8",
+      "sha256": "30aedcef74e5a5604dd066876892a1fdddccc65a7decd9ef13cdb65edd83ed87"
     },
     "Monk": {
       "icon": "classicon_monk",
-      "source": "https://www.wowhead.com/class=10"
+      "source": "https://www.wowhead.com/class=10",
+      "sha256": "0c3e1b35054dbce4d4082150eeb790b777c20ea81d08d76ec64606ede83f9545"
     },
     "Paladin": {
       "icon": "classicon_paladin",
-      "source": "https://www.wowhead.com/class=2"
+      "source": "https://www.wowhead.com/class=2",
+      "sha256": "afad8da7edffb2c9ab273da05c3c870e4c8d3e0082f34a29a281a5eec02f8369"
     },
     "Priest": {
       "icon": "classicon_priest",
-      "source": "https://www.wowhead.com/class=5"
+      "source": "https://www.wowhead.com/class=5",
+      "sha256": "b19bbec67ea3ed9304f9c54865139cae12e4eb4cbd1c7cb81d8c2e2c56ef72d4"
     },
     "Rogue": {
       "icon": "classicon_rogue",
-      "source": "https://www.wowhead.com/class=4"
+      "source": "https://www.wowhead.com/class=4",
+      "sha256": "00f1e760e8ca463beb8c93d47b303c9df1e2c5c43c6e94c3e00362f7c3ad6b7e"
     },
     "Shaman": {
       "icon": "classicon_shaman",
-      "source": "https://www.wowhead.com/class=7"
+      "source": "https://www.wowhead.com/class=7",
+      "sha256": "2b456032d001757b8270c9fb6523a1aa05c55c3ba3708835a2999e85377f7770"
     },
     "Warlock": {
       "icon": "classicon_warlock",
-      "source": "https://www.wowhead.com/class=9"
+      "source": "https://www.wowhead.com/class=9",
+      "sha256": "0387159cab14a58d1f48be328a537d365bddc228de6ef2920207e5a3ab9a7863"
     },
     "Warrior": {
       "icon": "classicon_warrior",
-      "source": "https://www.wowhead.com/class=1"
+      "source": "https://www.wowhead.com/class=1",
+      "sha256": "b87d4ae25c609965ee178e741cbaf146fbff2d14a98d2d1a6838fab9b4841bac"
     }
   },
   "roles": {
     "tank": {
       "icon": "inv_shield_06",
       "label": "Shield",
-      "source": "https://www.wowhead.com/icon=inv_shield_06"
+      "source": "https://www.wowhead.com/icon=inv_shield_06",
+      "sha256": "a9afd389e4563781e717bcc022f24cce9c58d0af331c33ad8f4a594ce9fdb47e"
     },
     "healer": {
       "icon": "spell_holy_flashheal",
       "label": "Healing",
-      "source": "https://www.wowhead.com/icon=spell_holy_flashheal"
+      "source": "https://www.wowhead.com/icon=spell_holy_flashheal",
+      "sha256": "f881838fd8acf7d5dc70e78247cdb02ba235a08dbb15ccb37977592c49005b61"
     },
     "dps": {
       "icon": "inv_sword_04",
       "label": "Damage",
-      "source": "https://www.wowhead.com/icon=inv_sword_04"
+      "source": "https://www.wowhead.com/icon=inv_sword_04",
+      "sha256": "83ba186ef6764b623972040e5d6397bec635c2f27fef0390eb7e3d9bb9b03e30"
     }
   }
 }
