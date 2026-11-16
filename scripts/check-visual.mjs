@@ -61,7 +61,7 @@ async function noOverflow(page) {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Horizontal overflow');
 }
 try {
-  for (const [name, viewport] of Object.entries({ desktop:{width:1440,height:900}, mobile:{width:390,height:844} })) {
+  for (const [name, viewport] of Object.entries({ mobile:{width:390,height:844}, desktop:{width:1440,height:900} })) {
     const context = await browser.newContext({ viewport, isMobile:name === 'mobile', hasTouch:name === 'mobile', reducedMotion:'reduce' });
     await context.grantPermissions(['clipboard-read','clipboard-write']);
     const page = await context.newPage();
@@ -213,8 +213,9 @@ try {
     await page.getByRole('button',{name:'All games',exact:false}).click();
     assert.equal(await page.locator('.release-card:visible').count(),4);
     const note = page.locator('.release-note').first();
-    await note.locator('summary').click();
-    assert.ok(await note.locator('div').isVisible());
+    if (name === 'desktop') await note.locator('summary').hover();
+    else await note.locator('summary').tap();
+    await note.locator('div').waitFor({state:'visible'});
     await noOverflow(page);
     await context.close();
   }

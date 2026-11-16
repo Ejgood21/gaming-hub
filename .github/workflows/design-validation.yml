@@ -36,6 +36,12 @@ jobs:
           ln -s "$GITHUB_WORKSPACE/node_modules" /tmp/hub-baseline/node_modules
           cd /tmp/hub-baseline
           BASE_PATH=/gaming-hub/ npm run build
+      - name: Save built previews for direct visual inspection
+        run: |
+          mkdir -p /tmp/hub-preview/current /tmp/hub-preview/baseline docs/design-refresh
+          cp -R dist /tmp/hub-preview/current/gaming-hub
+          cp -R /tmp/hub-baseline/dist /tmp/hub-preview/baseline/gaming-hub
+          tar -czf docs/design-refresh/preview.tgz -C /tmp/hub-preview current baseline
       - name: Check desktop and touch UI and measure density
         run: |
           node --input-type=module -e 'const {createStaticServer}=await import("./scripts/serve.mjs"); createStaticServer({basePath:"/gaming-hub/"}).listen(4173,"127.0.0.1");' &
