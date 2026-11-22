@@ -1,0 +1,86 @@
+/* Compact champion reference and source-aware component entry. */
+(() => {
+  const note=document.createElement('details');note.className='loot-note';
+  note.innerHTML='<summary id="loot-summary">Loot-history tie-break</summary><p>Among equally urgent needs, prefer components already dropped more often from natural PvE loot. This is a historical bag heuristic, not verified current-set odds. Pins, queue order, Academy priorities and the number needed come first. It does not predict when another component will drop.</p><p>Bench + and 1–8 record PvE loot. Choose component anvils in Anvil choices; those record Other. “Got one” always records carousel. Anvils, augments, special components and recipe clicks do not count as natural drops. − corrects the source of the last loose copy; crafting keeps the drop history. Undo corrects any recent action.</p><label><input type="checkbox" id="loot-enabled"> Use loot history to break ties</label><div id="loot-counts"></div><p id="loot-coverage"></p></details>';
+  document.querySelector('.shoppingfoot').before(note);
+  document.querySelector('.shoppingfoot').textContent='Got one = carousel · ★ Pin to put first';
+  document.getElementById('loot-enabled').addEventListener('change',e=>mutate(()=>state.lootTieBreak=e.target.checked,'Carousel ordering updated.'));
+  const makeDialog=(id,html)=>{const d=document.createElement('dialog');d.id=id;d.innerHTML=html;document.body.append(d);return d;};
+  const reference=makeDialog('meta-reference','<div class="modal-heading"><h2 id="reference-title">MetaTFT · S/A item builds</h2><button data-close="meta-reference" aria-label="Close builds">×</button></div><div class="reference-controls"><label>Champion <select id="reference-champion"></select></label><label>Containing item <select id="reference-item"><option value="">Any item</option></select></label></div><div class="reference-options"><label><input type="checkbox" id="reference-equipped" checked> Match completed items</label><button id="reference-pivot">Pivot to an item…</button><button id="reference-site">Open MetaTFT here ↗</button></div><div id="reference-owned" class="reference-owned"></div><div class="reference-hint"><span>Green ✓ = completed on this champion</span><button id="reference-clear">Clear item filter</button></div><details class="reference-data"><summary id="reference-data-summary">Data details</summary><p id="reference-date" class="reference-date"></p></details><div class="reference-table-heading"><span>Build</span><span>Tier</span><span>Avg place</span><span>Games</span></div><div id="reference-results"></div>');
+  reference.setAttribute('aria-labelledby','reference-title');
+  const site=makeDialog('meta-site','<div class="modal-heading"><h2 id="site-title">MetaTFT</h2><a id="site-external" target="_blank" rel="noopener noreferrer">Open in new tab ↗</a><button data-close="meta-site" aria-label="Close MetaTFT page">×</button></div><p class="frame-note">If the page stays blank or embedding is blocked, use the new-tab link.</p><iframe id="meta-frame" title="MetaTFT champion page" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="strict-origin-when-cross-origin"></iframe>');
+  site.setAttribute('aria-labelledby','site-title');
+  const champSelect=document.getElementById('reference-champion'),itemSelect=document.getElementById('reference-item');
+  let selected='',itemFilter='',matchEquipped=true,opener=null;
+  const champPicker=IconUI.picker(champSelect,'champion','Champion'),itemPicker=IconUI.picker(itemSelect,'item','Containing item');
+  reference.querySelector('.reference-options').insertAdjacentHTML('afterend',
+    '<p class="finder-note">S/A are relative within this champion (top builds rescaled)</p>');
+  function champions(){
+    const all=[...new Map(Academy.snapshot.champions.filter(c=>c.name).map(c=>[c.name,c])).values()].sort((a,b)=>a.name.localeCompare(b.name));
+    champSelect.innerHTML=all.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+    if(!all.some(c=>c.name===selected))selected=state.queue.find(q=>q.champion)?.champion||all[0]?.name||'';
+    champSelect.value=selected;champPicker.refresh();
+  }
+  function drawReference(){
+    const data=MetaBuilds.find(selected,true)?.entry,builds=MetaBuilds.referenceBuilds(selected,data);
+    const ids=[...new Set(builds.flatMap(b=>b.ids))].sort((a,b)=>byId[a].name.localeCompare(byId[b].name));
+    itemSelect.innerHTML='<option value="">Any item</option>'+ids.map(id=>`<option value="${esc(id)}">${esc(byId[id].name)}</option>`).join('');
+    if(itemFilter&&!ids.includes(itemFilter))ids.push(itemFilter);itemSelect.value=itemFilter;itemPicker.refresh();
+    const holders=MetaBuilds.equipment(state),equipped=state.queue.filter(q=>q.done&&Academy.normalizeName(holders.get(q.uid)||'')===Academy.normalizeName(selected)).map(q=>q.item);
+    const intents=MetaBuilds.isCompatible(data)?DecisionPlanner.commitments(state,selected):[];
+    const filtered=builds.filter(b=>{
+      const remaining=DecisionPlanner.subtract(b.ids,equipped);
+      return (!itemFilter||b.ids.includes(itemFilter))&&(!matchEquipped||remaining!==null)&&
+        MetaBuilds.fits(remaining||[],intents);
+    });
+    document.getElementById('reference-date').textContent=MetaBuilds.isCurrentSet(data)?`${filtered.length} builds · ${data.rankFilter==='ALL'?'All ranks':'Platinum+'} · patch ${data.patch||'?'} · snapshot ${new Date(data.updated).toLocaleDateString()} · ranked by MetaTFT score${MetaBuilds.isCompatible(data)?'':' · stale patch · reference only'}`:'No cached rankings for this champion in the current set. Online refresh requested.';
+    const connection=MetaBuilds.connection(selected);document.getElementById('reference-date').textContent+=' · '+connection.source+(connection.error?' · refresh failed: '+connection.error:'');
+    document.getElementById('reference-title').innerHTML=IconUI.champion(selected)+'<span>'+esc(selected)+' <small>MetaTFT · S/A builds</small></span>';
+    document.getElementById('reference-data-summary').textContent=`${filtered.length} builds · ${connection.source}${data&&!MetaBuilds.isCompatible(data)?' · stale patch · reference only':''}${connection.error?' · refresh unavailable':''}`;
+    document.getElementById('reference-owned').innerHTML=equipped.length?'<span>Equipped</span>'+equipped.map(id=>`<span class="equipped-chip" title="${esc(byId[id].name)}">${icon(id)}<b>✓</b></span>`).join(''):'<span>No completed items assigned to this champion</span>';
+    document.getElementById('reference-pivot').disabled=!MetaBuilds.isCompatible(data);
+    document.getElementById('reference-clear').disabled=!itemFilter;
+    document.getElementById('reference-results').innerHTML=filtered.map(b=>{
+      const copies=[...equipped];
+      const cells=b.ids.map(id=>{const at=copies.findIndex(x=>Academy.itemMatches(id,x)),owned=at>=0;if(owned)copies.splice(at,1);
+        return `<button class="build-item ${owned?'equipped':''} ${itemFilter===id?'filter-selected':''}" data-reference-filter="${esc(id)}" title="${esc(byId[id].name)}${owned?' · completed on '+esc(selected):' · not completed on '+esc(selected)} · click to filter" aria-label="${esc(byId[id].name)}${owned?', completed on '+esc(selected):', not completed on '+esc(selected)}. Filter builds containing this item">${icon(id)}${owned?'<b class="equipped-check">✓</b>':''}<span class="build-item-name">${esc(byId[id].name)}</span></button>`;
+      }).join('');
+      return `<article class="reference-build"><div class="reference-items">${cells}</div><b class="build-tier tier-${b.tier}">${b.tier}</b><span class="build-average">${Number(b.avg).toFixed(2)}</span><span class="build-games">${Number(b.games).toLocaleString()}</span></article>`;
+    }).join('')||'<div class="reference-empty">No matching S/A builds.<br>Clear the item filter or turn off “Match completed items”. The live page may have newer data.</div>';
+    document.getElementById('reference-site').innerHTML=IconUI.champion(selected)+'<span>MetaTFT page ↗</span>';
+  }
+
+  function openReference(name,button){
+    opener=button;selected=name||selected;itemFilter='';champPicker.close();itemPicker.close();champions();drawReference();reference.showModal();if(button)button.setAttribute('aria-expanded','true');MetaBuilds.request(selected);
+  }
+  window.MetaReference={open:openReference,selected:()=>selected,filter(id){itemFilter=id;matchEquipped=true;document.getElementById('reference-equipped').checked=true;drawReference();},refresh:drawReference,openPage(url,title,portrait=''){document.getElementById('site-title').innerHTML=portrait+'<span>'+esc(title)+'</span>';document.getElementById('site-external').href=url;document.getElementById('meta-frame').title=title;document.getElementById('meta-frame').src=url;site.showModal();}};
+  document.getElementById('reference-pivot').addEventListener('click',()=>DecisionUI.openPivot(selected));
+  document.getElementById('reference-clear').addEventListener('click',()=>{itemFilter='';drawReference();});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-champion-builds]');if(b)openReference(b.dataset.championBuilds,b);});
+  champSelect.addEventListener('change',()=>{selected=champSelect.value;itemFilter='';drawReference();MetaBuilds.request(selected);});
+  itemSelect.addEventListener('change',()=>{itemFilter=itemSelect.value;drawReference();});
+  document.getElementById('reference-equipped').addEventListener('change',e=>{matchEquipped=e.target.checked;drawReference();});
+  document.getElementById('reference-results').addEventListener('click',e=>{const b=e.target.closest('[data-reference-filter]');if(b){itemFilter=b.dataset.referenceFilter;drawReference();}});
+  document.getElementById('reference-site').addEventListener('click',()=>{
+    MetaReference.openPage('https://www.metatft.com/units/'+encodeURIComponent(selected),selected+' · MetaTFT',IconUI.champion(selected));
+  });
+  site.addEventListener('close',()=>document.getElementById('meta-frame').removeAttribute('src'));
+  reference.addEventListener('close',()=>{champPicker.close();itemPicker.close();if(opener){opener.setAttribute('aria-expanded','false');if(opener.isConnected)opener.focus();}});
+  document.addEventListener('carousel-meta-updated',()=>{if(reference.open)drawReference();});
+  document.addEventListener('carousel-new-game',()=>{reference.close();site.close();document.getElementById('meta-frame').removeAttribute('src');});
+  const oldRender=render;render=function(){
+    LootTracker.ensure(state);oldRender();
+    for(const card of document.querySelectorAll('#queue .qcard')){
+      const q=state.queue.find(q=>q.uid===card.dataset.queueUid),owner=card.querySelector('.item-owner');if(!q?.champion||!owner)continue;
+      const b=document.createElement('button');b.className='queue-champion';b.dataset.championBuilds=q.champion;b.innerHTML=owner.innerHTML;b.setAttribute('aria-label',q.champion+' S/A builds');b.setAttribute('aria-haspopup','dialog');b.setAttribute('aria-expanded','false');owner.replaceChildren(b);
+    }
+    const h=state.lootHistory;
+    document.getElementById('loot-enabled').checked=state.lootTieBreak!==false;document.getElementById('loot-enabled').disabled=!h.complete;
+    document.getElementById('loot-summary').textContent='Loot-history tie-break · '+(!h.complete?'unavailable':state.lootTieBreak===false?'off':'estimate');
+    document.getElementById('loot-coverage').textContent=h.complete?'Tracks natural PvE components from the start of this game.':'This game predates source tracking. Start a new game for a complete history; current inventory is preserved.';
+    document.getElementById('loot-counts').innerHTML='<span>Natural drops</span>'+componentOrder.slice(0,8).map(id=>`<span title="${esc(byId[id].name)}" aria-label="${esc(byId[id].name)}: ${h.counts[id]||0} natural drops">${icon(id)} ×${h.counts[id]||0}</span>`).join('');
+    for(const el of document.querySelectorAll('#shopping .need')){const id=el.querySelector('[data-action="gain"]')?.dataset.id;if(!id)continue;el.querySelector('[data-action="gain"]').setAttribute('aria-label','Got one '+byId[id].name+' from carousel');if(h.complete&&state.lootTieBreak!==false&&(h.counts[id]||0)>0)el.querySelector('.needname').insertAdjacentHTML('beforeend',`<small class="loot-history-label">${h.counts[id]} prior PvE drop${h.counts[id]===1?'':'s'} · tie-break only</small>`);}
+    if(reference.open)drawReference();
+  };
+  render();
+})();
