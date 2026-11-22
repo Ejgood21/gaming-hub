@@ -62,11 +62,13 @@
     if(!pendingImport)return;
     const reviewed=pendingImport;
     if(reviewed.academy){
+      Academy.live=false;
       Academy.useSnapshot(reviewed.academy);
       try{localStorage.setItem(Academy.cacheKey,JSON.stringify(reviewed.academy));}catch{}
     }
     if(typeof reviewed.shortcuts==='boolean')shortcuts=reviewed.shortcuts;
     mutate(()=>state=reviewed.state,'Tracker backup imported.');
+    document.dispatchEvent(new Event('carousel-backup-imported'));
     preferences();imp.close();pendingImport=null;
   });
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Craft now</b> is a compact row of ready-item shortcuts. Click an icon to craft it immediately; the name underneath is its target champion.</li><li><b>Received item</b> records completed carousel/anvil items without spending loose components.</li><li>Use <b>1–8</b> to add components, <b>Shift + number</b> to remove, and <b>Ctrl/Cmd + Z</b> to undo. Keys are shown on the bench. Manage backups in <b>Data & keys</b>.</li>');

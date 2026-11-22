@@ -9,7 +9,7 @@ module.exports = function createPlanAdvisor(model) {
     equipped(plan,name){const holders=Academy.equipment(plan);return plan.queue.filter(q=>q.done&&this.same(holders.get(q.uid)||'',name));},
     suggest(plan,name){
       const {DecisionPlanner, CompFinder}=model;
-      const guide=Academy.guide(plan),equipped=DecisionPlanner.equipped(plan,name),targets=DecisionPlanner.pending(plan,name);
+      const guide=Academy.currentGuide(plan),equipped=DecisionPlanner.equipped(plan,name),targets=DecisionPlanner.pending(plan,name);
       if(!guide||!equipped.length||!targets.length)return null;
       if(equipped.reduce((n,id)=>n+CompFinder.slotCost(id),0)>=3)return {champion:name,equipped,remaining:[],kind:'full'};
       const baseline=Academy.build(guide).entries.filter(q=>DecisionPlanner.same(q.champion,name)).map(q=>q.item);
@@ -21,7 +21,7 @@ module.exports = function createPlanAdvisor(model) {
     },
     apply(plan,choice){model.DecisionPlanner.applyBuild(plan,choice);return true;},
     restoreAcademy(plan){
-      const guide=Academy.guide(plan);if(!guide)return;
+      const guide=Academy.currentGuide(plan);if(!guide)return;
       QuickImport.replace(plan,{guide,entries:Academy.build(guide).entries,priorities:Academy.priorities(guide)},plan.activeComp.code);
     }
   };

@@ -4,10 +4,11 @@ const {decodeMetaSnapshot} = require('./snapshots');
 
 module.exports = function createMetaBuilds({DATA, byId, Academy, OfflineTracker, PivotPlanner, meta}) {
   const cache=new Map();
+  const freshness=15*60000;
   const key=entry=>JSON.stringify([entry.unit,entry.set,entry.patch]);
   const remember=(entry,source)=>{
     const id=key(entry),prior=cache.get(id);
-    if(!prior||entry.updated>=prior.entry.updated)cache.set(id,{entry,source});
+    if(!prior||source==='live'||entry.updated>=prior.entry.updated)cache.set(id,{entry,source});
   };
   for(const entry of decodeMetaSnapshot(meta).units)remember(entry,'bundled');
 
@@ -15,7 +16,8 @@ module.exports = function createMetaBuilds({DATA, byId, Academy, OfflineTracker,
      Snapshot filters: current patch, ranked, Platinum+, last 3 days, three equipped items.
      Confidence, frequency and tier normalization follow the unit page's model. */
   return {
-    compact(overall, detail) {
+    freshness,
+    compact(overall, detail, verifiedPatch) {
       if(!overall||!detail||overall.unit!==detail.unit||overall.tft_set!==detail.tft_set||!Array.isArray(overall.levels)||!Array.isArray(detail.builds)||!Array.isArray(detail.items))throw Error('Unrecognized MetaTFT data');
       const sum=a=>a.reduce((s,n)=>s+n,0), total=p=>sum(p.map((n,i)=>n*(i+1)));
       const levels=overall.levels.filter(r=>Number(r.lvl_items[0])<=4&&Number(r.lvl_items[1])===3);
@@ -36,23 +38,35 @@ module.exports = function createMetaBuilds({DATA, byId, Academy, OfflineTracker,
       const third=builds[Math.min(2,builds.length-1)]?.score;
       const scale=third>0&&third<.35?.35/third:1;
       for(const b of builds){b.score*=scale;b.tier=b.score>=.35?'S':b.score>=.25?'A':b.score>=.15?'B':b.score>=.05?'C':'D';b.score=+b.score.toFixed(5);b.avg=+b.avg.toFixed(3);}
-      return {unit:detail.unit,set:detail.tft_set,patch:String(detail.build_games?.[0]?.patch||''),rankFilter:detail.filter_adjustment?.rank_filter||'ALL',updated:Math.min(Number(overall.updated)||0,Number(detail.updated)||0),builds:builds.filter(b=>b.items.length===3&&b.games>=30)};
+      return {unit:detail.unit,set:detail.tft_set,patch:verifiedPatch||String(detail.build_games?.[0]?.patch||''),rankFilter:detail.filter_adjustment?.rank_filter||'ALL',updated:Math.min(Number(overall.updated)||0,Number(detail.updated)||0),builds:builds.filter(b=>b.items.length===3&&b.games>=30)};
     },
     isCurrentSet(data){return data?.set==='TFTSet'+Academy.snapshot.set;},
-    isCompatible(data){return this.isCurrentSet(data)&&!!data.patch&&data.patch===Academy.snapshot.patch;},
+    isCompatible(data){
+      return Academy.isCurrent()&&this.isCurrentSet(data)&&!!data.patch&&data.patch===Academy.snapshot.patch&&
+        (!Academy.requireLive||data.revision===Academy.revision&&Date.now()-data.fetchedAt<freshness);
+    },
     cache(entry,source){
       if(typeof entry?.unit!=='string'||typeof entry.set!=='string'||typeof entry.patch!=='string'||
           !Number.isFinite(entry.updated)||!Array.isArray(entry.builds)||!entry.builds.every(b=>
             Array.isArray(b.items)&&b.items.length===3&&b.items.every(i=>typeof i==='string')&&
             Number.isFinite(b.score)&&Number.isFinite(b.avg)&&Number.isFinite(b.games)&&/^[SABCD]$/.test(b.tier)))return;
-      remember(entry,source);
+      const revision=source==='live'?Academy.revision:undefined;
+      remember({...entry,revision},source);
     },
     cached(){return [...cache.values()].filter(r=>r.source!=='bundled'&&this.isCurrentSet(r.entry)).map(r=>r.entry);},
+    invalidate(unit){
+      const entry=cache.get(key({unit,set:'TFTSet'+Academy.snapshot.set,patch:Academy.snapshot.patch}));
+      if(entry?.source==='live'){
+        entry.entry={...entry.entry,revision:undefined};
+        entry.source='saved';
+      }
+    },
     find(champion,allowStale=false){
       const unit=this.champion(champion)?.apiName;
       const set='TFTSet'+Academy.snapshot.set,patch=Academy.snapshot.patch;
       const matching=cache.get(key({unit,set,patch}));
-      if(matching||!allowStale)return matching;
+      if(this.isCompatible(matching?.entry))return matching;
+      if(!allowStale)return;
       return [...cache.values()].filter(r=>r.entry.unit===unit&&this.isCurrentSet(r.entry))
         .sort((a,b)=>b.entry.updated-a.entry.updated)[0];
     },
@@ -71,7 +85,7 @@ module.exports = function createMetaBuilds({DATA, byId, Academy, OfflineTracker,
           return [{...b,ids,stalePatch:!this.isCompatible(data)}];
         });
     },
-    champion(name){return Academy.snapshot.champions.find(c=>Academy.normalizeName(c.name)===Academy.normalizeName(name));},
+    champion(name){return name&&Academy.snapshot.champions.find(c=>Academy.normalizeName(c.name)===Academy.normalizeName(name));},
     equipment(plan){return Academy.equipment(plan);},
     fits(build,items){const remaining=[...build];for(const id of items){const at=remaining.indexOf(id);if(at<0)return false;remaining.splice(at,1);}return true;},
     ranked(plan,uid,snapshot,{craftableOnly=false,strongOnly=false}={}){

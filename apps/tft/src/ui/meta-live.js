@@ -1,6 +1,6 @@
 (() => {
   const key='carousel-metatft-v2',attempted=new Map(),waiting=[],pending=new Set(),connections=new Map();let active=0;
-  const freshness=15*60000;
+  const {freshness}=MetaBuilds;
   const report=()=>document.dispatchEvent(new Event('carousel-meta-updated'));
   const mark=(id,fields)=>connections.set(id,{...(connections.get(id)||{}),...fields});
   try{
@@ -10,7 +10,7 @@
   const status=document.createElement('span');status.id='meta-status';status.className='meta-status';document.querySelector('.academy-bar').append(status);
   MetaBuilds.connection=name=>{
     const cached=MetaBuilds.find(name,true);
-    return {...connections.get(MetaBuilds.champion(name)?.apiName),source:cached?.source||'none'};
+    return {...connections.get(MetaBuilds.champion(name)?.apiName),source:cached?.source==='live'&&!MetaBuilds.isCompatible(cached.entry)?'saved':cached?.source||'none'};
   };
   MetaBuilds.connections=()=>[...connections.entries()].filter(([id,s])=>s.checked).map(([id,s])=>({unit:id,...s}));
   MetaBuilds.request= name=>{const unit=MetaBuilds.champion(name);if(unit)request(unit);};
@@ -31,45 +31,56 @@
     const staleLive=info.some(s=>s.error?.startsWith('Stale patch'));
     const live=info.filter(s=>s.source==='live').length;
     const relevant=names.map(name=>MetaBuilds.find(name,true)?.entry).filter(Boolean);
-    const reported=relevant.length?relevant:[META_BUNDLED];
+    const currentProbe=MetaBuilds.dataFor({champion:Academy.snapshot.champions.find(c=>c.apiName===Academy.liveMetaUnit)?.name});
+    const reported=relevant.length?relevant:[currentProbe||META_BUNDLED];
     const sources=new Map();
     for(const data of reported){
       const updated=new Date(data.sourceUpdated||data.updated);
       const date=Number.isNaN(updated.getTime())?'unknown date':updated.toISOString().slice(0,10);
-      const stale=data.patch!==Academy.snapshot.patch;
-      const source=`Patch ${data.patch||'unknown'} · ${date}${stale?' · stale patch':''}`;
+      const stale=!MetaBuilds.isCompatible(data);
+      const source=`Patch ${data.patch||'unknown'} · ${date}${stale?' · stale reference':''}`;
       sources.set(source,stale);
     }
-    const statusText=active?'checking…':!names.length?'awaiting champion':errors?'refresh unavailable':live===names.length?'live stats':live?'live + cached stats':'saved stats';
+    const statusText=active?'checking…':!names.length?(currentProbe?'live check complete':'awaiting champion'):errors?'refresh unavailable':live===names.length?'live stats':live?'live + saved reference':'saved reference';
     status.innerHTML='<a href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">MetaTFT supplement</a> · '+
       [...sources].map(([label,stale])=>`<span class="${stale?'source-notice':''}">${esc(label)}</span>`).join(' / ')+' · '+statusText+(staleLive?' · live returned a stale patch':'');
     status.title='Requests go to api-hc.metatft.com. Data & keys shows last checks and errors. Academy remains the baseline.';
   }
 
   function request(unit){
+    if(!Academy.live)return;
     const id=unit.apiName,now=Date.now(),info=connections.get(id)||{};
-    const {set,patch}=Academy.snapshot,requestKey=JSON.stringify([id,set,patch]);
+    const {set,patch}=Academy.snapshot,revision=Academy.revision,requestKey=JSON.stringify([id,revision]);
     if(pending.has(requestKey)||now-(attempted.get(requestKey)||0)<(info.error?5*60000:freshness))return;
     const cached=MetaBuilds.dataFor({champion:unit.name});
     if(cached&&now-Number(cached.fetchedAt||0)<freshness)return;
     attempted.set(requestKey,now);mark(id,{checked:now,error:'',phase:'queued'});
-    pending.add(requestKey);waiting.push({id,set,patch,requestKey});pump();
+    pending.add(requestKey);waiting.push({id,set,patch,revision,requestKey});pump();
   }
 
   async function pump(){
-    if(active>=3||!waiting.length)return;const {id,set,patch,requestKey}=waiting.shift();active++;mark(id,{phase:'checking'});draw();report();
-    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+    if(active>=3||!waiting.length)return;
+    const {id,set,patch,revision,requestKey}=waiting.shift();
+    if(revision!==Academy.revision){pending.delete(requestKey);pump();return;}
+    active++;mark(id,{phase:'checking'});draw();report();
     try{
-      const base='https://api-hc.metatft.com/tft-stat-api/unit_detail_';
-      const fetchData=async kind=>{const r=await fetch(base+kind+'?unit='+encodeURIComponent(id)+'&queue=1100&patch=current&days=3&rank=CHALLENGER,DIAMOND,EMERALD,GRANDMASTER,MASTER,PLATINUM&permit_filter_adjustment=true'+(kind==='items'?'&num_items=3':''),{credentials:'omit',signal:controller.signal});if(!r.ok)throw Error('HTTP '+r.status);return r.json();};
-      const [overall,items]=await Promise.all([fetchData('overall'),fetchData('items')]);
-      const data=MetaBuilds.compact(overall,items);if(data.unit!==id||data.set!=='TFTSet'+set||!data.builds.length)throw Error('Stats unavailable for this set');
-      if(data.patch!==patch)throw Error(`Stale patch ${data.patch||'unknown'} (Academy ${patch})`);
-      if(!MetaBuilds.isCompatible(data))return;
+      const result=await fetchMetaTFT(id,{fetchJSON:fetch});
+      if(revision!==Academy.revision)return;
+      const data=MetaBuilds.compact(result.overall,result.items,result.patch);
+      if(data.set!=='TFTSet'+set||!data.builds.length)throw Error('Stats unavailable for this set');
+      if(data.patch!==patch)throw Error(`Stale patch ${data.patch} (Academy ${patch})`);
       data.fetchedAt=Date.now();MetaBuilds.cache(data,'live');mark(id,{success:Date.now(),error:''});
       try{localStorage.setItem(key,JSON.stringify(MetaBuilds.cached()));}catch{}
-    }catch(e){mark(id,{error:e.name==='AbortError'?'Timed out':e.message||'Network / CORS unavailable'});}
-    finally{clearTimeout(timer);active--;pending.delete(requestKey);mark(id,{phase:'idle'});draw();document.dispatchEvent(new Event('carousel-meta-updated'));pump();}
+    }catch(e){
+      if(revision===Academy.revision){
+        MetaBuilds.invalidate(id);
+        mark(id,{error:e.name==='TimeoutError'?'Timed out':e.message||'Network / CORS unavailable'});
+      }
+    }finally{
+      active--;pending.delete(requestKey);
+      if(revision===Academy.revision)mark(id,{phase:'idle'});
+      draw();report();pump();
+    }
   }
   function checkActive(){for(const q of state.queue.filter(q=>q.champion))MetaBuilds.request(q.champion);}
   if(window.addEventListener){window.addEventListener('online',()=>{attempted.clear();checkActive();});window.addEventListener('focus',checkActive);}

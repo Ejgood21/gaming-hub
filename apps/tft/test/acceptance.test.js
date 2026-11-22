@@ -3,7 +3,7 @@
 const assert = require('node:assert/strict');
 const {test} = require('node:test');
 const createModel = require('../src/model');
-const {refreshAcademy, readAcademyCache, decodeMetaSnapshot, loadSnapshots, ACADEMY_TTL_MS} = require('../src/snapshots');
+const {refreshLiveData, readAcademyCache, decodeMetaSnapshot, loadSnapshots, ACADEMY_TTL_MS} = require('../src/snapshots');
 const {exportBackup, reviewBackup, maxBackupBytes} = require('../src/backup');
 const academy = require('../data/academy-18.3b.json');
 const metaFile = require('../data/metatft-18.3b.json');
@@ -187,17 +187,19 @@ test('A15: a backup made before refresh round-trips below the byte limit', () =>
 });
 
 test('A16: unexpected live Academy format leaves saved data and a notice', async () => {
-  const {Academy, CompFinder} = model();
-  let requests = 0;
-  const result = await refreshAcademy(Academy, {bundledSet:academy.set, fetchJSON: async url => {
-    requests++;
-    assert.equal(url, 'https://tftacademy.com/tierlist/comps/__data.json');
+  const m = createModel({academy, meta, core, requireLive: true});
+  const requests = [];
+  const result = await refreshLiveData(m, {fetchJSON: async url => {
+    requests.push(url);
     return {ok:true, json:async()=>({data:{tierlist:[]}})};
   }});
-  assert.deepEqual(result, {updated:false, notice:'Refresh unavailable · using saved data'});
-  assert.equal(requests, 1);
-  assert.equal(Academy.snapshot, academy);
-  assert.ok(CompFinder.evaluate(plan(), guide('Caitlyn Hunters')).selectable);
+  assert.equal(result.updated, false);
+  assert.match(result.notice, /changed its data format/);
+  assert.equal(requests.length, 6);
+  assert.ok(requests.includes('https://tftacademy.com/tierlist/comps/__data.json'));
+  assert.equal(m.Academy.snapshot, academy);
+  assert.ok(m.CompFinder.evaluate(plan(), guide('Caitlyn Hunters')).selectable);
+  assert.deepEqual(m.CompFinder.recommendations(plan()).rows, []);
 });
 
 test('Academy cache requires both the current set and a fresh valid fetch timestamp', () => {
@@ -209,22 +211,168 @@ test('Academy cache requires both the current set and a fresh valid fetch timest
   assert.equal(readAcademyCache(raw(-1000,18),18,now), null);
 });
 
-test('situational tiers share B rank for both Explore and exact team-code import', () => {
+test('exact team-code ties favor an ordinary tier unless the X requirement is owned', () => {
   const {Academy, CompFinder, QuickImport, academyTier} = model();
-  assert.equal(CompFinder.tierRank('X'), CompFinder.tierRank('B'));
-  assert.equal(academyTier('X').score, academyTier('B').score);
+  assert.ok(CompFinder.tierRank('X') > CompFinder.tierRank('B'));
   assert.equal(academyTier('X').label, 'Situational');
   const baseline = guide('Caitlyn Hunters');
   const hex = Academy.guideHex(baseline);
   const code = '02' + [...hex, ...Array(10-hex.length).fill('000')].join('') + 'TFTSet18';
   const situational = {...baseline, id:'situational', tier:'X', updated:'2026-10-01'};
   Academy.useSnapshot({...academy, guides:[baseline,situational]});
-  assert.equal(QuickImport.choose(code).guide.id, situational.id);
-  const input = plan({queue:['GuinsoosRageblade','Leviathan','HextechGunblade'].map(item=>queue(item,{done:true})),
-    currentUnits:[{...caitlyn,stars:3}]});
-  const row = CompFinder.ranked(input).find(r=>r.guide.id===situational.id);
-  assert.ok(row.strongFit);
-  assert.equal(row.recommendationTierRank, row.baseTierRank);
+  const ordinary = plan({queue:[queue('GuinsoosRageblade',{done:true})]});
+  assert.equal(QuickImport.choose(code, ordinary).guide.id, baseline.id);
+  const radiant = Academy.itemMap.get('DA_GuinsoosRagebladeRadiant');
+  assert.equal(QuickImport.choose(code, plan({queue:[queue(radiant,{done:true})]})).guide.id, situational.id);
+});
+
+const infernoId = 'lskq0yo5kvzfrfj';
+const infernoItem = 'Academy_DA_18_EmblemInferno';
+const infernoPlan = owned => plan({
+  currentUnits:[{apiName:'DA_Lux18_Base',stars:1}],
+  queue:[queue('GuinsoosRageblade',{done:true}), ...(owned?[queue(infernoItem,{done:true})]:[])]
+});
+
+test('X-tier Inferno Fast 9 leads with the completed Inferno Emblem and names the unlock', () => {
+  const {CompFinder} = model();
+  assert.deepEqual(guide('Inferno Fast 9').gatedBy, {type:'emblem',id:'DA_18_EmblemInferno'});
+  const [top] = CompFinder.recommendations(infernoPlan(true)).rows;
+  assert.equal(top.guide.id, infernoId);
+  assert.equal(top.guide.tier, 'X');
+  assert.equal(top.unlocked, true);
+  assert.ok(top.reasons.some(reason => reason.text === 'Unlocked by Inferno Emblem'));
+});
+
+test('the same X-tier guide stays Situational outside the top three without the emblem', () => {
+  const {CompFinder, academyTier} = model();
+  const input = infernoPlan(false);
+  input.queue.push(queue(infernoItem));
+  const rows = CompFinder.recommendations(input).rows;
+  const index = rows.findIndex(row => row.guide.id === infernoId);
+  assert.ok(index >= 3);
+  assert.equal(academyTier(rows[index].guide.tier).label, 'Situational');
+  assert.equal(rows[index].unlocked, false);
+  assert.equal(rows[index].blocked, true);
+});
+
+test('ordinary tiers rank as before without an X requirement', () => {
+  const {CompFinder} = model();
+  const input = plan({currentUnits:[caitlyn],queue:[queue('GuinsoosRageblade',{done:true})]});
+  const rows = CompFinder.recommendations(input).rows;
+  assert.equal(rows.find(row => row.guide.tier === 'B').guide.title, 'Caitlyn Hunters');
+  assert.ok(rows.some(row => row.guide.tier === 'A' && !row.blocked));
+  assert.ok(rows.every(row => ['S','A','B','X'].includes(row.guide.tier)));
+});
+
+test('an X guide can use a featured emblem outside its board or a held structured augment', () => {
+  const {Academy, CompFinder} = model();
+  const emblem = guide('Ravager Elise');
+  assert.equal(emblem.gatedBy, null);
+  assert.deepEqual(Academy.gate(emblem), {type:'emblem',id:'DA_18_EmblemSlayer'});
+  const item = Academy.itemMap.get('DA_18_EmblemSlayer');
+  assert.match(CompFinder.evaluate(plan({queue:[queue(item,{done:true})]}),emblem).unlockReason, /Ravager Emblem/);
+  const rivals = guide('Unrivaled Reroll');
+  assert.equal(CompFinder.evaluate(plan({queue:[queue('EdgeOfNight',{done:true})]}),rivals).blocked, true);
+  assert.equal(CompFinder.evaluate(plan({chosenAugments:['','','DA_18_RivalsAugment']}),rivals).unlocked, true);
+});
+
+const liveFixtureUpdated = Date.parse('2026-10-01T12:00:00Z');
+function liveFixture({academyPatch = '18.3b', metaPatch = '18.3b', metaSet = 18, omitAcademyPatch = false,
+                      staleGuideDates = false, fail = false, timeout = false} = {}) {
+  const updated = staleGuideDates ? '2026-09-26T12:00:00Z' : academy.sourceUpdated;
+  const liveGuides = academy.guides.map(g=>({...g,isPublic:true,updated}));
+  const fetchJSON = async url => {
+    if (fail) throw new TypeError('Network error');
+    if (timeout) throw new DOMException('Timed out','TimeoutError');
+    const {pathname, searchParams} = new URL(url);
+    let data;
+    if (pathname.endsWith('__data.json')) {
+      if (omitAcademyPatch) return {type:'opaque'};
+      data = {nodes:[{data:[{patch:1},academyPatch]}]};
+    } else if (pathname.endsWith('/api/tierlist/comps')) {
+      data = {guides:liveGuides};
+    } else if (pathname.includes('/api/assets/')) {
+      const kind = pathname.split('/').at(-1);
+      assert.equal(searchParams.get('set'), '18');
+      data = {[kind]:academy[kind]};
+    } else {
+      assert.equal(searchParams.get('unit'), 'DA_18_Ashe');
+      const patch = metaPatch.slice(0,4), revision = metaPatch.slice(4);
+      data = {unit:'DA_18_Ashe',tft_set:'TFTSet'+metaSet,updated:liveFixtureUpdated};
+      if (pathname.endsWith('_overall')) {
+        data.games = [{day:1,count:1200,patch:[patch,revision]},
+          {day:2,count:1200,patch:[patch,revision]},{day:3,count:1200,patch:['18.2','']}];
+        data.levels = [{lvl_items:[2,3],places:[120,120,120,120,120,120,120,120]}];
+      } else {
+        const places = [12,11,10,10,8,6,4,2];
+        data.build_games = [{patch,b_patch_version:revision}];
+        data.items = [{places}];
+        data.builds = [{buildNames:'DA_HandOfJustice|DA_IonicSpark|DA_JeweledGauntlet',places}];
+      }
+    }
+    return {ok:true,json:async()=>data};
+  };
+  return fetchJSON;
+}
+
+test('live success adopts a matching 18.3b source and current MetaTFT builds', async () => {
+  const m = createModel({academy, meta, core, requireLive: true});
+  const input = infernoPlan(true);
+  assert.deepEqual(m.CompFinder.recommendations(input).rows, []);
+  const result = await refreshLiveData(m, {set:18,fetchJSON:liveFixture()});
+  assert.equal(result.updated, true, result.notice);
+  assert.equal(m.Academy.live, true);
+  assert.equal(m.Academy.snapshot.patch, '18.3b');
+  assert.notEqual(m.Academy.snapshot, academy);
+  assert.equal(m.MetaBuilds.dataFor({champion:'Ashe'}).builds[0].games, 63);
+  assert.equal(m.CompFinder.recommendations(input).rows[0].guide.id, infernoId);
+});
+
+test('failed and mismatched refreshes leave stale comps and MetaTFT builds out of recommendations', async () => {
+  const m = createModel({academy, meta, core, requireLive: true});
+  const input = infernoPlan(true);
+  assert.equal((await refreshLiveData(m,{fetchJSON:liveFixture()})).updated, true);
+  const saved = m.Academy.snapshot;
+  for (const options of [{fail:true},{timeout:true},{metaPatch:'18.3'},{metaSet:19}]) {
+    const result = await refreshLiveData(m,{fetchJSON:liveFixture(options)});
+    assert.equal(result.updated,false);
+    if(options.timeout)assert.match(result.notice,/timed out/);
+    assert.equal(m.Academy.live,false);
+    assert.equal(m.Academy.snapshot,saved);
+    const output = m.CompFinder.recommendations(input);
+    assert.deepEqual(output.rows,[]);
+    assert.match(output.notice,/Not enough current info/);
+    assert.ok(output.guidance.length);
+    assert.equal(m.MetaBuilds.dataFor({champion:'Ashe'}),undefined);
+    assert.ok(m.MetaBuilds.find('Ashe',true)?.entry);
+    assert.deepEqual(m.DecisionPlanner.builds(input,'Ashe'),[]);
+    assert.throws(()=>m.CompFinder.choose(input,infernoId),/Refresh live data/);
+  }
+});
+
+test('a superseded request cannot re-enable recommendations after a newer refresh fails', async () => {
+  const m = createModel({academy, meta, core, requireLive: true});
+  const wait = Promise.withResolvers();
+  const fixture = liveFixture();
+  const older = refreshLiveData(m,{fetchJSON:async url=>{
+    if(url.endsWith('__data.json'))await wait.promise;
+    return fixture(url);
+  }});
+  const newer = await refreshLiveData(m,{fetchJSON:liveFixture({fail:true})});
+  assert.equal(newer.updated,false);
+  wait.resolve();
+  assert.deepEqual(await older,{updated:false,superseded:true});
+  assert.equal(m.Academy.snapshot,academy);
+  assert.deepEqual(m.CompFinder.recommendations(infernoPlan(true)).rows,[]);
+});
+
+test('metadata-free Academy guides must have been updated in a current-only MetaTFT patch day', async () => {
+  const m = createModel({academy, meta, core, requireLive: true});
+  const opts = {omitAcademyPatch:true};
+  assert.equal((await refreshLiveData(m,{fetchJSON:liveFixture(opts)})).updated,true);
+  const result = await refreshLiveData(m,{fetchJSON:liveFixture({...opts,staleGuideDates:true})});
+  assert.equal(result.updated,false);
+  assert.match(result.notice,/patches could not be matched/);
 });
 
 test('pivot profiles use emblem traits, radiant base roles and artifact effects', () => {

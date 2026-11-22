@@ -211,3 +211,10 @@
 .finder-empty { color: var(--muted); }
 .finder-empty [role="status"] { color: var(--text); font-weight: 650; }
 .finder-empty ul, .comp-suggestion .finder-method ul { margin: 6px 0; padding-left: 22px; }
+
+.live-data-warning { margin: 0 0 12px; padding: 10px 14px; border: 1px solid #c98e50; border-radius: 8px; background: #38261d; color: #ffe4b5; font-weight: 650; }
+.academy-reference { margin: 0 0 14px; color: var(--muted); font-size: 13px; }
+.academy-reference summary { cursor: pointer; }
+.academy-reference ul { max-height: 270px; overflow: auto; padding: 0 4px; list-style: none; }
+.academy-reference li { display: flex; align-items: baseline; gap: 8px; margin: 6px 0; }
+.academy-reference a { color: #b8d3c5; }

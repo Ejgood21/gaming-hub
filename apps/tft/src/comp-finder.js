@@ -66,8 +66,11 @@ module.exports = function createCompFinder(model) {
         const alternatives=[item,...(guide.altBuilds||[]).filter(a=>a.apiName===u.apiName).flatMap(a=>a.items.map(api=>Academy.itemMap.get(api))).filter(id=>Academy.itemInfo(id)?.type==='emblems')];
         return [{item,alternatives:[...new Set(alternatives)]}];
       }));
-      const gate=guide.gatedBy,required=gate?.type==='emblem'?Academy.itemMap.get(gate.id):null;
-      const missingGate=gate?.type==='emblem'&&(!required||!bank.includes(required));
+      const gate=Academy.gate(guide),required=gate?.type==='emblem'?Academy.itemMap.get(gate.id):null;
+      const validItem=gate?.type==='item'||gate?.type==='emblem';
+      const gatedItem=validItem&&Academy.itemMap.get(gate.id);
+      const ownedItem=!!gatedItem&&bank.includes(gatedItem);
+      const missingGate=validItem&&!ownedItem;
       if(required&&!groups.some(g=>g.item===required))groups.unshift({item:required,alternatives:[required]});
       for(const group of groups){
         const at=bank.findIndex(id=>group.alternatives.includes(id));if(at>=0){bank.splice(at,1);continue;}
@@ -75,11 +78,15 @@ module.exports = function createCompFinder(model) {
         if(can){for(const c of byId[can].recipe)pool[c]--;craftable.push(can);}else missing.push(group.item);
       }
       const augment=gate?.type==='augment'&&!this.heldAugments(plan).includes(gate.id)?gate.id:'';
-      const emblemName=Academy.snapshot.items.find(i=>i.apiName===gate?.id)?.name||'required emblem';
-      const gateReason=missingGate?'Only play with '+emblemName.replace(/ Emblem$/,' emblem'):
-        augment?'Requires '+(this.augment(augment)?.name||'the featured augment'):'';
+      const gateName=gate?.type==='augment'?this.augment(gate.id)?.name||gate.id:
+        Academy.snapshot.items.find(i=>i.apiName===gate?.id)?.name||gate?.id;
+      const conditional=academyTier(guide.tier).conditional;
+      const unlocked=conditional&&!!gate&&!missingGate&&!augment;
+      const gateReason=missingGate&&gate.type==='emblem'?'Only play with '+gateName.replace(/ Emblem$/,' emblem'):
+        missingGate||augment?'Requires '+gateName:conditional&&!gate?'Situational · requirement unavailable':'';
       return {missingEmblems:missing,craftableEmblems:craftable,missingAugment:augment,gateReason,
-        blocked:!!augment||missingGate,requirementPenalty:Math.min(60,missing.length*24)+(augment?40:0)};
+        unlockReason:unlocked?'Unlocked by '+gateName:'',unlocked,
+        blocked:!!augment||missingGate||!!conditional&&!gate,requirementPenalty:Math.min(60,missing.length*24)+(augment?40:0)};
     },
     execution(plan,guide){
       const owned=new Map(this.units(plan).map(u=>[u.apiName,u.stars]));
@@ -148,7 +155,8 @@ module.exports = function createCompFinder(model) {
       }
       const componentFit=this.componentFit(plan,remaining),{used,ready}=componentFit,componentScore=componentFit.score;
       const matchedAugments=this.heldAugments(plan).filter(id=>(guide.augments||[]).some(a=>a.apiName===id)||guide.mainAugment?.apiName===id),augmentMatch=matchedAugments.length>0;
-      const tierScore=academyTier(guide.tier).score,board=this.boardFit(plan,guide),requirements=this.requirements(plan,guide),execution=this.execution(plan,guide);
+      const requirements=this.requirements(plan,guide);
+      const tierScore=academyTier(requirements.unlocked?'A':guide.tier).score,board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
       const names=ids=>[...new Set(ids.map(id=>byId[id]?.name||id))].join(', ');
       const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
@@ -161,6 +169,7 @@ module.exports = function createCompFinder(model) {
         {points:-requirements.requirementPenalty,text:[requirements.gateReason,requirements.missingEmblems.length?'Missing emblems: '+names(requirements.missingEmblems):''].filter(Boolean).join(' · ')},
         {points:-execution.executionPenalty,text:'Missing core units or upgrades: '+execution.missingCore.map(u=>u.name).join(', ')}
       ].filter(reason=>reason.points);
+      if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
       const fitScore=reasons.reduce((sum,reason)=>sum+reason.points,0);
       return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatch,matchedAugments,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
         score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
@@ -173,9 +182,9 @@ module.exports = function createCompFinder(model) {
     },
     recommendations(plan){
       const rows=this.ranked(plan);
-      const highest=Academy.snapshot.guides.map(g=>g.tier).sort((a,b)=>this.tierRank(a)-this.tierRank(b))[0];
+      const highest=Academy.isCurrent()?Academy.snapshot.guides.map(g=>g.tier).filter(tier=>['S','A','B'].includes(tier)).sort((a,b)=>this.tierRank(a)-this.tierRank(b))[0]:null;
       const tierNotice=highest&&highest!=='S'?`No S-tier comp in this snapshot — top band is ${academyTier(highest).label}`:'';
-      return {rows,tierNotice,notice:rows.length?'':'Not enough to recommend yet — add units/items/augment',
+      return {rows,tierNotice,notice:rows.length?'':Academy.isCurrent()?'Not enough to recommend yet — add units/items/augment':'Not enough current info to recommend a comp.',
         guidance:rows.length?[]:[
           'Start with upgraded units and a frontline that can protect your carry.',
           'Record completed items and loose components to see which builds can use them.',
@@ -190,22 +199,28 @@ module.exports = function createCompFinder(model) {
       return substantial&&row.fitScore>=60&&!row.blocked&&!row.missingEmblems.length&&!row.missingAugment;
     },
     ranked(plan,{allowSparse=false}={}){
-      if(!allowSparse&&this.signalCount(plan)<2)return [];
-      const rows=Academy.snapshot.guides.map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
-      if(!allowSparse&&!rows.some(r=>!r.blocked&&r.fitScore>0))return [];
-      for(const r of rows){r.baseTierRank=this.tierRank(r.guide.tier);r.recommendationTierRank=r.baseTierRank;r.strongFit=this.strongFit(r);}
+      if(!Academy.isCurrent())return [];
+      const rows=Academy.snapshot.guides.filter(g=>['S','A','B','X'].includes(g.tier))
+        .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
+      if(!allowSparse&&!rows.some(r=>r.unlocked)&&
+        (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
       for(const r of rows){
-        if(!r.strongFit||academyTier(r.guide.tier).conditional)continue;
-        // Stable bands avoid a pairwise comparator that can contradict itself.
-        // Beat the strongest original-tier candidate by 30 fit points per tier
-        // skipped, in addition to meeting the absolute strong-fit requirement.
+        r.baseTierRank=this.tierRank(r.unlocked?'A':r.guide.tier);
+        r.recommendationTierRank=r.baseTierRank;
+        r.strongFit=this.strongFit(r);
+      }
+      for(const r of rows){
+        if(!r.strongFit)continue;
+        // Beat the strongest original-tier candidate by 30 fit points per tier.
         for(let target=r.baseTierRank-1;target>=0;target--){
           const better=rows.filter(other=>!other.blocked&&other.baseTierRank===target);
           if(better.length&&r.fitScore<Math.max(...better.map(other=>other.fitScore))+30*(r.baseTierRank-target))break;
           r.recommendationTierRank=target;
         }
       }
-      return rows.sort((a,b)=>Number(a.blocked)-Number(b.blocked)||a.recommendationTierRank-b.recommendationTierRank||b.fitScore-a.fitScore||a.baseTierRank-b.baseTierRank||a.guide.title.localeCompare(b.guide.title));
+      const rankable=rows.filter(r=>!r.blocked).length;
+      return rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
+        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||a.recommendationTierRank-b.recommendationTierRank||b.fitScore-a.fitScore||a.baseTierRank-b.baseTierRank||a.guide.title.localeCompare(b.guide.title));
     },
     componentFit(plan,entries){
       let beam=[{pool:{...plan.owned},score:0,used:[],ready:[]}];
@@ -220,6 +235,7 @@ module.exports = function createCompFinder(model) {
       }return beam[0];
     },
     choose(plan,id){
+      if(!Academy.isCurrent())throw new Error('Refresh live data to choose a current comp.');
       const guide=Academy.snapshot.guides.find(g=>g.id===id);if(!guide)throw new Error('This comp is no longer available.');
       const fit=this.evaluate(plan,guide);if(!fit.selectable)throw new Error('This guide’s items are not available yet.');
       if(fit.blocked)throw new Error(fit.gateReason);
@@ -228,7 +244,7 @@ module.exports = function createCompFinder(model) {
       for(const p of fit.placements){const q=plan.queue.find(q=>q.uid===p.uid);if(q&&!q.champion)q.champion=p.champion;}
       const completed=plan.queue.filter(q=>q.done);
       plan.queue=[...completed,...fit.remaining.map((e,n)=>({...e,uid:crypto.randomUUID(),recommendedOrder:n,done:false,used:{},usedSources:{},academyItem:e.item,planSource:e.planSource||'academy'}))];
-      plan.pivotIntents={};plan.activeComp={guide:Academy.cleanGuide(guide),id:guide.id,title:guide.title,code:'',itemPriority:Academy.priorities(guide)};
+      plan.pivotIntents={};plan.activeComp={guide:Academy.cleanGuide(guide),id:guide.id,title:guide.title,code:'',patch:Academy.snapshot.patch,itemPriority:Academy.priorities(guide)};
       return {pending:fit.remaining.length,covered:fit.placements.length};
     }
   };

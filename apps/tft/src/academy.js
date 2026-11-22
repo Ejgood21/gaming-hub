@@ -2,11 +2,13 @@
 
 const {academySource, validAcademy} = require('./snapshots');
 
-module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlanner}) {
+module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlanner, requireLive}) {
   const coreRecipes=new Map(DATA.items.filter(i=>!i.academyOnly).map(i=>[i.id,[...i.recipe]]));
   /* Public TFT Academy data. Team codes contain champions, never item builds. */
   return {
     cacheKey:'carousel-academy-v7', snapshot:ACADEMY_BUNDLED, itemMap:new Map(),
+    requireLive, live:false, revision:0, liveMetaUnit:'',
+    isCurrent(){return !requireLive||this.live;},
     normalizeName(s){return String(s).toLowerCase().replace(/[^a-z0-9]/g,'');},
     decodeCode(text){
       const code=String(text).trim();
@@ -36,6 +38,11 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
       });
     },
     guide(plan){return plan.activeComp?.guide||this.snapshot.guides.find(g=>g.id===plan.activeComp?.id);},
+    currentGuide(plan){
+      if(!this.isCurrent())return;
+      if(!requireLive)return this.guide(plan);
+      return this.snapshot.guides.find(g=>g.id===(plan.activeComp?.id||plan.activeComp?.guide?.id));
+    },
     itemInfo(id){return this.snapshot.items.find(i=>this.itemMap.get(i.apiName)===id);},
     baseItem(id, snapshot=this.snapshot){
       const src=snapshot.items.find(i=>this.itemMap.get(i.apiName)===id);
@@ -57,17 +64,21 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
       if(!g||!Array.isArray(g.finalComp))return null;
       const text=v=>String(v||'').slice(0,4000);
       const unit=c=>({apiName:text(c.apiName),items:(c.items||[]).filter(i=>typeof i==='string').slice(0,6),boardIndex:Number.isInteger(c.boardIndex)&&c.boardIndex>=0&&c.boardIndex<28?c.boardIndex:null,stars:Math.max(1,Math.min(3,Number(c.stars)||1))});
-      // Academy can supply an explicit gate. For situational live guides, use
-      // a featured augment or a featured emblem on the final board.
-      const featured=g.mainItem?.apiName;
-      const inferred=g.tier!=='X'?null:g.mainAugment?.apiName&&!g.mainAugment.disabled
-        ? {type:'augment',id:g.mainAugment.apiName}
-        : items.some(i=>i.apiName===featured&&i.type==='emblems')&&g.finalComp.some(u=>u.items?.includes(featured))
-          ? {type:'emblem',id:featured} : null;
-      const gate=Object.hasOwn(g,'gatedBy')?g.gatedBy:inferred;
-      const gatedBy=['emblem','augment'].includes(gate?.type)&&typeof gate.id==='string'&&/^\w+$/.test(gate.id)
-        ? {type:gate.type,id:gate.id} : null;
+      const gatedBy=this.gate(g,items);
       return {gatedBy,id:text(g.id),title:text(g.title),compSlug:text(g.compSlug),tier:text(g.tier),set:Number(g.set),updated:text(g.updated),mainChampion:{apiName:text(g.mainChampion?.apiName)},mainItem:g.mainItem?.apiName?{apiName:text(g.mainItem.apiName)}:null,mainAugment:g.mainAugment?.apiName&&!g.mainAugment.disabled?{apiName:text(g.mainAugment.apiName)}:null,style:text(g.style),difficulty:text(g.difficulty),altBuilds:(g.altBuilds||[]).slice(0,40).map(unit),carousel:(g.carousel||[]).slice(0,30).map(p=>({apiName:text(p.apiName)})),earlyComp:(g.earlyComp||[]).slice(0,28).map(unit),finalComp:g.finalComp.slice(0,28).map(unit),augments:(g.augments||[]).filter(a=>a&&!a.disabled&&typeof a.apiName==='string').slice(0,60).map(a=>({apiName:text(a.apiName)})),augmentsTip:text(g.augmentsTip),tips:(g.tips||[]).slice(0,12).map(t=>({stage:text(t.stage),tip:text(t.tip)}))};
+    },
+    gate(guide,items=this.snapshot.items){
+      const gate=guide.gatedBy;
+      if(['item','emblem','augment'].includes(gate?.type)&&typeof gate.id==='string'&&/^\w+$/.test(gate.id)){
+        return {type:gate.type,id:gate.id};
+      }
+      if(guide.tier!=='X')return null;
+      if(guide.mainAugment?.apiName&&!guide.mainAugment.disabled)return {type:'augment',id:guide.mainAugment.apiName};
+      const featured=items.find(i=>i.apiName===guide.mainItem?.apiName);
+      if(featured&&featured.type!=='components')return {type:featured.type==='emblems'?'emblem':'item',id:featured.apiName};
+      const finalItems=new Set(guide.finalComp.flatMap(unit=>unit.items||[]));
+      const emblems=items.filter(i=>i.type==='emblems'&&finalItems.has(i.apiName));
+      return emblems.length===1?{type:'emblem',id:emblems[0].apiName}:null;
     },
     normalize(nodes,championData,itemData,augmentData){
       const guides=nodes.find(n=>Array.isArray(n?.guides))?.guides;
@@ -77,7 +88,7 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
       const snapshot=this.cleanSnapshot({
         patch:String(nodes.find(n=>n?.patch)?.patch||''),set,source:academySource,sourceUpdated,
         curatedAt:null,schemaVersion:1,fetchedAt:new Date().toISOString(),
-        guides:guides.filter(g=>g.isPublic&&g.set===set&&Array.isArray(g.finalComp)),
+        guides:guides.filter(g=>g.isPublic&&Number(g.set)===set&&Array.isArray(g.finalComp)),
         champions:championData.champions,items:itemData.items,augments:augmentData?.augments
       });
       return snapshot;
@@ -104,6 +115,7 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
         guides,champions,items,augments:this.cleanAugments(snapshot.augments)};
     },
     useSnapshot(snapshot){
+      this.itemMap.clear();
       this.register(snapshot,byId);
       this.snapshot=snapshot;
     },
@@ -195,7 +207,7 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
     },
     equipment(plan){
       const done=plan.queue.filter(q=>q.done),holders=new Map(done.map(q=>[q.uid,q.champion||'']));
-      const guide=this.guide(plan);
+      const guide=this.currentGuide(plan);
       if(!guide)return holders;
       const names=new Set(guide.finalComp.map(c=>this.snapshot.champions.find(x=>x.apiName===c.apiName)?.name));
       const entries=[...this.build(guide).entries],pool=[],slots=new Map();
@@ -224,7 +236,7 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
       });
     },
     componentPreference(plan,id){
-      const ordered=plan.activeComp?.itemPriority||[];
+      const ordered=requireLive?this.priorities(this.currentGuide(plan)||{}):plan.activeComp?.itemPriority||[];
       const at=ordered.findIndex(p=>p.component&&p.id===id);return at<0?999:at;
     }
   };
