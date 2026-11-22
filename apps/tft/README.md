@@ -4,6 +4,22 @@ In-game TFT helper, seeded 2026-11-22 from Evan's standalone HTML file
 (`carousel-companion.html`, 7.8 MB, 2,335 lines, as-shipped — do not edit
 the seed directly; Codex work splits/refactors it per the audit).
 
+**Upload note:** the single HTML file exceeded the GitHub MCP upload
+limit, so it is stored split in `parts/` — reassemble first, before any
+other work:
+
+```
+cat apps/tft/parts/carousel-companion.html.part00 \
+    apps/tft/parts/carousel-companion.html.part01 \
+  > apps/tft/carousel-companion.html
+sha256sum apps/tft/carousel-companion.html
+# expected: ef2e68040fa27d38dab3425d3f0d71399ded3072becd8329b0999358ad2a1fd8
+# bytes: 8133298
+```
+
+Delete the `parts/` files only after the reassembled file is verified
+and the split source (P0.3) is in place.
+
 ## What it does today
 
 - Manual item tracker: queue / bench / craft / receive / undo / backup.
