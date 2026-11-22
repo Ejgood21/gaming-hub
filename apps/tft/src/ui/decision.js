@@ -13,7 +13,7 @@ const DecisionUI = (()=>{
   document.querySelector('.loot-note p').textContent='A historical bag heuristic, not verified current-set odds. Used only after equally useful component choices and pins. It does not predict when another component will drop.';
   function signature(){
     const names=[...new Set([...state.queue.map(q=>q.champion),...Academy.snapshot.guides.map(g=>Academy.snapshot.champions.find(c=>c.apiName===g.mainChampion?.apiName)?.name)].filter(Boolean))];
-    return JSON.stringify(state)+'|'+Academy.snapshot.sourceUpdated+'|'+names.map(n=>{const d=MetaBuilds.dataFor({champion:n});return (d?.updated||0)+':'+(d?.fetchedAt||0);}).join(',');
+    return JSON.stringify(state)+'|'+Academy.revision+'|'+Academy.live+'|'+Academy.snapshot.sourceUpdated+'|'+names.map(n=>{const d=MetaBuilds.dataFor({champion:n});return (d?.updated||0)+':'+(d?.fetchedAt||0);}).join(',');
   }
   function get(){const key=signature();if(key!==cacheKey){cacheKey=key;const groups=DecisionPlanner.groups(state);current={groups,craft:DecisionPlanner.solve(state,groups),carousel:DecisionPlanner.carousel(state,groups)};}return current;}
   const compactItem=(id)=>`<span class="decision-item" title="${esc(byId[id].name)}" aria-label="${esc(byId[id].name)}">${icon(id)}</span>`;

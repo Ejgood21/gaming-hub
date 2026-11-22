@@ -158,7 +158,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
       // Planned priorities must be scored exclusively against the current queue.
       // A craftable alternative must not boost a planned component's rank.
       const baselineGroups=groups.map(g=>({...g,options:g.options.filter(option=>option.source==='academy')}));
-      const order=Academy.itemizationOrder(Academy.guide(plan)),holderRanks=new Map(order.flatMap((names,n)=>names.map(name=>[Academy.normalizeName(name),n])));
+      const order=Academy.itemizationOrder(Academy.currentGuide(plan)),holderRanks=new Map(order.flatMap((names,n)=>names.map(name=>[Academy.normalizeName(name),n])));
       const rawRank=name=>order.length?(holderRanks.get(Academy.normalizeName(name||''))??order.length):0;
       // An explicit user reorder can promote another recipient group. Otherwise
       // the guide's stated carry/tank/support sequence outranks a ready craft.
@@ -206,7 +206,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
     },
     anvil(plan,type='ornns'){
       if(type==='components')return this.carousel(plan).filter(r=>componentOrder.slice(0,8).includes(r.id)).map(r=>({...r,item:byId[r.id],component:true,champion:'',reason:r.count?r.count+' still needed for your queue':r.discovery?'Flexible component':r.pivot?'Pivot item':'Not needed'}));
-      const guide=Academy.guide(plan),ranked=guide?[]:CompFinder.ranked(plan,{allowSparse:true}).filter(r=>!r.blocked).slice(0,8);
+      const guide=Academy.currentGuide(plan),ranked=guide?[]:CompFinder.ranked(plan,{allowSparse:true}).filter(r=>!r.blocked).slice(0,8);
       const guides=guide?[guide]:ranked.map(r=>r.guide),names=[...new Set(guides.flatMap(g=>g.finalComp.map(u=>Academy.snapshot.champions.find(c=>c.apiName===u.apiName)?.name)).filter(Boolean))];
       const bases=new Map(guides.map(g=>[g.id,Academy.build(g).entries]));
       return CompFinder.ownedCatalog().filter(i=>i.type===type).map(item=>{

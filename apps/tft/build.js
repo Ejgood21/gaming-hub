@@ -44,14 +44,14 @@ ${definitions}
     }
     return loaded.get(id).exports;
   }
-  const {loadSnapshots, readAcademyCache, refreshAcademy} = require('./snapshots');
+  const {loadSnapshots, readAcademyCache, refreshLiveData, fetchMetaTFT} = require('./snapshots');
   const Backup = require('./backup');
   const bytes = Uint8Array.from(atob('${embedded}'), c => c.charCodeAt(0));
   const embedded = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
   const fallback = await new Response(embedded).json();
   const {academy: ACADEMY_BUNDLED, meta: META_BUNDLED, core} =
     await loadSnapshots(fallback, location.href, fetch);
-  const model = require('./model')({academy: ACADEMY_BUNDLED, meta: META_BUNDLED, core});
+  const model = require('./model')({academy: ACADEMY_BUNDLED, meta: META_BUNDLED, core, requireLive: true});
   const {
     DATA, byId, componentOrder, academyTier, Academy, Tracker, OfflineTracker, LootTracker,
     QueueOrder, PivotPlanner, QuickImport, MetaBuilds, CompFinder, DecisionPlanner,

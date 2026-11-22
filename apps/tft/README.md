@@ -27,21 +27,26 @@ opened directly. The original 8,133,298-byte seed was verified against SHA-256
 
 ## Data and recommendations
 
-- Academy's 18.3b snapshot has 45 guides (9 A, 18 B, 11 C, 7 Situational).
-  Explore builds needs at least two relevant inputs with positive fit. The
-  fit score lists the contributions behind each result. Guide requirements
-  are stored as `gatedBy` and item priority comes from the guide's structured
-  carousel list.
-- MetaTFT's saved statistics are from patch 18.3. They remain visible as stale
-  reference data. Automatic suggestions and pivots require the same set and
-  patch as Academy. The S/A labels are relative to each champion. The hosted
-  snapshot retains all 15,550 rows. Each row follows `buildColumns` and uses
-  indices into the snapshot's `itemIds` list.
-- The app tries Academy's live tierlist and asset endpoints. The browser cache
-  requires the bundled set and expires 24 hours after fetching. If the refresh
-  cannot be read, the app shows a saved-data notice and keeps working.
-- Live MetaTFT requests use the assigned champion, ranked queue, current patch,
-  last three days, and Platinum+ ranks. Each request goes directly to its source.
+- Carousel checks TFT Academy and MetaTFT on launch, new game, team-code
+  paste, and **Refresh live data**. It matches the Academy set to the MetaTFT
+  current queue and validates the patch. Academy's guide API can omit the
+  patch ID. In that case the tier list must have been updated within
+  MetaTFT's current-patch window, following the last day with mixed patches.
+- The bundled Academy fallback is Set 18, Patch 18.3b, fetched October 1,
+  2026. Saved tier lists carry a stale label and stay available for reference.
+  During a failed or mismatched refresh, the tracker keeps your items and
+  queue and Explore shows opening guidance. Current recommendations resume
+  after a verified refresh.
+- Explore uses Academy's S, A and B tiers. An X-tier guide can move ahead when
+  you have its structured required item, emblem or augment. The guide names
+  that requirement. X guides with an unmet requirement remain Situational.
+  The Academy tier list also shows the source's other tiers for reference.
+- MetaTFT builds use ranked queue, current patch, the last three days and
+  Platinum+ ranks. Recommendations and pivots use builds fetched for the
+  verified set and patch. The saved MetaTFT snapshot is from patch 18.3 and
+  stays available as reference. S/A labels are relative to each champion.
+  The hosted file preserves all 15,550 rows, encoded by its `buildColumns`
+  and `itemIds` fields.
 - Carousel priority uses queue shortages, crafting value, and the loot-history
   tie-break. It estimates crafting value without assuming measured drop odds.
 

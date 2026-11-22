@@ -1,11 +1,14 @@
 'use strict';
 
-module.exports = function createQuickImport({Academy, academyTier}) {
+module.exports = function createQuickImport(model) {
+  const {Academy, academyTier} = model;
   return {
-    choose(text) {
+    choose(text, currentPlan) {
+      if(!Academy.isCurrent())throw new Error('Refresh live data before importing a team code.');
+      const rank=guide=>academyTier(guide.tier==='X'&&currentPlan&&model.CompFinder.requirements(currentPlan,guide).unlocked?'A':guide.tier).rank;
       const result=Academy.match(text);
       if(!result.exact)throw new Error('No exact TFT Academy comp matches this code. Your current queue is unchanged.');
-      const candidates=[...result.matches].sort((a,b)=>academyTier(a.guide.tier).rank-academyTier(b.guide.tier).rank||String(b.guide.updated).localeCompare(String(a.guide.updated))||a.guide.title.localeCompare(b.guide.title));
+      const candidates=[...result.matches].sort((a,b)=>rank(a.guide)-rank(b.guide)||String(b.guide.updated).localeCompare(String(a.guide.updated))||a.guide.title.localeCompare(b.guide.title));
       const guide=candidates[0].guide,plan=Academy.build(guide);
       if(plan.missing.length)throw new Error('Some items in this guide are not recognized yet. Your current queue is unchanged.');
       if(!plan.entries.length)throw new Error('This guide has no recommended items. Your current queue is unchanged.');
@@ -23,7 +26,7 @@ module.exports = function createQuickImport({Academy, academyTier}) {
       // Preserve physical inventory exactly, including completed items no longer
       // recommended by the new comp. Each owned copy covers only one target.
       plan.queue=[...completed,...pending];plan.pivotIntents={};
-      plan.activeComp={guide:Academy.cleanGuide(choice.guide),id:choice.guide.id,title:choice.guide.title,code,itemPriority:choice.priorities||Academy.priorities(choice.guide)};
+      plan.activeComp={guide:Academy.cleanGuide(choice.guide),id:choice.guide.id,title:choice.guide.title,code,patch:Academy.snapshot.patch,itemPriority:choice.priorities||Academy.priorities(choice.guide)};
       return {pending:pending.length,covered};
     }
   };

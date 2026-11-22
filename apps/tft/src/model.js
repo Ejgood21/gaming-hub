@@ -19,10 +19,10 @@ const componentOrder = [
   'NegatronCloak', 'GiantsBelt', 'SparringGloves', 'Spatula', 'FryingPan'
 ];
 
-module.exports = function createModel({core, academy, meta}) {
+module.exports = function createModel({core, academy, meta, requireLive = false}) {
   const DATA = structuredClone(core);
   const byId = Object.fromEntries([...DATA.components, ...DATA.items].map(i => [i.id, i]));
-  const model = {DATA, byId, componentOrder, academyTier, ACADEMY_BUNDLED: academy};
+  const model = {DATA, byId, componentOrder, academyTier, ACADEMY_BUNDLED: academy, requireLive};
   model.LootTracker = createLootTracker(model);
   model.Tracker = createTracker(model);
   model.PivotPlanner = createPivotPlanner(model);

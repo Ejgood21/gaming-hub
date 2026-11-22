@@ -2,10 +2,10 @@
   const center=document.querySelector('.centercol'),queueColumn=document.createElement('div');queueColumn.className='plan-queue';
   while(center.firstChild)queueColumn.append(center.firstChild);center.append(queueColumn);
   const overview=document.createElement('aside');overview.className='plan-overview';overview.setAttribute('aria-label','Academy build progress and advice');center.append(overview);
-  overview.innerHTML='<section class="board-panel panel"><div class="board-heading"><button id="board-source" class="quiet">Academy original ↗</button></div><div id="position-board"></div><div class="board-legend"><span>○ Planned</span><span>◐ Components ready</span><span>✓ Completed</span><span>↔ Adjusted plan</span></div><div id="board-extras"></div></section><section class="tips-panel panel"><div class="tips-heading"><h2>Academy tips</h2></div><div id="academy-tips"></div></section>';
+  overview.innerHTML='<section class="board-panel panel"><div class="board-heading"><span id="board-source-status" class="source-notice"></span><button id="board-source" class="quiet">Academy original ↗</button></div><div id="position-board"></div><div class="board-legend"><span>○ Planned</span><span>◐ Components ready</span><span>✓ Completed</span><span>↔ Adjusted plan</span></div><div id="board-extras"></div></section><section class="tips-panel panel"><div class="tips-heading"><h2>Academy tips</h2></div><div id="academy-tips"></div></section>';
   const origin=document.createElement('div');origin.className='academy-order';origin.innerHTML='<button id="restore-academy" class="quiet">Reset targets to Academy</button>';overview.prepend(origin);origin.prepend(document.getElementById('academy-priority'));
   document.getElementById('restore-academy').addEventListener('click',()=>mutate(()=>PlanAdvisor.restoreAcademy(state),'Academy targets restored. Inventory kept.'));
-  const diagnostics=document.createElement('details');diagnostics.className='data-diagnostics';diagnostics.innerHTML='<summary>MetaTFT connection details</summary><p>Versioned snapshot → browser cache → live API. Refresh checks run for assigned champions on launch, focus, and while this tab is visible. Successful data stays fresh for 15 minutes; failed requests wait 5 minutes before retrying.</p><p>Host: <code>api-hc.metatft.com</code><br>Endpoints: <code>unit_detail_overall</code> and <code>unit_detail_items</code>. Filters: ranked, Platinum+, current patch, last 3 days, three-item builds. No API key.</p><div id="meta-diagnostics"></div>';
+  const diagnostics=document.createElement('details');diagnostics.className='data-diagnostics';diagnostics.innerHTML='<summary>MetaTFT connection details</summary><p>Live checks run for assigned champions after a verified refresh, on focus, and while this tab is visible. Stats can guide pivots for 15 minutes. A failed check makes prior stats stale reference.</p><p>Host: <code>api-hc.metatft.com</code><br>Endpoints: <code>unit_detail_overall</code> and <code>unit_detail_items</code>. Filters: ranked, Platinum+, current patch, last 3 days, three-item builds. No API key.</p><div id="meta-diagnostics"></div>';
   document.getElementById('settings-dialog').append(diagnostics);
   if(state.activeComp&&!state.activeComp.guide){const g=Academy.guide(state);if(g){state.activeComp.guide=Academy.cleanGuide(g);save();}}
   let assignmentUid='';
@@ -21,6 +21,10 @@
   const champIcon=(unit)=>{const c=Academy.snapshot.champions.find(c=>c.apiName===unit.apiName),embedded=ACADEMY_BUNDLED.champions.find(c=>c.apiName===unit.apiName)?.icon;return {cost:c?.cost||1,name:c?.name||unit.apiName.replace(/^DA_/,''),src:embedded?.startsWith('data:')?embedded:c?.icon||'https://assets.tftacademy.com/champions/champion_icons/'+encodeURIComponent(unit.apiName)+'.webp'};};
   function renderBoard(){
     const guide=Academy.guide(state);overview.hidden=!guide;origin.hidden=!guide;if(!guide)return;
+    const activePatch=state.activeComp?.patch;
+    const current=Academy.live&&activePatch===Academy.snapshot.patch&&Academy.currentGuide(state);
+    document.getElementById('board-source-status').textContent=current?'':`Saved plan${activePatch?' · Patch '+activePatch:''}`;
+    document.getElementById('restore-academy').disabled=!Academy.currentGuide(state);
     document.getElementById('board-source').setAttribute('aria-label','View original '+guide.title+' guide inside the app');
     const holders=Academy.equipment(state),allocated=Tracker.allocate(state,DATA.items),rows=new Map(allocated.rows.map(q=>[q.uid,q]));
     const names=new Set(guide.finalComp.map(c=>champIcon(c).name));
@@ -45,7 +49,7 @@
   }
 
   function drawConnections(){
-    document.getElementById('meta-diagnostics').innerHTML=MetaBuilds.connections().map(s=>`<p><b>${IconUI.championLabel(Academy.snapshot.champions.find(c=>c.apiName===s.unit)?.name||s.unit)}</b> · ${esc(s.source||'no data')} · checked ${new Date(s.checked).toLocaleTimeString()}${s.error?`<br><span class="connection-error">${esc(s.error)} — using saved stats when available</span>`:''}</p>`).join('')||'<p>No requests yet. Import a comp or choose a champion in S/A item builds.</p>';
+    document.getElementById('meta-diagnostics').innerHTML=MetaBuilds.connections().map(s=>`<p><b>${IconUI.championLabel(Academy.snapshot.champions.find(c=>c.apiName===s.unit)?.name||s.unit)}</b> · ${esc(s.source||'no data')} · checked ${new Date(s.checked).toLocaleTimeString()}${s.error?`<br><span class="connection-error">${esc(s.error)} · saved stats are reference only</span>`:''}</p>`).join('')||'<p>No requests yet. Import a comp or choose a champion in S/A item builds.</p>';
   }
   overview.addEventListener('click',e=>{
     if(e.target.closest('#board-source')){const guide=Academy.guide(state);if(guide)MetaReference.openPage('https://tftacademy.com/tierlist/comps/'+encodeURIComponent(guide.compSlug),guide.title+' · TFT Academy');}
