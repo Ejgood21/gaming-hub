@@ -251,6 +251,14 @@ export async function build({
   for (const d of directories) {
     const target = path.join(output, d.name);
     await mkdir(target, { recursive: true });
+    if (d.name === "tft") {
+      const source = path.join(root, "apps", d.name);
+      const companion = path.join(source, "carousel-companion.html");
+      await cp(companion, path.join(target, "index.html"));
+      await cp(companion, path.join(target, "carousel-companion.html"));
+      await cp(path.join(source, "data"), path.join(target, "data"), { recursive: true });
+      continue;
+    }
     await writeFile(
       path.join(target, "index.html"),
       render(

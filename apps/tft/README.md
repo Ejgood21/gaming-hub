@@ -1,66 +1,48 @@
 # TFT Carousel Companion
 
-In-game TFT helper, seeded 2026-11-22 from Evan's standalone HTML file
-(`carousel-companion.html`, 7.8 MB, 2,335 lines, as-shipped — do not edit
-the seed directly; Codex work splits/refactors it per the audit).
+Carousel is a manual TFT item tracker and build planner. Record items, board
+units, and augments, or paste a TFT Academy team code to load a guide. The app
+runs in the browser and stores progress locally. Backups let you move progress
+between browsers.
 
-**Upload note:** the single HTML file exceeded the GitHub MCP upload
-limit, so it is stored split in `parts/` — reassemble first, before any
-other work:
+## Run locally
 
+Open `carousel-companion.html` directly in a browser. This version includes the
+Set 18 Academy guides, item recipes, thumbnails, and S/A MetaTFT builds in a
+compressed fallback. When the
+page is served over HTTP(S), it can also read the full snapshots next to it in
+`data/`. The Gaming Hub build publishes the page and snapshots under `/tft/`.
+
+Run the build and tests from this directory with Node 24.
+
+```sh
+node build.js
+node --test
 ```
-cat apps/tft/parts/carousel-companion.html.part00 \
-    apps/tft/parts/carousel-companion.html.part01 \
-  > apps/tft/carousel-companion.html
-sha256sum apps/tft/carousel-companion.html
-# expected: ef2e68040fa27d38dab3425d3f0d71399ded3072becd8329b0999358ad2a1fd8
-# bytes: 8133298
-```
 
-Delete the `parts/` files only after the reassembled file is verified
-and the split source (P0.3) is in place.
+Edit `src/` and `data/` and rebuild the distributable. The build and tests require
+zero dependencies. The HTML build is checked in so it can be downloaded and
+opened directly. The original 8,133,298-byte seed was verified against SHA-256
+`ef2e68040fa27d38dab3425d3f0d71399ded3072becd8329b0999358ad2a1fd8`.
 
-## What it does today
+## Data and recommendations
 
-- Manual item tracker: queue / bench / craft / receive / undo / backup.
-- Paste a TFT Academy team code to import a comp and track its items.
-- "Explore builds" fit-ranker over 45 Academy guides (Set 18 / Patch 18.3b
-  bundled snapshot, fetched 2026-10-01).
-- MetaTFT per-champion 3-item builds as a supplement (bundled Patch 18.3).
-- Augment suggestions (2-1 / 3-2 / 4-2) and item-anvil suggestions
-  (component / full / artifact / radiant).
-- Carousel priority (beam-search marginal utility + loot-history tie-break —
-  **not** drop odds; there is no odds model in the file).
+- Academy's 18.3b snapshot has 45 guides (9 A, 18 B, 11 C, 7 Situational).
+  Explore builds needs at least two relevant inputs with positive fit. The
+  fit score lists the contributions behind each result. Guide requirements
+  are stored as `gatedBy` and item priority comes from the guide's structured
+  carousel list.
+- MetaTFT's saved statistics are from patch 18.3. They remain visible as stale
+  reference data. Automatic suggestions and pivots require the same set and
+  patch as Academy. The S/A labels are relative to each champion. The hosted
+  snapshot retains all 15,550 rows. Each row follows `buildColumns` and uses
+  indices into the snapshot's `itemIds` list.
+- The app tries Academy's live tierlist and asset endpoints. The browser cache
+  requires the bundled set and expires 24 hours after fetching. If the refresh
+  cannot be read, the app shows a saved-data notice and keeps working.
+- Live MetaTFT requests use the assigned champion, ranked queue, current patch,
+  last three days, and Platinum+ ranks. Each request goes directly to its source.
+- Carousel priority uses queue shortages, crafting value, and the loot-history
+  tie-break. It estimates crafting value without assuming measured drop odds.
 
-## Live data (runtime, direct fetch, no proxy/key)
-
-- TFT Academy: `tftacademy.com/tierlist/comps/__data.json` +
-  `/api/assets/champions|items|augments?set=N`
-- MetaTFT: `api-hc.metatft.com/tft-stat-api/unit_detail_overall|items`
-  (ranked, current patch, last 3 days, Platinum+)
-- See `AUDIT-2026-11-21.md` §2 for exact endpoints, parsing, caching,
-  and fallback behaviour.
-
-## Known problems (audit, 2026-11-21)
-
-- Bundled Academy snapshot has **zero S-tier guides** (A 9, B 18, C 11, X 7);
-  MetaTFT S/A are per-champion builds, not comps.
-- Empty input recommends alphabetical A-tier #1; tier dominates fit below
-  the 60-point promotion gate; X-tier is inconsistent; emblem gating is a
-  prose regex; pivot roles cover only the 39 core items.
-- Three pivot engines can disagree; no comp-level pivot.
-- Zero tests; 4.95 MB of the file is base64 Academy icons.
-- Full findings + Codex work plan (P0–P3) + 16 acceptance tests (A1–A16):
-  `AUDIT-2026-11-21.md`.
-
-## Constraints for Codex work
-
-- No LLM call, backend, accounts, or paid API at runtime. Guidance must
-  work live in the browser via rules / precomputed snapshots.
-- Do not scrape BunnyMuffins at runtime. Opener data is a curated
-  per-patch snapshot (`openers/<patch>.json`) from
-  https://bunnymuffins.lol/openers — see audit §8.
-- Keep the tool working as a standalone page unless Evan approves a
-  build step. New home is `apps/tft/`, mirroring `apps/wow/`.
-- Codex model: GPT-6.2 Sol Extra High (GPT-6.1 Sol is no longer offered;
-  Extra High = 4 of 6, not Ultra/max).
+The original audit and acceptance criteria are in [AUDIT-2026-11-21.md](AUDIT-2026-11-21.md).
