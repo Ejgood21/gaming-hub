@@ -1,5 +1,5 @@
 (() => {
-  const key='carousel-metatft-v2',attempted=new Map(),waiting=[],pending=new Set(),connections=new Map();let active=0;
+  const key='carousel-metatft-v2',attempted=new Map(),waiting=[],pending=new Map(),connections=new Map();let active=0;
   const {freshness}=MetaBuilds;
   const report=()=>document.dispatchEvent(new Event('carousel-meta-updated'));
   const mark=(id,fields)=>connections.set(id,{...(connections.get(id)||{}),...fields});
@@ -8,6 +8,8 @@
     if(Array.isArray(saved))for(const entry of saved)MetaBuilds.cache(entry,'browser cache');
   }catch{}
   const status=document.createElement('span');status.id='meta-status';status.className='meta-status';document.querySelector('.academy-bar').append(status);
+  status.title='Requests go to api-hc.metatft.com. Data & keys shows last checks and errors. Academy remains the baseline.';
+  const statusLink='<a href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">MetaTFT supplement</a>';
   MetaBuilds.connection=name=>{
     const cached=MetaBuilds.find(name,true);
     return {...connections.get(MetaBuilds.champion(name)?.apiName),source:cached?.source==='live'&&!MetaBuilds.isCompatible(cached.entry)?'saved':cached?.source||'none'};
@@ -26,13 +28,22 @@
       el.innerHTML=`<div class="inline-pivot-label">Build instead <span class="pivot-source">${source}${context}</span></div><button class="inline-pivot-build" data-ready-pivot="${esc(choice.item.id)}" data-queue-uid="${esc(uid)}" aria-label="Build ${esc(choice.item.name)} instead of ${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(choice.item.id)}<strong>${esc(choice.item.name)}</strong><span class="inline-pivot-recipe">${choice.item.recipe.map(id=>icon(id)).join('<span>+</span>')}</span><span class="inline-build-label">Build</span></button>`;
       card.append(el);
     }
+    if(AcademyUI.isChecking()||[...pending.values()].includes(Academy.revision)){
+      status.innerHTML=statusLink+' · checking…';
+      return;
+    }
     const names=[...new Set(state.queue.map(q=>q.champion).filter(Boolean))];
-    const info=names.map(n=>MetaBuilds.connection(n)),errors=info.filter(s=>s.error).length;
-    const staleLive=info.some(s=>s.error?.startsWith('Stale patch'));
+    const info=names.map(n=>MetaBuilds.connection(n));
+    const errors=info.map(s=>s.revision===Academy.revision?s.error:'');
+    const failed=!Academy.live||errors.some(Boolean);
+    const staleLive=errors.some(error=>error?.startsWith('Stale patch'));
     const live=info.filter(s=>s.source==='live').length;
-    const relevant=names.map(name=>MetaBuilds.find(name,true)?.entry).filter(Boolean);
+    const relevant=names.flatMap((name,i)=>{
+      const data=MetaBuilds.find(name,true)?.entry;
+      return data&&(MetaBuilds.isCompatible(data)||!Academy.live||errors[i])?[data]:[];
+    });
     const currentProbe=MetaBuilds.dataFor({champion:Academy.snapshot.champions.find(c=>c.apiName===Academy.liveMetaUnit)?.name});
-    const reported=relevant.length?relevant:[currentProbe||META_BUNDLED];
+    const reported=relevant.length?relevant:currentProbe?[currentProbe]:failed?[META_BUNDLED]:[];
     const sources=new Map();
     for(const data of reported){
       const updated=new Date(data.sourceUpdated||data.updated);
@@ -41,10 +52,9 @@
       const source=`Patch ${data.patch||'unknown'} · ${date}${stale?' · stale reference':''}`;
       sources.set(source,stale);
     }
-    const statusText=active?'checking…':!names.length?(currentProbe?'live check complete':'awaiting champion'):errors?'refresh unavailable':live===names.length?'live stats':live?'live + saved reference':'saved reference';
-    status.innerHTML='<a href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">MetaTFT supplement</a> · '+
-      [...sources].map(([label,stale])=>`<span class="${stale?'source-notice':''}">${esc(label)}</span>`).join(' / ')+' · '+statusText+(staleLive?' · live returned a stale patch':'');
-    status.title='Requests go to api-hc.metatft.com. Data & keys shows last checks and errors. Academy remains the baseline.';
+    const statusText=failed?'refresh unavailable':!names.length?(currentProbe?'live check complete':'awaiting champion'):live===names.length?'live stats':live?'some live stats':'awaiting champion stats';
+    const labels=[...sources].map(([label,stale])=>`<span class="${stale?'source-notice':''}">${esc(label)}</span>`).join(' / ');
+    status.innerHTML=[statusLink,labels,statusText,staleLive?'live returned a stale patch':''].filter(Boolean).join(' · ');
   }
 
   function request(unit){
@@ -54,8 +64,8 @@
     if(pending.has(requestKey)||now-(attempted.get(requestKey)||0)<(info.error?5*60000:freshness))return;
     const cached=MetaBuilds.dataFor({champion:unit.name});
     if(cached&&now-Number(cached.fetchedAt||0)<freshness)return;
-    attempted.set(requestKey,now);mark(id,{checked:now,error:'',phase:'queued'});
-    pending.add(requestKey);waiting.push({id,set,patch,revision,requestKey});pump();
+    attempted.set(requestKey,now);mark(id,{revision,checked:now,error:'',phase:'queued'});
+    pending.set(requestKey,revision);waiting.push({id,set,patch,revision,requestKey});pump();
   }
 
   async function pump(){
@@ -85,7 +95,7 @@
   function checkActive(){for(const q of state.queue.filter(q=>q.champion))MetaBuilds.request(q.champion);}
   if(window.addEventListener){window.addEventListener('online',()=>{attempted.clear();checkActive();});window.addEventListener('focus',checkActive);}
   if(typeof setInterval==='function')setInterval(()=>{if(!document.hidden)checkActive();},60000);
-  const oldRender=render;render=function(){oldRender();draw();for(const q of state.queue.filter(q=>q.champion)){const unit=MetaBuilds.champion(q.champion);if(unit)request(unit);}};
+  const oldRender=render;render=function(){oldRender();checkActive();draw();};
   document.addEventListener('carousel-new-game',()=>{attempted.clear();for(const task of waiting.splice(0))pending.delete(task.requestKey);});
   document.getElementById('queue').addEventListener('click',e=>{
     const b=e.target.closest('[data-ready-pivot]');if(!b)return;

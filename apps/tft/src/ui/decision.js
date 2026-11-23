@@ -72,9 +72,9 @@ const DecisionUI = (()=>{
     b=e.target.closest('[data-batch-champion]');if(b){const action=get().craft.actions.find(a=>a.choice.champion===b.dataset.batchChampion);if(action)applyItemPivot(next=>DecisionPlanner.execute(next,{actions:[action]}),'Pivot crafted and remaining targets adjusted.');}
     b=e.target.closest('[data-plan-pivot],[data-build-pivot],[data-owned-pivot]');if(b){
       const id=b.dataset.planPivot||b.dataset.buildPivot||b.dataset.ownedPivot,mode=b.dataset.buildPivot?'craft':b.dataset.ownedPivot?'owned':'plan';
-      if(applyItemPivot(next=>DecisionPlanner.applyPivot(next,pivotChampion,id,mode),'Champion plan updated. Completed items kept.')){
+      applyItemPivot(next=>DecisionPlanner.applyPivot(next,pivotChampion,id,mode),'Champion plan updated. Completed items kept.',()=>{
         pivot.close();MetaReference.filter(id);drawIntents();
-      }
+      });
     }
     b=e.target.closest('#clear-pivot-intent');if(b)mutate(()=>{delete state.pivotIntents?.[Academy.normalizeName(MetaReference.selected())];},'Pivot target released. Current queue kept.');
 

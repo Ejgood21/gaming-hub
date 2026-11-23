@@ -7,6 +7,12 @@
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
   <details class="finder-method"><summary>How this is ranked · Academy tier, then your fit</summary><p>Academy tier leads the ranking. Your items, units and augments rank comps within each tier. A lower-tier comp can move ahead only with substantial matching resources and a clear fit advantage. Matches use its final board, alternate items, early holders, featured item and recommended carriers. All remaining item recipes are checked; each loose component counts once. Emblems count as whole items, radiants cover their normal versions, and special items never turn back into components. Missing emblems, required situational augments, core units and star upgrades reduce readiness. Current MetaTFT S/A item builds supplement Academy. An X-tier guide moves up when you own its required item or hold its required augment. A suggested carrier is a destination, not an equipped-item claim. Aim here keeps the Academy baseline; review alternate carriers in the plan. This is a fit estimate, not a win probability: economy, stage and lobby contesting are not tracked.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
+  const exploreInputs=panel.querySelector('.explore-inputs');
+  const boardEditor=exploreInputs.querySelector('.explore-board');
+  const planEditor=document.createElement('details');
+  planEditor.className='panel plan-champions';
+  planEditor.innerHTML='<summary>Edit current champions</summary>';
+  panel.before(planEditor);
   const alternatives=document.createElement('section');
   alternatives.className='panel pivot-section';
   alternatives.setAttribute('aria-labelledby','comp-alternative-title');
@@ -22,7 +28,7 @@
     if(exploring)panel.scrollIntoView({block:'start'});
   });
   const select=panel.querySelector('select');select.innerHTML='<option value="">Not chosen yet</option>';
-  const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query,0));
+  const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query));
   select.addEventListener('change',()=>mutate(()=>{state.firstAugment=select.value;state.chosenAugments||=['','',''];state.chosenAugments[0]=select.value;},'First augment updated.'));
   panel.querySelector('#finder-more').addEventListener('click',()=>{expanded=!expanded;draw();});
   panel.parentElement.addEventListener('click',e=>{
@@ -88,15 +94,21 @@
   document.addEventListener('error',e=>{if(!e.target.classList?.contains('augment-icon'))return;const fallback=document.createElement('span');fallback.className='augment-icon augment-fallback';fallback.textContent='✦';fallback.setAttribute('aria-hidden','true');e.target.replaceWith(fallback);},true);
   const chips=ids=>ids.map(id=>`<span class="finder-item" title="${esc(byId[id]?.name||id)}" aria-label="${esc(byId[id]?.name||id)}">${icon(id)}</span>`).join('');
   const unitChips=units=>units.map(u=>`<span class="fit-unit" title="${esc(u.name)} ${u.stars}★${u.targetStars&&u.targetStars>u.stars?' → target '+u.targetStars+'★':''}" aria-label="${esc(u.name)}, ${u.stars} stars">${IconUI.champion(u.apiName)}<b>${u.stars}★</b></span>`).join('');
-  function drawInputs(){
+  function drawBoard(){
     const units=CompFinder.units(state);
     document.getElementById('explore-current-units').innerHTML=units.map(u=>`<div class="current-unit"><div>${IconUI.champion(u.apiName)}<strong>${esc(u.name)}</strong><button class="unit-remove" data-unit-remove="${esc(u.apiName)}" aria-label="Remove ${esc(u.name)}">×</button></div><div class="unit-stars" role="group" aria-label="${esc(u.name)} star level">${[1,2,3].map(n=>`<button data-unit-stars="${n}" data-unit="${esc(u.apiName)}" data-focus="unit-${esc(u.apiName)}-${n}" aria-pressed="${u.stars===n}" aria-label="${esc(u.name)} ${n} star${n>1?'s':''}">${n}★</button>`).join('')}</div></div>`).join('')||'<p class="finder-note">Add a few units to see which boards you’re closest to.</p>';
-    document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>`<span class="explore-owned" title="${esc(byId[q.item].name)}">${icon(q.item)}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${esc(byId[q.item].name)}">×</button></span>`).join('')||'<span class="finder-note">No completed items recorded</span>';
-    if(unitsDialog.open)drawUnitDialog();if(itemsDialog.open)drawItemsDialog();drawSearch();
+    if(unitsDialog.open)drawUnitDialog();drawSearch();
   }
   function draw(){
     const comp=state.activeComp?.id||'';if(comp!==lastComp){exploring=false;lastComp=comp;}
     panel.hidden=!!state.activeComp&&!exploring;mode.hidden=!state.activeComp;mode.textContent=exploring?'Back to plan':'Explore builds';mode.setAttribute('aria-pressed',String(exploring));
+    planEditor.hidden=!panel.hidden;
+    const editorParent=panel.hidden?planEditor:exploreInputs;
+    if(boardEditor.parentElement!==editorParent){
+      if(panel.hidden)planEditor.append(boardEditor);
+      else exploreInputs.prepend(boardEditor);
+    }
+    drawBoard();
     document.querySelector('.centercol').classList.toggle('exploring-plan',!!state.activeComp&&exploring);
     alternatives.hidden=!state.activeComp;
     const current=Academy.currentGuide(state),guide=current||Academy.guide(state);
@@ -113,7 +125,8 @@
     alternativeButton.dataset.chooseComp=alternative?.id||'';
     alternativeButton.textContent=alternative?'Pivot to '+alternative.title:'';
     if(panel.hidden){picker.close();return;}
-    drawInputs();
+    document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>`<span class="explore-owned" title="${esc(byId[q.item].name)}">${icon(q.item)}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${esc(byId[q.item].name)}">×</button></span>`).join('')||'<span class="finder-note">No completed items recorded</span>';
+    if(itemsDialog.open)drawItemsDialog();
     const catalog=CompFinder.augments(),signature=catalog.map(a=>a.apiName+a.name).join('|')+'|'+(state.firstAugment||'');
     if(signature!==catalogSignature){catalogSignature=signature;select.innerHTML='<option value="">Not chosen yet</option>'+catalog.map(a=>`<option value="${esc(a.apiName)}">${esc(a.name)}</option>`).join('');if(state.firstAugment&&!catalog.some(a=>a.apiName===state.firstAugment))select.insertAdjacentHTML('beforeend',`<option value="${esc(state.firstAugment)}">${esc(CompFinder.augment(state.firstAugment)?.name||'Saved augment (unavailable)')}</option>`);select.value=state.firstAugment||'';picker.refresh();}
     const {rows,tierNotice,notice,guidance}=CompFinder.recommendations(state),selected=CompFinder.augment(state.firstAugment),hasMatch=rows.some(r=>r.augmentMatch);
@@ -131,10 +144,10 @@
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;
   }
-  document.addEventListener('carousel-new-game',()=>{expanded=false;exploring=false;search.value='';ownedSearch.value='';drawOwnedSearch();picker.close();unitsDialog.close();itemsDialog.close();draw();});
+  document.addEventListener('carousel-new-game',()=>{expanded=false;exploring=false;planEditor.open=false;search.value='';ownedSearch.value='';drawOwnedSearch();picker.close();unitsDialog.close();itemsDialog.close();draw();});
   document.addEventListener('carousel-comp-imported',()=>{exploring=false;draw();window.scrollTo(0,0);});
   document.addEventListener('carousel-meta-updated',draw);
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]');if(b)PivotDialog.open(b.dataset.pivotItem);});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]:not([data-pivot-kind])');if(b)PivotDialog.open(b.dataset.pivotItem);});
   const previous=render;render=function(){const focus=document.activeElement?.dataset.focus;previous();draw();if(focus?.startsWith('unit-'))document.querySelector('[data-focus="'+CSS.escape(focus)+'"]')?.focus();for(const card of document.querySelectorAll('#queue .qcard')){const uid=card.querySelector('[data-action="remove"]')?.dataset.id,img=card.querySelector('.qtop > .icon');if(!uid||!img)continue;const b=document.createElement('button');b.className='queue-item-pivot';b.dataset.pivotItem=uid;b.setAttribute('aria-label','Pivot '+byId[state.queue.find(q=>q.uid===uid).item].name);b.setAttribute('aria-haspopup','dialog');img.before(b);b.append(img);}};
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Explore builds:</b> type a champion name and Enter, then set its stars. Record your first augment and any completed items using the owned-item search or Browse all. Standard items, emblems, radiants, artifacts and other items are supported; click once per owned copy. Academy tier leads; lower tiers move ahead only for a strong match with a clear fit advantage. Unbuilt wishlist items do not count. Suggestions update from your board and inventory. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Other special-item carrier suggestions do not assign equipment automatically. Explore builds can be reopened from your plan. New game clears board, augment and inventory; Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');
   render();

@@ -89,8 +89,8 @@ module.exports = function createPivotPlanner(model) {
     if(!q||q.done||!item||q.item===id)return false;
     if(built&&!Tracker.canCraft(state.owned,item))return false;
     const holder=model.Academy.normalizeName(q.champion||'');
-    const existing=state.queue.find(row=>!row.done&&row.item===id&&
-      model.Academy.normalizeName(row.champion||'')===holder);
+    const existing=!holder&&state.queue.find(row=>!row.done&&row.item===id&&
+      !model.Academy.normalizeName(row.champion||''));
     if(existing){
       state.queue=state.queue.filter(row=>row!==q);
       if(built)Tracker.complete(state,existing,item);

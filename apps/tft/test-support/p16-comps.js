@@ -16,7 +16,9 @@ const apFast9 = comp('pe2ljiorlrcs6uj','AP Fast 9','S','DA_18_Alune',[
   ['DA_Sentinel18','DA_WarmogsArmor','DA_Crownguard','DA_ProtectorsVow'],
   ['DA_18_Morgana','DA_VoidStaff','DA_Morellonomicon'], ['DA_18_Ivern','DA_SpearOfShojin','DA_AdaptiveHelm'],
   ['DA_18_Alune','DA_BlueBuff','DA_ArchangelsStaff','DA_JeweledGauntlet']
-],{compSlug:'set-18-ap-95',style:'Fast 9'});
+],{compSlug:'set-18-ap-95',style:'Fast 9',carousel:[
+  'DA_SpearOfShojin','DA_Component_NeedlesslyLargeRod','DA_Component_TearOfTheGoddess','DA_Component_GiantsBelt'
+].map(apiName=>({apiName}))});
 const mamawood = comp('s2co8lsczo7eyg1','Mamawood','S','DA_18_Zyra',[
   ['DA_18_Aphelios'], ['DA_18_Alistar'], ['DA_18_Hecarim','DA_WarmogsArmor'],
   ['DA_18_Zyra','DA_SpearOfShojin'], ['DA_18_Xayah']

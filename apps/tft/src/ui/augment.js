@@ -1,5 +1,5 @@
 const AugmentUI=(()=>{
-  let activeSlot=0,query='',searchRows=[],searchIndex=0,result=null,contextKey='';
+  let activeSlot=0,query='',searchRows=[],searchIndex=0,result=null,contextKey='',lastSearchResults;
   const button=document.createElement('button');button.id='augment-open';button.textContent='Augment choices';document.querySelector('.decision-controls').append(button);
   const selected=document.createElement('div');selected.id='chosen-augments';selected.className='chosen-augments';document.querySelector('.decision-controls').after(selected);
   const modal=document.createElement('dialog');modal.id='augment-dialog';modal.setAttribute('aria-labelledby','augment-title');
@@ -12,9 +12,16 @@ const AugmentUI=(()=>{
   function drawSelected(){const ids=AugmentAdvisor.slots(state);selected.hidden=!ids.some(Boolean);selected.innerHTML=ids.map((id,n)=>{const a=CompFinder.augment(id);if(!id)return '';return `<button data-edit-augment="${n}" title="${esc(a?.name||'Saved augment')} · ${AugmentAdvisor.stages[n]}" aria-label="Review ${esc(a?.name||'saved augment')} at ${AugmentAdvisor.stages[n]}">${augmentIcon(id)}<span>${esc(a?.name||'Saved augment')}</span><small>${AugmentAdvisor.stages[n]}</small></button>`;}).join('');}
   function search(){
     const o=offers(),norm=Academy.normalizeName(query);list.hidden=!norm;
-    searchRows=norm?AugmentAdvisor.catalog(state,o.round).filter(a=>!o.ids.includes(a.apiName)&&Academy.normalizeName(a.name).includes(norm)).sort((a,b)=>Number(!Academy.normalizeName(a.name).startsWith(norm))-Number(!Academy.normalizeName(b.name).startsWith(norm))||a.name.localeCompare(b.name)).slice(0,7):[];
+    const held=AugmentAdvisor.held(state);
+    const relevance=name=>name===norm?0:name.startsWith(norm)?1:2;
+    searchRows=norm?CompFinder.augments().filter(a=>!held.includes(a.apiName)&&!o.ids.includes(a.apiName)&&Academy.normalizeName(a.name).includes(norm))
+      .sort((a,b)=>relevance(Academy.normalizeName(a.name))-relevance(Academy.normalizeName(b.name))||a.name.localeCompare(b.name)).slice(0,7):[];
     searchIndex=Math.max(0,Math.min(searchIndex,searchRows.length-1));
-    list.innerHTML=searchRows.map((a,n)=>`<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(a.description)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query,o.round))+'</p>';
+    const results=searchRows.map((a,n)=>{
+      const detail=AugmentAdvisor.eligible(a,o.round)?a.description:'Academy lists '+a.stages.join(', ');
+      return `<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(detail)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`;
+    }).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query))+'</p>';
+    if(results!==lastSearchResults){list.innerHTML=results;lastSearchResults=results;}
   }
   function draw(){
     drawSelected();if(!modal.open)return;
@@ -28,14 +35,15 @@ const AugmentUI=(()=>{
       const a=CompFinder.augment(id),r=comparison.rows.find(r=>r.slot===slot),best=comparison.best?.slot===slot&&['take','lean'].includes(comparison.action),reroll=comparison.reroll?.slot===slot;
       if(!a)return `<article class="augment-offer empty-offer ${slot===activeSlot?'active-slot':''}"><button data-offer-edit="${slot}"><span>${slot+1}</span>${id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
       const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
-      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid?'Check offer':r?.evidence?'Contextual fit':'Limited evidence'}</div><div class="augment-reasons">${(r?.reasons||[]).slice(0,2).map(x=>`<span>${esc(x.text)}</span>`).join('')}</div>${r?.items?.length?'<div class="augment-related">'+r.items.slice(0,3).map(id=>`<span title="${esc(byId[id].name)}">${icon(id)}</span>`).join('')+'</div>':''}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>Took this</button></article>`;
+      const fit=best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid||r?.offRound?'Check offer':r?.evidence?'Contextual fit':'Limited evidence';
+      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${(r?.reasons||[]).slice(0,2).map(x=>`<span>${esc(x.text)}</span>`).join('')}</div>${r?.items?.length?'<div class="augment-related">'+r.items.slice(0,3).map(id=>`<span title="${esc(byId[id].name)}">${icon(id)}</span>`).join('')+'</div>':''}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>Took this</button></article>`;
     }).join('');
     document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
   function open(round){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';input.value='';contextKey='';modal.showModal();draw();input.focus();}
   function add(id){
-    const o=offers(),a=CompFinder.augment(id);if(!a||!AugmentAdvisor.eligible(a,o.round)||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
+    const o=offers(),a=CompFinder.augment(id);if(!a||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
     const slot=activeSlot;query='';input.value='';searchIndex=0;
     mutate(()=>{offers().ids[slot]=id;},'Offer '+(slot+1)+' entered.');
     const next=offers().ids.findIndex((id,n)=>n>slot&&!id);activeSlot=next>=0?next:Math.max(0,offers().ids.findIndex(id=>!id));draw();input.focus();

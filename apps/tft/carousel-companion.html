@@ -25,6 +25,7 @@
 /* One reading order, at every viewport width. */
 #queue,#pivot-results{grid-template-columns:minmax(0,1fr)}
 #pivot-dialog{width:610px}
+#item-pivot-confirm-message{white-space:pre-line;margin-top:8px}
 .pivot-option{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center}
 .pivot-itemhead{grid-column:1}.pivot-recipe{grid-column:1;margin:0}.pivot-actions{grid-column:2;grid-row:1/3;margin:0;display:flex;flex-direction:column;gap:5px}
 .pivot-actions button{min-width:100px}.meta-status{margin-left:auto;font-size:12px;color:var(--muted)}
@@ -116,6 +117,9 @@
 
 .comp-finder{padding:15px;margin-bottom:16px;overflow:visible;background:#151e28;border-color:#334151}
 .comp-finder[hidden],#queue .empty[hidden]{display:none}
+.plan-champions{margin-bottom:12px;padding:9px 12px;overflow:visible}
+.plan-champions>summary{cursor:pointer;font-size:13px}
+.plan-champions .explore-board{margin-top:9px}
 .finder-heading h2{font-size:18px}.finder-heading p,.finder-note{font-size:12px;color:#9eafc2;margin-top:4px}
 .finder-controls{display:flex;align-items:center;gap:12px;margin-top:12px}.finder-controls>label{font-size:12px;color:#c1ccda;flex-shrink:0}.finder-controls>.icon-select{width:min(380px,100%)}.finder-controls .icon-select-popup{z-index:30}.finder-controls .icon-select-trigger{min-height:38px;padding:5px 9px}
 .augment-icon{width:28px;height:28px;object-fit:contain;flex-shrink:0}.augment-fallback{display:inline-grid;place-items:center;background:#343545;border-radius:4px;color:#b9b6df}.finder-note{min-height:18px}
@@ -553,13 +557,11 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     eligible(a,round){return !a.stages?.length||a.stages.includes(this.stages[round]);},
     catalog(plan,round){const held=new Set(this.held(plan));return (Academy.snapshot.augments||[]).filter(a=>!held.has(a.apiName)&&this.eligible(a,round)).sort((a,b)=>a.name.localeCompare(b.name));},
-    searchNotice(query,round){
+    searchNotice(query){
       const term=Academy.normalizeName(query);
       if(!term)return 'Type an augment name to search.';
       const matches=(Academy.snapshot.augments||[]).filter(a=>Academy.normalizeName(a.name).includes(term));
-      if(!matches.length)return 'Limited evidence · No TFT Academy entry matches this name.';
-      if(matches.some(a=>this.eligible(a,round)))return 'No remaining matches for this offer.';
-      return matches.slice(0,3).map(a=>a.name+' · Academy lists '+a.stages.join(', ')).join(' / ');
+      return matches.length?'No remaining matches for this offer.':'Limited evidence · No TFT Academy entry matches this name.';
     },
     context(plan){
       const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan,{allowSparse:true}),routes=ranked.filter(r=>!r.blocked).slice(0,8);
@@ -570,7 +572,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       const {plan,guide,units,pending,done,needs,urgent,held}=ctx,reasons=[],links=[];let score=0,evidence=0,conflict=false;
       const add=(points,text)=>{score+=points;reasons.push({points,text});};
       if(held.includes(a.apiName))return {augment:a,score:-999,evidence:0,reasons:[{text:'Already selected'}],invalid:true};
-      if(!this.eligible(a,round))return {augment:a,score:-999,evidence:0,reasons:[{text:'Not listed for this augment round'}],invalid:true};
+      if(!this.eligible(a,round))return {augment:a,score:-999,evidence:0,reasons:[{text:'Academy lists '+a.stages.join(', ')}],offRound:true};
       const endorses=g=>(g.augments||[]).some(x=>x.apiName===a.apiName)||g.mainAugment?.apiName===a.apiName;
       if(guide&&endorses(guide)){
         add(guide.mainAugment?.apiName===a.apiName?58:42,guide.mainAugment?.apiName===a.apiName?'Academy featured augment for your comp':'Academy recommends this for your comp');evidence=3;
@@ -615,7 +617,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     compare(plan,offers=this.ensure(plan)){
       const ctx=this.context(plan),round=offers.round,rows=offers.ids.map((id,slot)=>({a:CompFinder.augment(id),slot})).filter(x=>x.a).map(({a,slot})=>({...this.evaluate(a,ctx,round),slot})).sort((a,b)=>b.score-a.score||a.slot-b.slot);
-      const valid=rows.filter(r=>!r.invalid),best=valid[0],seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
+      const valid=rows.filter(r=>!r.invalid&&!r.offRound),best=valid[0],seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
       let action='enter',message='Enter your three offered augments.',reroll=null;
       if(best){
         const complete=offers.ids.every(Boolean)&&valid.length===3;
@@ -624,7 +626,9 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
         // will appear. Missing annotations alone never justify a reroll.
         const weakest=[...valid].reverse().find(r=>r.evidence>0&&(r.conflict||r.score<20));
         const better=weakest&&alternatives.filter(r=>r.augment.tier===weakest.augment.tier&&r.evidence>=2&&r.score>=best.score+16&&r.score>=32).sort((a,b)=>b.score-a.score)[0];
-        if(!complete){action='partial';message='Add all three offers to compare. Current best fit shown below.';}
+        if(!complete){action='partial';message=offers.ids.every(Boolean)
+          ?'Some offers have limited round evidence. The supported fit is shown below.'
+          :'Add all three offers to compare. Current best fit shown below.';}
         else if(best.score>=38&&best.evidence>=2){action='take';message='Take '+best.augment.name+' — strongest supported fit.';}
         else if(better&&weakest){action='reroll';reroll={slot:weakest.slot,example:better};message='Consider rerolling '+weakest.augment.name+' if available. Keep '+best.augment.name+' as your fallback.';}
         else if(best.evidence>0&&best.score>=8){action='lean';message='Lean '+best.augment.name+'. No strong reason to spend a reroll from the available data.';}
@@ -634,7 +638,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     record(plan,slot){
       const offers=this.ensure(plan),id=offers.ids[slot],a=CompFinder.augment(id);
-      if(!a||!this.eligible(a,offers.round)||this.held(plan).includes(id))return false;
+      if(!a||this.held(plan).includes(id))return false;
       const selected=this.slots(plan);selected[offers.round]=id;plan.chosenAugments=selected;plan.firstAugment=selected[0];
       plan.augmentOffers={round:Math.min(2,offers.round+1),ids:['','',''],seen:[]};return true;
     }
@@ -684,7 +688,7 @@ module.exports = function createCompFinder(model) {
      Academy owns the comp tier, item order and recommended augment lists. */
   return {
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
-    augments(){return (Academy.snapshot.augments||[]).filter(a=>!a.stages?.length||a.stages.includes('2-1')).sort((a,b)=>a.name.localeCompare(b.name));},
+    augments(){return [...(Academy.snapshot.augments||[])].sort((a,b)=>a.name.localeCompare(b.name));},
     augment(id){return (Academy.snapshot.augments||[]).find(a=>a.apiName===id);},
     units(plan){
       const byUnit=new Map();for(const u of plan.currentUnits||[]){const c=Academy.snapshot.champions.find(c=>c.apiName===u.apiName);if(!c)continue;const stars=Math.max(1,Math.min(3,Number(u.stars)||1));if(stars>(byUnit.get(u.apiName)?.stars||0))byUnit.set(u.apiName,{...c,stars});}return [...byUnit.values()];
@@ -1557,8 +1561,8 @@ module.exports = function createPivotPlanner(model) {
     if(!q||q.done||!item||q.item===id)return false;
     if(built&&!Tracker.canCraft(state.owned,item))return false;
     const holder=model.Academy.normalizeName(q.champion||'');
-    const existing=state.queue.find(row=>!row.done&&row.item===id&&
-      model.Academy.normalizeName(row.champion||'')===holder);
+    const existing=!holder&&state.queue.find(row=>!row.done&&row.item===id&&
+      !model.Academy.normalizeName(row.champion||''));
     if(existing){
       state.queue=state.queue.filter(row=>row!==q);
       if(built)Tracker.complete(state,existing,item);
@@ -2051,18 +2055,48 @@ function render(){
 function save(){QueueOrder.ensure(state);try{localStorage.setItem(KEY,JSON.stringify(state));storageOK=true;}catch(e){storageOK=false;}}
 let toastTimer;function toast(s){document.getElementById('toast').textContent=s;clearTimeout(toastTimer);toastTimer=setTimeout(()=>document.getElementById('toast').textContent='',2400);}
 function mutate(fn,message){history.push(JSON.stringify(state));if(history.length>40)history.shift();fn();save();render();if(message)toast(message);}
-function applyItemPivot(apply,message){
+const itemPivotConfirm=document.createElement('dialog');
+itemPivotConfirm.setAttribute('aria-labelledby','item-pivot-confirm-title');
+itemPivotConfirm.setAttribute('aria-describedby','item-pivot-confirm-message');
+itemPivotConfirm.innerHTML=`<h2 id="item-pivot-confirm-title">Confirm item pivot</h2>
+ <p id="item-pivot-confirm-message"></p><form method="dialog" class="dialogactions">
+ <button value="cancel" autofocus>Cancel</button><button value="confirm" class="primary">Confirm</button></form>`;
+document.body.append(itemPivotConfirm);
+let pendingItemPivot;
+itemPivotConfirm.querySelector('form').addEventListener('submit',event=>{
+ event.preventDefault();
+ const commit=pendingItemPivot;
+ pendingItemPivot=null;
+ itemPivotConfirm.close();
+ if(event.submitter?.value==='confirm')commit?.();
+});
+itemPivotConfirm.addEventListener('close',()=>{if(!itemPivotConfirm.open)pendingItemPivot=null;});
+function applyItemPivot(apply,message,onApplied){
+ if(itemPivotConfirm.open)return;
  const next=structuredClone(state);
- if(!apply(next))return false;
+ if(!apply(next))return;
  const holders=rows=>rows.map(q=>q.champion||'an unassigned holder').join(', ');
  const warnings=PivotPlanner.addedQueueCopies(state,next).map(({item,added,existing})=>{
    const name=byId[item].name;
    return existing.length?`${name} is already queued for ${holders(existing)}. Also queue it for ${holders(added)}?`
      :`Queue ${name} for ${holders(added)}? Each assignment needs its own copy.`;
  });
- if(warnings.length&&!window.confirm(warnings.join('\n\n')))return false;
- mutate(()=>{state=next;},message);
- return true;
+ if(!warnings.length){
+   mutate(()=>{state=next;},message);
+   onApplied?.();
+   return;
+ }
+ const before=JSON.stringify(state),revision=Academy.revision;
+ pendingItemPivot=()=>{
+   if(Academy.revision!==revision||JSON.stringify(state)!==before){
+     toast('The plan changed. Review the pivot again.');
+     return;
+   }
+   mutate(()=>{state=next;},message);
+   onApplied?.();
+ };
+ itemPivotConfirm.querySelector('p').textContent=warnings.join('\n\n');
+ itemPivotConfirm.showModal();
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const {action,id}=b.dataset,q=state.queue.find(q=>q.uid===id);
  if(action==='help'){document.getElementById('help').showModal();return;}
@@ -2085,7 +2119,7 @@ render();
 
 /* Per-item pivots. */
 (() => {
-  let targetId=null,pivotQuery='';
+  let targetId=null,pivotQuery='',lastCandidates;
   function matches(item,text){const words=text.toLowerCase().trim().split(/\s+/).filter(Boolean);const hay=[item.name,...item.recipe.map(id=>byId[id].name),...PivotPlanner.profile(item.id).flatMap(r=>[r,PivotPlanner.labels[r]])].join(' ').toLowerCase();return words.every(w=>hay.includes(w));}
   const dialog=document.createElement('dialog');dialog.id='pivot-dialog';dialog.setAttribute('aria-labelledby','pivot-title');
   dialog.innerHTML='<div class="pivot-dialog-head"><div id="pivot-original"></div><button id="close-pivot" aria-label="Close pivot chooser">×</button></div><label class="visuallyhidden" for="pivot-search">Find a replacement</label><input id="pivot-search" class="search" type="search" placeholder="Find an item…"><div id="pivot-results"></div>';
@@ -2102,11 +2136,15 @@ render();
     const meta=typeof MetaBuilds!=='undefined'&&MetaBuilds.dataFor?MetaBuilds.ranked(state,targetId,MetaBuilds.dataFor(target)):[];
     const ranks=new Map(meta.map((r,n)=>[r.item.id,{...r,order:n}]));
     if(target.champion)results.sort((a,b)=>(ranks.get(a.item.id)?.order??999)-(ranks.get(b.item.id)?.order??999));
-    document.getElementById('pivot-results').innerHTML=results.map(r=>{
+    const candidates=results.map(r=>{
       const i=r.item,costs={...pool};
       const recipe=i.recipe.map(c=>{const have=(costs[c]||0)>0;if(have)costs[c]--;return `<span class="pivot-ingredient ${have?'have':''}" aria-label="${esc(byId[c].name)} ${have?'owned':'needed'}">${icon(c)}<span>${shortNames[c]}${have?' ✓':''}</span></span>`;}).join('<b>+</b>');
       return `<article class="pivot-option"><div class="pivot-itemhead">${icon(i.id)}<h3>${esc(i.name)}</h3>${ranks.has(i.id)?`<small class="pivot-meta-tier">MetaTFT ${ranks.get(i.id).tier}${ranks.get(i.id).rankFilter==='ALL'?' · all ranks':''}</small>`:''}</div><div class="pivot-recipe">${recipe||'Received item'}<small>${esc(r.reasons.filter(reason=>reason.points).map(reason=>reason.text).join(' · '))}</small></div><div class="pivot-actions"><button data-pivot-item="${i.id}" data-pivot-kind="plan">Plan instead</button>${i.recipe.length===2?`<button class="primary" data-pivot-item="${i.id}" data-pivot-kind="built" ${Tracker.canCraft(state.owned,i)?'':'disabled title="Track both recipe components first"'}>Build instead</button>`: ''}</div></article>`;
     }).join('')||'<p class="emptysearch">No matching items.</p>';
+    if(candidates!==lastCandidates){
+      document.getElementById('pivot-results').innerHTML=candidates;
+      lastCandidates=candidates;
+    }
   }
   function openPivot(uid){targetId=uid;pivotQuery='';document.getElementById('pivot-search').value='';drawCandidates();dialog.showModal();document.getElementById('pivot-results').scrollTop=0;}
   document.addEventListener('carousel-meta-updated',()=>{if(dialog.open)drawCandidates();});
@@ -2118,7 +2156,8 @@ render();
     const target=state.queue.find(q=>q.uid===targetId&&!q.done);if(!target){dialog.close();return;}
     const id=b.dataset.pivotItem,built=b.dataset.pivotKind==='built',original=byId[target.item].name;
     if(!Academy.canEquip(state,target.champion,id)||built&&!Tracker.canCraft(state.owned,byId[id]))return;
-    if(applyItemPivot(next=>PivotPlanner.replace(next,targetId,id,DATA.items,built),`${byId[id].name} ${built?'built':'planned'} instead of ${original}.`))dialog.close();
+    applyItemPivot(next=>PivotPlanner.replace(next,target.uid,id,DATA.items,built),
+      `${byId[id].name} ${built?'built':'planned'} instead of ${original}.`,()=>dialog.close());
   });
   const oldRender=render;
   render=function(){
@@ -2220,7 +2259,7 @@ function academyTierBadges(guide,label=guide.tier){
     :' <span class="academy-tier">Secondary tier unavailable</span>');
 }
 
-(() => {
+const AcademyUI=(() => {
   let intent=0,controller,checking=true,error='';
   const bar=document.createElement('div');bar.className='academy-bar';
   bar.innerHTML='<a id="academy-tierlist" href="https://tftacademy.com/tierlist/comps" aria-haspopup="dialog">TFT Academy ↗</a><button id="refresh-live-data" class="quiet">Refresh live data</button><span id="academy-status" role="status"></span>';
@@ -2293,7 +2332,13 @@ function academyTierBadges(guide,label=guide.tier){
     let choice;
     try{choice=QuickImport.choose(code,state);}catch(e){feedback.textContent=e.message;feedback.classList.add('error');return;}
     let counts;
-    mutate(()=>{counts=QuickImport.replace(state,choice,code);},`${choice.guide.title} imported. Bench and completed items kept.`);
+    mutate(()=>{
+      counts=QuickImport.replace(state,choice,code);
+      const playable=new Set(CompFinder.champions().map(unit=>unit.apiName));
+      const imported=state.activeComp.guide.finalComp.filter(unit=>playable.has(unit.apiName));
+      state.currentUnits=CompFinder.units({currentUnits:imported})
+        .map(({apiName,stars})=>({apiName,stars}));
+    },`${choice.guide.title} imported. Current champions updated. Inventory kept.`);
     document.dispatchEvent(new Event('carousel-comp-imported'));
     feedback.textContent=`${counts.pending} targets${counts.covered?' · '+counts.covered+' already owned':''}.`+
       (choice.variants>1?` ${choice.variants} guides share this code. Using ${choice.guide.title}.`:'');
@@ -2312,6 +2357,7 @@ function academyTierBadges(guide,label=guide.tier){
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="undo"],#apply-import')){intent++;feedback.textContent='';feedback.classList.remove('error');}},true);
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy; component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Loose components and completed items stay; matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>Only exact champion matches are imported. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
   void refreshData(plannedSet());
+  return {isChecking:()=>checking};
 })();
 
 (() => {
@@ -2334,7 +2380,7 @@ function academyTierBadges(guide,label=guide.tier){
 })();
 
 (() => {
-  const key='carousel-metatft-v2',attempted=new Map(),waiting=[],pending=new Set(),connections=new Map();let active=0;
+  const key='carousel-metatft-v2',attempted=new Map(),waiting=[],pending=new Map(),connections=new Map();let active=0;
   const {freshness}=MetaBuilds;
   const report=()=>document.dispatchEvent(new Event('carousel-meta-updated'));
   const mark=(id,fields)=>connections.set(id,{...(connections.get(id)||{}),...fields});
@@ -2343,6 +2389,8 @@ function academyTierBadges(guide,label=guide.tier){
     if(Array.isArray(saved))for(const entry of saved)MetaBuilds.cache(entry,'browser cache');
   }catch{}
   const status=document.createElement('span');status.id='meta-status';status.className='meta-status';document.querySelector('.academy-bar').append(status);
+  status.title='Requests go to api-hc.metatft.com. Data & keys shows last checks and errors. Academy remains the baseline.';
+  const statusLink='<a href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">MetaTFT supplement</a>';
   MetaBuilds.connection=name=>{
     const cached=MetaBuilds.find(name,true);
     return {...connections.get(MetaBuilds.champion(name)?.apiName),source:cached?.source==='live'&&!MetaBuilds.isCompatible(cached.entry)?'saved':cached?.source||'none'};
@@ -2361,13 +2409,22 @@ function academyTierBadges(guide,label=guide.tier){
       el.innerHTML=`<div class="inline-pivot-label">Build instead <span class="pivot-source">${source}${context}</span></div><button class="inline-pivot-build" data-ready-pivot="${esc(choice.item.id)}" data-queue-uid="${esc(uid)}" aria-label="Build ${esc(choice.item.name)} instead of ${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(choice.item.id)}<strong>${esc(choice.item.name)}</strong><span class="inline-pivot-recipe">${choice.item.recipe.map(id=>icon(id)).join('<span>+</span>')}</span><span class="inline-build-label">Build</span></button>`;
       card.append(el);
     }
+    if(AcademyUI.isChecking()||[...pending.values()].includes(Academy.revision)){
+      status.innerHTML=statusLink+' · checking…';
+      return;
+    }
     const names=[...new Set(state.queue.map(q=>q.champion).filter(Boolean))];
-    const info=names.map(n=>MetaBuilds.connection(n)),errors=info.filter(s=>s.error).length;
-    const staleLive=info.some(s=>s.error?.startsWith('Stale patch'));
+    const info=names.map(n=>MetaBuilds.connection(n));
+    const errors=info.map(s=>s.revision===Academy.revision?s.error:'');
+    const failed=!Academy.live||errors.some(Boolean);
+    const staleLive=errors.some(error=>error?.startsWith('Stale patch'));
     const live=info.filter(s=>s.source==='live').length;
-    const relevant=names.map(name=>MetaBuilds.find(name,true)?.entry).filter(Boolean);
+    const relevant=names.flatMap((name,i)=>{
+      const data=MetaBuilds.find(name,true)?.entry;
+      return data&&(MetaBuilds.isCompatible(data)||!Academy.live||errors[i])?[data]:[];
+    });
     const currentProbe=MetaBuilds.dataFor({champion:Academy.snapshot.champions.find(c=>c.apiName===Academy.liveMetaUnit)?.name});
-    const reported=relevant.length?relevant:[currentProbe||META_BUNDLED];
+    const reported=relevant.length?relevant:currentProbe?[currentProbe]:failed?[META_BUNDLED]:[];
     const sources=new Map();
     for(const data of reported){
       const updated=new Date(data.sourceUpdated||data.updated);
@@ -2376,10 +2433,9 @@ function academyTierBadges(guide,label=guide.tier){
       const source=`Patch ${data.patch||'unknown'} · ${date}${stale?' · stale reference':''}`;
       sources.set(source,stale);
     }
-    const statusText=active?'checking…':!names.length?(currentProbe?'live check complete':'awaiting champion'):errors?'refresh unavailable':live===names.length?'live stats':live?'live + saved reference':'saved reference';
-    status.innerHTML='<a href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">MetaTFT supplement</a> · '+
-      [...sources].map(([label,stale])=>`<span class="${stale?'source-notice':''}">${esc(label)}</span>`).join(' / ')+' · '+statusText+(staleLive?' · live returned a stale patch':'');
-    status.title='Requests go to api-hc.metatft.com. Data & keys shows last checks and errors. Academy remains the baseline.';
+    const statusText=failed?'refresh unavailable':!names.length?(currentProbe?'live check complete':'awaiting champion'):live===names.length?'live stats':live?'some live stats':'awaiting champion stats';
+    const labels=[...sources].map(([label,stale])=>`<span class="${stale?'source-notice':''}">${esc(label)}</span>`).join(' / ');
+    status.innerHTML=[statusLink,labels,statusText,staleLive?'live returned a stale patch':''].filter(Boolean).join(' · ');
   }
 
   function request(unit){
@@ -2389,8 +2445,8 @@ function academyTierBadges(guide,label=guide.tier){
     if(pending.has(requestKey)||now-(attempted.get(requestKey)||0)<(info.error?5*60000:freshness))return;
     const cached=MetaBuilds.dataFor({champion:unit.name});
     if(cached&&now-Number(cached.fetchedAt||0)<freshness)return;
-    attempted.set(requestKey,now);mark(id,{checked:now,error:'',phase:'queued'});
-    pending.add(requestKey);waiting.push({id,set,patch,revision,requestKey});pump();
+    attempted.set(requestKey,now);mark(id,{revision,checked:now,error:'',phase:'queued'});
+    pending.set(requestKey,revision);waiting.push({id,set,patch,revision,requestKey});pump();
   }
 
   async function pump(){
@@ -2420,7 +2476,7 @@ function academyTierBadges(guide,label=guide.tier){
   function checkActive(){for(const q of state.queue.filter(q=>q.champion))MetaBuilds.request(q.champion);}
   if(window.addEventListener){window.addEventListener('online',()=>{attempted.clear();checkActive();});window.addEventListener('focus',checkActive);}
   if(typeof setInterval==='function')setInterval(()=>{if(!document.hidden)checkActive();},60000);
-  const oldRender=render;render=function(){oldRender();draw();for(const q of state.queue.filter(q=>q.champion)){const unit=MetaBuilds.champion(q.champion);if(unit)request(unit);}};
+  const oldRender=render;render=function(){oldRender();checkActive();draw();};
   document.addEventListener('carousel-new-game',()=>{attempted.clear();for(const task of waiting.splice(0))pending.delete(task.requestKey);});
   document.getElementById('queue').addEventListener('click',e=>{
     const b=e.target.closest('[data-ready-pivot]');if(!b)return;
@@ -2611,6 +2667,12 @@ const DialogDismiss = {
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
   <details class="finder-method"><summary>How this is ranked · Academy tier, then your fit</summary><p>Academy tier leads the ranking. Your items, units and augments rank comps within each tier. A lower-tier comp can move ahead only with substantial matching resources and a clear fit advantage. Matches use its final board, alternate items, early holders, featured item and recommended carriers. All remaining item recipes are checked; each loose component counts once. Emblems count as whole items, radiants cover their normal versions, and special items never turn back into components. Missing emblems, required situational augments, core units and star upgrades reduce readiness. Current MetaTFT S/A item builds supplement Academy. An X-tier guide moves up when you own its required item or hold its required augment. A suggested carrier is a destination, not an equipped-item claim. Aim here keeps the Academy baseline; review alternate carriers in the plan. This is a fit estimate, not a win probability: economy, stage and lobby contesting are not tracked.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
+  const exploreInputs=panel.querySelector('.explore-inputs');
+  const boardEditor=exploreInputs.querySelector('.explore-board');
+  const planEditor=document.createElement('details');
+  planEditor.className='panel plan-champions';
+  planEditor.innerHTML='<summary>Edit current champions</summary>';
+  panel.before(planEditor);
   const alternatives=document.createElement('section');
   alternatives.className='panel pivot-section';
   alternatives.setAttribute('aria-labelledby','comp-alternative-title');
@@ -2626,7 +2688,7 @@ const DialogDismiss = {
     if(exploring)panel.scrollIntoView({block:'start'});
   });
   const select=panel.querySelector('select');select.innerHTML='<option value="">Not chosen yet</option>';
-  const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query,0));
+  const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query));
   select.addEventListener('change',()=>mutate(()=>{state.firstAugment=select.value;state.chosenAugments||=['','',''];state.chosenAugments[0]=select.value;},'First augment updated.'));
   panel.querySelector('#finder-more').addEventListener('click',()=>{expanded=!expanded;draw();});
   panel.parentElement.addEventListener('click',e=>{
@@ -2692,15 +2754,21 @@ const DialogDismiss = {
   document.addEventListener('error',e=>{if(!e.target.classList?.contains('augment-icon'))return;const fallback=document.createElement('span');fallback.className='augment-icon augment-fallback';fallback.textContent='✦';fallback.setAttribute('aria-hidden','true');e.target.replaceWith(fallback);},true);
   const chips=ids=>ids.map(id=>`<span class="finder-item" title="${esc(byId[id]?.name||id)}" aria-label="${esc(byId[id]?.name||id)}">${icon(id)}</span>`).join('');
   const unitChips=units=>units.map(u=>`<span class="fit-unit" title="${esc(u.name)} ${u.stars}★${u.targetStars&&u.targetStars>u.stars?' → target '+u.targetStars+'★':''}" aria-label="${esc(u.name)}, ${u.stars} stars">${IconUI.champion(u.apiName)}<b>${u.stars}★</b></span>`).join('');
-  function drawInputs(){
+  function drawBoard(){
     const units=CompFinder.units(state);
     document.getElementById('explore-current-units').innerHTML=units.map(u=>`<div class="current-unit"><div>${IconUI.champion(u.apiName)}<strong>${esc(u.name)}</strong><button class="unit-remove" data-unit-remove="${esc(u.apiName)}" aria-label="Remove ${esc(u.name)}">×</button></div><div class="unit-stars" role="group" aria-label="${esc(u.name)} star level">${[1,2,3].map(n=>`<button data-unit-stars="${n}" data-unit="${esc(u.apiName)}" data-focus="unit-${esc(u.apiName)}-${n}" aria-pressed="${u.stars===n}" aria-label="${esc(u.name)} ${n} star${n>1?'s':''}">${n}★</button>`).join('')}</div></div>`).join('')||'<p class="finder-note">Add a few units to see which boards you’re closest to.</p>';
-    document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>`<span class="explore-owned" title="${esc(byId[q.item].name)}">${icon(q.item)}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${esc(byId[q.item].name)}">×</button></span>`).join('')||'<span class="finder-note">No completed items recorded</span>';
-    if(unitsDialog.open)drawUnitDialog();if(itemsDialog.open)drawItemsDialog();drawSearch();
+    if(unitsDialog.open)drawUnitDialog();drawSearch();
   }
   function draw(){
     const comp=state.activeComp?.id||'';if(comp!==lastComp){exploring=false;lastComp=comp;}
     panel.hidden=!!state.activeComp&&!exploring;mode.hidden=!state.activeComp;mode.textContent=exploring?'Back to plan':'Explore builds';mode.setAttribute('aria-pressed',String(exploring));
+    planEditor.hidden=!panel.hidden;
+    const editorParent=panel.hidden?planEditor:exploreInputs;
+    if(boardEditor.parentElement!==editorParent){
+      if(panel.hidden)planEditor.append(boardEditor);
+      else exploreInputs.prepend(boardEditor);
+    }
+    drawBoard();
     document.querySelector('.centercol').classList.toggle('exploring-plan',!!state.activeComp&&exploring);
     alternatives.hidden=!state.activeComp;
     const current=Academy.currentGuide(state),guide=current||Academy.guide(state);
@@ -2717,7 +2785,8 @@ const DialogDismiss = {
     alternativeButton.dataset.chooseComp=alternative?.id||'';
     alternativeButton.textContent=alternative?'Pivot to '+alternative.title:'';
     if(panel.hidden){picker.close();return;}
-    drawInputs();
+    document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>`<span class="explore-owned" title="${esc(byId[q.item].name)}">${icon(q.item)}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${esc(byId[q.item].name)}">×</button></span>`).join('')||'<span class="finder-note">No completed items recorded</span>';
+    if(itemsDialog.open)drawItemsDialog();
     const catalog=CompFinder.augments(),signature=catalog.map(a=>a.apiName+a.name).join('|')+'|'+(state.firstAugment||'');
     if(signature!==catalogSignature){catalogSignature=signature;select.innerHTML='<option value="">Not chosen yet</option>'+catalog.map(a=>`<option value="${esc(a.apiName)}">${esc(a.name)}</option>`).join('');if(state.firstAugment&&!catalog.some(a=>a.apiName===state.firstAugment))select.insertAdjacentHTML('beforeend',`<option value="${esc(state.firstAugment)}">${esc(CompFinder.augment(state.firstAugment)?.name||'Saved augment (unavailable)')}</option>`);select.value=state.firstAugment||'';picker.refresh();}
     const {rows,tierNotice,notice,guidance}=CompFinder.recommendations(state),selected=CompFinder.augment(state.firstAugment),hasMatch=rows.some(r=>r.augmentMatch);
@@ -2735,10 +2804,10 @@ const DialogDismiss = {
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;
   }
-  document.addEventListener('carousel-new-game',()=>{expanded=false;exploring=false;search.value='';ownedSearch.value='';drawOwnedSearch();picker.close();unitsDialog.close();itemsDialog.close();draw();});
+  document.addEventListener('carousel-new-game',()=>{expanded=false;exploring=false;planEditor.open=false;search.value='';ownedSearch.value='';drawOwnedSearch();picker.close();unitsDialog.close();itemsDialog.close();draw();});
   document.addEventListener('carousel-comp-imported',()=>{exploring=false;draw();window.scrollTo(0,0);});
   document.addEventListener('carousel-meta-updated',draw);
-  document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]');if(b)PivotDialog.open(b.dataset.pivotItem);});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]:not([data-pivot-kind])');if(b)PivotDialog.open(b.dataset.pivotItem);});
   const previous=render;render=function(){const focus=document.activeElement?.dataset.focus;previous();draw();if(focus?.startsWith('unit-'))document.querySelector('[data-focus="'+CSS.escape(focus)+'"]')?.focus();for(const card of document.querySelectorAll('#queue .qcard')){const uid=card.querySelector('[data-action="remove"]')?.dataset.id,img=card.querySelector('.qtop > .icon');if(!uid||!img)continue;const b=document.createElement('button');b.className='queue-item-pivot';b.dataset.pivotItem=uid;b.setAttribute('aria-label','Pivot '+byId[state.queue.find(q=>q.uid===uid).item].name);b.setAttribute('aria-haspopup','dialog');img.before(b);b.append(img);}};
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Explore builds:</b> type a champion name and Enter, then set its stars. Record your first augment and any completed items using the owned-item search or Browse all. Standard items, emblems, radiants, artifacts and other items are supported; click once per owned copy. Academy tier leads; lower tiers move ahead only for a strong match with a clear fit advantage. Unbuilt wishlist items do not count. Suggestions update from your board and inventory. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Other special-item carrier suggestions do not assign equipment automatically. Explore builds can be reopened from your plan. New game clears board, augment and inventory; Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');
   render();
@@ -2818,9 +2887,9 @@ const DecisionUI = (()=>{
     b=e.target.closest('[data-batch-champion]');if(b){const action=get().craft.actions.find(a=>a.choice.champion===b.dataset.batchChampion);if(action)applyItemPivot(next=>DecisionPlanner.execute(next,{actions:[action]}),'Pivot crafted and remaining targets adjusted.');}
     b=e.target.closest('[data-plan-pivot],[data-build-pivot],[data-owned-pivot]');if(b){
       const id=b.dataset.planPivot||b.dataset.buildPivot||b.dataset.ownedPivot,mode=b.dataset.buildPivot?'craft':b.dataset.ownedPivot?'owned':'plan';
-      if(applyItemPivot(next=>DecisionPlanner.applyPivot(next,pivotChampion,id,mode),'Champion plan updated. Completed items kept.')){
+      applyItemPivot(next=>DecisionPlanner.applyPivot(next,pivotChampion,id,mode),'Champion plan updated. Completed items kept.',()=>{
         pivot.close();MetaReference.filter(id);drawIntents();
-      }
+      });
     }
     b=e.target.closest('#clear-pivot-intent');if(b)mutate(()=>{delete state.pivotIntents?.[Academy.normalizeName(MetaReference.selected())];},'Pivot target released. Current queue kept.');
 
@@ -2834,7 +2903,7 @@ const DecisionUI = (()=>{
 })();
 
 const AugmentUI=(()=>{
-  let activeSlot=0,query='',searchRows=[],searchIndex=0,result=null,contextKey='';
+  let activeSlot=0,query='',searchRows=[],searchIndex=0,result=null,contextKey='',lastSearchResults;
   const button=document.createElement('button');button.id='augment-open';button.textContent='Augment choices';document.querySelector('.decision-controls').append(button);
   const selected=document.createElement('div');selected.id='chosen-augments';selected.className='chosen-augments';document.querySelector('.decision-controls').after(selected);
   const modal=document.createElement('dialog');modal.id='augment-dialog';modal.setAttribute('aria-labelledby','augment-title');
@@ -2847,9 +2916,16 @@ const AugmentUI=(()=>{
   function drawSelected(){const ids=AugmentAdvisor.slots(state);selected.hidden=!ids.some(Boolean);selected.innerHTML=ids.map((id,n)=>{const a=CompFinder.augment(id);if(!id)return '';return `<button data-edit-augment="${n}" title="${esc(a?.name||'Saved augment')} · ${AugmentAdvisor.stages[n]}" aria-label="Review ${esc(a?.name||'saved augment')} at ${AugmentAdvisor.stages[n]}">${augmentIcon(id)}<span>${esc(a?.name||'Saved augment')}</span><small>${AugmentAdvisor.stages[n]}</small></button>`;}).join('');}
   function search(){
     const o=offers(),norm=Academy.normalizeName(query);list.hidden=!norm;
-    searchRows=norm?AugmentAdvisor.catalog(state,o.round).filter(a=>!o.ids.includes(a.apiName)&&Academy.normalizeName(a.name).includes(norm)).sort((a,b)=>Number(!Academy.normalizeName(a.name).startsWith(norm))-Number(!Academy.normalizeName(b.name).startsWith(norm))||a.name.localeCompare(b.name)).slice(0,7):[];
+    const held=AugmentAdvisor.held(state);
+    const relevance=name=>name===norm?0:name.startsWith(norm)?1:2;
+    searchRows=norm?CompFinder.augments().filter(a=>!held.includes(a.apiName)&&!o.ids.includes(a.apiName)&&Academy.normalizeName(a.name).includes(norm))
+      .sort((a,b)=>relevance(Academy.normalizeName(a.name))-relevance(Academy.normalizeName(b.name))||a.name.localeCompare(b.name)).slice(0,7):[];
     searchIndex=Math.max(0,Math.min(searchIndex,searchRows.length-1));
-    list.innerHTML=searchRows.map((a,n)=>`<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(a.description)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query,o.round))+'</p>';
+    const results=searchRows.map((a,n)=>{
+      const detail=AugmentAdvisor.eligible(a,o.round)?a.description:'Academy lists '+a.stages.join(', ');
+      return `<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(detail)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`;
+    }).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query))+'</p>';
+    if(results!==lastSearchResults){list.innerHTML=results;lastSearchResults=results;}
   }
   function draw(){
     drawSelected();if(!modal.open)return;
@@ -2863,14 +2939,15 @@ const AugmentUI=(()=>{
       const a=CompFinder.augment(id),r=comparison.rows.find(r=>r.slot===slot),best=comparison.best?.slot===slot&&['take','lean'].includes(comparison.action),reroll=comparison.reroll?.slot===slot;
       if(!a)return `<article class="augment-offer empty-offer ${slot===activeSlot?'active-slot':''}"><button data-offer-edit="${slot}"><span>${slot+1}</span>${id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
       const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
-      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid?'Check offer':r?.evidence?'Contextual fit':'Limited evidence'}</div><div class="augment-reasons">${(r?.reasons||[]).slice(0,2).map(x=>`<span>${esc(x.text)}</span>`).join('')}</div>${r?.items?.length?'<div class="augment-related">'+r.items.slice(0,3).map(id=>`<span title="${esc(byId[id].name)}">${icon(id)}</span>`).join('')+'</div>':''}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>Took this</button></article>`;
+      const fit=best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid||r?.offRound?'Check offer':r?.evidence?'Contextual fit':'Limited evidence';
+      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${(r?.reasons||[]).slice(0,2).map(x=>`<span>${esc(x.text)}</span>`).join('')}</div>${r?.items?.length?'<div class="augment-related">'+r.items.slice(0,3).map(id=>`<span title="${esc(byId[id].name)}">${icon(id)}</span>`).join('')+'</div>':''}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>Took this</button></article>`;
     }).join('');
     document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
   function open(round){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';input.value='';contextKey='';modal.showModal();draw();input.focus();}
   function add(id){
-    const o=offers(),a=CompFinder.augment(id);if(!a||!AugmentAdvisor.eligible(a,o.round)||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
+    const o=offers(),a=CompFinder.augment(id);if(!a||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
     const slot=activeSlot;query='';input.value='';searchIndex=0;
     mutate(()=>{offers().ids[slot]=id;},'Offer '+(slot+1)+' entered.');
     const next=offers().ids.findIndex((id,n)=>n>slot&&!id);activeSlot=next>=0?next:Math.max(0,offers().ids.findIndex(id=>!id));draw();input.focus();

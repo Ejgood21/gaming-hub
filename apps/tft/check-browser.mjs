@@ -56,6 +56,7 @@ try {
   });
   const choose = title => suggestion(title).locator('[data-choose-comp]').click();
   const alternate = page.locator('.pivot-section');
+  const savedPlan = () => page.evaluate(()=>JSON.parse(localStorage.getItem('carousel-tracker-v1')));
   // An offline queue created before the free-form picker was removed.
   await page.addInitScript(() => {
     localStorage.setItem('carousel-tracker-v1', JSON.stringify({
@@ -101,8 +102,9 @@ try {
   assert.equal(await page.locator('#app-title').textContent(),before);
   await pivotAction.waitFor();
 
+  const azirRammus=academy.guides.find(g=>g.title==='Azir Rammus');
   fixture = liveFixture({metaPatch:'18.7',omitAcademyPatch:true,allowOtherUnits:true,
-    guides:[apFast9,mamawood,covenElise,solarEclipse,{...covenElise,id:'unknown-x-guide',title:'X guide without a badge'}]});
+    guides:[apFast9,mamawood,covenElise,solarEclipse,azirRammus,{...covenElise,id:'unknown-x-guide',title:'X guide without a badge'}]});
   async function startGame(){
     await page.getByRole('button',{name:'New game',exact:true}).click();
     await page.getByText('Live · Patch 18.7',{exact:false}).waitFor();
@@ -132,28 +134,63 @@ try {
   await noPivot.waitFor();
   await checkWidth('.pivot-section, .qcard, .queue-champion, .board-panel, .need');
 
-  const blueBuff = page.locator('#queue .qcard').filter({has:page.getByRole('heading',{name:'Blue Buff',exact:true})});
-  const holders = () => blueBuff.locator('.item-owner').allTextContents();
-  assert.deepEqual(await holders(),['For Alune']);
-  await page.getByRole('button',{name:'Pivot Spear of Shojin for Ivern',exact:true}).click();
+  const card = name => page.locator('#queue .qcard').filter({has:page.getByRole('heading',{name,exact:true})});
+  const holders = name => card(name).locator('.item-owner').allTextContents();
+  const originalQueue = (await savedPlan()).queue;
+  assert.equal(originalQueue.length,10);
+  assert.deepEqual([originalQueue[0],originalQueue[2]].map(q=>[q.item,q.champion]),[['SpearOfShojin','Ivern'],['BlueBuff','Alune']]);
+  const openShojin=()=>page.getByRole('button',{name:'Pivot Spear of Shojin for Ivern',exact:true}).click();
+  await openShojin();
   await page.locator('#pivot-search').fill('Spear of Shojin');
   await page.getByText('No matching items.',{exact:true}).waitFor();
   await page.locator('#pivot-search').fill('Blue Buff');
   await checkWidth('#pivot-dialog, .pivot-option, .pivot-actions');
-  const planBlueBuff = page.locator('[data-pivot-item="BlueBuff"][data-pivot-kind="plan"]');
-  const confirmCopy = async accept => {
-    const dialog = page.waitForEvent('dialog').then(async dialog=>{
-      assert.equal(dialog.type(),'confirm');
-      assert.equal(dialog.message(),'Blue Buff is already queued for Alune. Also queue it for Ivern?');
-      await (accept?dialog.accept():dialog.dismiss());
-    });
-    await Promise.all([planBlueBuff.click(),dialog]);
+  const confirmation=page.getByRole('dialog',{name:'Confirm item pivot',exact:true});
+  const planInstead=id=>page.locator(`[data-pivot-item="${id}"][data-pivot-kind="plan"]`).click();
+  const confirmCopy=async (id,message,accept)=>{
+    await planInstead(id);
+    await confirmation.getByText(message,{exact:true}).waitFor();
+    assert.deepEqual((await savedPlan()).queue,originalQueue);
+    await confirmation.getByRole('button',{name:accept?'Confirm':'Cancel',exact:true}).click();
+    if(accept)await page.locator('#pivot-dialog').waitFor({state:'hidden'});
+    else assert.deepEqual((await savedPlan()).queue,originalQueue);
   };
-  await confirmCopy(false);
-  assert.deepEqual(await holders(),['For Alune']);
-  await confirmCopy(true);
-  assert.deepEqual((await holders()).sort(),['For Alune','For Ivern']);
+  const blueMessage='Blue Buff is already queued for Alune. Also queue it for Ivern?';
+  await confirmCopy('BlueBuff',blueMessage,false);
+  assert.deepEqual(await holders('Spear of Shojin'),['For Ivern']);
+  assert.deepEqual(await holders('Blue Buff'),['For Alune']);
+  await confirmCopy('BlueBuff',blueMessage,true);
+  assert.deepEqual((await holders('Blue Buff')).sort(),['For Alune','For Ivern']);
+  assert.equal((await savedPlan()).queue.length,10);
+  await page.locator('#undo').click();
+  await openShojin();
+  await page.locator('#pivot-search').fill('Adaptive Helm');
+  const helmMessage='Adaptive Helm is already queued for Ivern. Also queue it for Ivern?';
+  await confirmCopy('AdaptiveHelm',helmMessage,false);
+  await confirmCopy('AdaptiveHelm',helmMessage,true);
+  assert.deepEqual(await holders('Adaptive Helm'),['For Ivern','For Ivern']);
+  assert.equal((await savedPlan()).queue.length,10);
   await checkWidth('.qcard, .queue-champion, .need');
+
+  const augmentOpen=page.getByRole('button',{name:'Augment choices',exact:true});
+  const offerSearch=page.locator('#augment-offer-search');
+  const lotus='DA_JeweledLotus_I';
+  for(const keyboard of [false,true]){
+    await augmentOpen.click();
+    await offerSearch.fill(keyboard?'Jeweled Lotus':'Jeweled Lotus I');
+    if(keyboard){
+      await offerSearch.press('ArrowDown');
+      await offerSearch.press('ArrowUp');
+      await offerSearch.press('Enter');
+    }else{
+      await page.locator('#augment-search-results').getByText('Jeweled Lotus I',{exact:true}).click();
+    }
+    assert.equal((await savedPlan()).augmentOffers.ids[0],lotus);
+    await page.locator('[data-augment-take="0"]').click();
+    assert.equal((await savedPlan()).chosenAugments[0],lotus);
+    await page.locator('#undo').click();
+    await page.locator('#undo').click();
+  }
 
   await page.getByRole('button',{name:'Explore builds',exact:true}).click();
   await noPivot.waitFor();
@@ -167,8 +204,32 @@ try {
   await page.getByRole('button',{name:'Got one Tear of the Goddess from carousel',exact:true}).click();
   assert.equal(await page.getByRole('status',{name:'Tear of the Goddess owned',exact:true}).textContent(),'1');
   await checkWidth('.pivot-section, .qcard, .queue-champion, .board-panel, .need');
+  const readyFixture=fixture;
+  let releaseRefresh;
+  const delayed=new Promise(resolve=>{releaseRefresh=resolve;});
+  fixture=async url=>{await delayed;return readyFixture(url);};
+  await page.getByRole('button',{name:'Refresh live data',exact:true}).click();
+  assert.equal(await page.locator('#meta-status').innerText(),'MetaTFT supplement · checking…');
+  fixture=readyFixture;
+  releaseRefresh();
+  await page.locator('#meta-status').getByText(/Patch 18\.7/).first().waitFor();
+
+  const hex=azirRammus.finalComp.flatMap(u=>academy.champions.find(c=>c.apiName===u.apiName)?.hexIndex||[]);
+  const code='02'+hex.map(h=>h.padStart(3,'0')).join('').padEnd(30,'0')+'TFTSet18';
+  await page.evaluate(code=>{
+    const data=new DataTransfer();data.setData('text/plain',code);
+    document.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}));
+  },code);
+  await page.locator('#app-title').getByText('Azir Rammus',{exact:true}).waitFor();
+  await page.locator('.plan-champions > summary').click();
+  assert.equal(await page.getByRole('heading',{name:'Current champions',exact:true}).isVisible(),true);
+  const azirStars=page.getByRole('button',{name:'Azir 2 stars',exact:true});
+  assert.equal(await page.getByRole('button',{name:'Azir 3 stars',exact:true}).getAttribute('aria-pressed'),'true');
+  await azirStars.click();
+  await page.getByRole('button',{name:'Explore builds',exact:true}).click();
+  assert.equal(await azirStars.getAttribute('aria-pressed'),'true');
   assert.deepEqual(errors,[]);
-  console.log('390px passed for Explore, comp and item pivots, queue, board and carousel. No console errors.');
+  console.log('390px passed for Explore, comp and item pivots, queue, board, carousel, augments, and refresh. No console errors.');
 } catch (error) {
   if(errors.length)console.error(errors);
   throw error;
