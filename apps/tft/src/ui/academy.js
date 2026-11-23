@@ -11,12 +11,12 @@ function academyTierBadges(guide,label=guide.tier){
   let intent=0,controller,checking=true,error='';
   const bar=document.createElement('div');bar.className='academy-bar';
   bar.innerHTML='<a id="academy-tierlist" href="https://tftacademy.com/tierlist/comps" aria-haspopup="dialog">TFT Academy ↗</a><button id="refresh-live-data" class="quiet">Refresh live data</button><span id="academy-status" role="status"></span>';
-  document.querySelector('.pagehead').after(bar);
-  const warning=document.createElement('p');warning.id='live-data-warning';warning.className='live-data-warning';warning.setAttribute('role','alert');bar.after(warning);
+  document.querySelector('.footer').before(bar);
+  const warning=document.createElement('p');warning.id='live-data-warning';warning.className='live-data-warning';warning.setAttribute('role','alert');document.querySelector('.workspace').before(warning);
   const reference=document.createElement('details');reference.className='academy-reference';
   reference.innerHTML='<summary></summary><ul id="academy-source-guides"></ul>';
-  warning.after(reference);
-  const feedback=document.createElement('p');feedback.id='comp-feedback';feedback.className='quick-import-feedback';feedback.setAttribute('role','status');reference.after(feedback);
+  bar.after(reference);
+  const feedback=document.createElement('p');feedback.id='comp-feedback';feedback.className='quick-import-feedback';feedback.setAttribute('role','status');warning.after(feedback);
   let listed;
   function status(){
     const s=Academy.snapshot,updated=new Date(s.sourceUpdated||s.fetchedAt);
@@ -84,7 +84,6 @@ function academyTierBadges(guide,label=guide.tier){
     document.dispatchEvent(new Event('carousel-comp-imported'));
     feedback.textContent=`${counts.pending} targets${counts.covered?' · '+counts.covered+' already owned':''}.`+
       (choice.variants>1?` ${choice.variants} guides share this code. Using ${choice.guide.title}.`:'');
-    document.getElementById('item-drawer').removeAttribute('open');
     for(const d of document.querySelectorAll('dialog[open]'))d.close();
   }
   document.addEventListener('paste',e=>{

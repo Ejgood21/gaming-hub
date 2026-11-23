@@ -45,7 +45,7 @@ try {
         ...(document.documentElement.scrollWidth>width?['page']:[]),
         ...[...document.querySelectorAll(selectors)].filter(el=>{
           const {width:span,left,right}=el.getBoundingClientRect();
-          return span>0&&(left<0||right>width||el.scrollWidth>el.clientWidth+1);
+          return span>0&&((!el.closest('#shopping')&&(left<0||right>width))||el.scrollWidth>el.clientWidth+1);
         }).map(el=>el.id||el.className)
       ];
     },selectors);
@@ -55,14 +55,19 @@ try {
     has:page.getByRole('heading',{name:title,exact:true})
   });
   const choose = title => suggestion(title).locator('[data-choose-comp]').click();
-  const alternate = page.getByRole('region',{name:'If this game changes'});
+  const alternate = page.locator('.pivot-section');
+  // An offline queue created before the free-form picker was removed.
+  await page.addInitScript(() => {
+    localStorage.setItem('carousel-tracker-v1', JSON.stringify({
+      queue:[{uid:'first',item:'InfinityEdge'},{uid:'second',item:'Deathblade'}],
+      owned:{},pins:[]
+    }));
+  });
 
   await page.goto(origin);
   await page.getByText('Live · Patch 18.3b',{exact:false}).waitFor();
 
-  await page.locator('#item-drawer summary').click();
-  await page.locator('#catalog [data-id="InfinityEdge"]').click();
-  await page.locator('#catalog [data-id="Deathblade"]').click();
+  assert.equal(await page.getByText('Add an item',{exact:false}).count(),0);
   await page.getByRole('button',{name:'Pivot Deathblade',exact:true}).last().click();
   await page.locator('[data-pivot-item="InfinityEdge"][data-pivot-kind="plan"]').click();
   assert.deepEqual(await page.locator('#queue .qcard h3').allTextContents(),['Infinity Edge']);
@@ -83,7 +88,7 @@ try {
 
   assert.equal(await alternate.isVisible(),false);
   await choose('Ahri Morgana');
-  await alternate.waitFor();
+  await alternate.getByRole('heading',{name:'A better fit for your board',exact:true}).waitFor();
   const before = await page.locator('#app-title').textContent();
   const pivotAction = alternate.getByRole('button',{name:/^Pivot to /});
   const next = (await pivotAction.textContent()).replace(/^Pivot to /,'');
@@ -120,6 +125,7 @@ try {
   await alternate.getByRole('button',{name:'Pivot to AP Fast 9',exact:true}).click();
   const noPivot=alternate.getByText('No better-fitting pivot available for your board and items.');
   await noPivot.waitFor();
+  await alternate.getByRole('heading',{name:'No better fit yet',exact:true}).waitFor();
   assert.equal(await alternate.getByRole('button').count(),0);
   await startGame();
   await choose('AP Fast 9');

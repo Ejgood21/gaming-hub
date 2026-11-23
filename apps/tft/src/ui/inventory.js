@@ -1,6 +1,5 @@
 (() => {
   const bench=document.querySelector('.bench');
-  document.getElementById('item-drawer').before(bench);
   document.getElementById('bench-title').textContent='Component bench';
   document.querySelector('.benchnote').innerHTML='<kbd>1</kbd>–<kbd>8</kbd> add · <kbd>Shift</kbd> + number removes';
   bench.querySelector('.panelhead').append(bench.querySelector('.benchnote'));
