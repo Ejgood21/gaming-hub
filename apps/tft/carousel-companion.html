@@ -45,12 +45,7 @@
 .benchitem:not(.has)>.icon{filter:grayscale(1);opacity:.36}.benchitem.has>.icon{filter:none;opacity:1;border-color:#c9dbae}
 .benchitem.has .counter output{color:#e2ffe8;background:#396444;border-radius:4px;min-width:25px;font-weight:800;font-size:18px}
 .benchitem:not(.has) .counter output{color:#798992}.benchitem.has .bench-key{color:#d3ebda;border-color:#659c77;background:#213c2b}
-.owned-bench{display:flex;align-items:center;gap:12px;padding:8px 12px;border-top:1px solid #354e40;background:#10251a;min-height:49px;border-radius:0 0 11px 11px}
-.owned-bench-label{color:#b9d0bf;font-size:12px;font-weight:600;white-space:nowrap}.owned-bench-items{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
-.owned-component{display:inline-flex;align-items:center;gap:5px;padding:3px 6px 3px 3px;border:1px solid #477055;border-radius:5px;background:#264331}
-.owned-component .icon{width:28px;height:28px}.owned-component b{color:#e5ffe8;font-size:14px;font-variant-numeric:tabular-nums}.owned-bench-empty{color:#85988b;font-size:12px}
 @media(min-width:900px) and (min-height:650px){.rightcol{top:185px}}
-@media(max-width:540px){.owned-bench{gap:8px;padding:7px 9px}.owned-bench-items{gap:5px}.owned-component .icon{width:24px;height:24px}}
 
 /* Completed inventory stays visible above the queue, one compact tile per copy. */
 .completed-strip{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px;padding:9px 10px;background:#14221d;border:1px solid #344c3e;border-radius:8px}
@@ -262,6 +257,36 @@
 .academy-bar{margin-top:16px}
 .pivot-section{margin:0 0 16px}
 .plan-queue,.plan-overview{grid-row:auto}
+.climb-plan{min-width:0}
+.component-heading{padding:10px 12px}
+.component-heading h2{font-size:15px}
+.component-heading small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+.component-rail .benchgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+#component-toggle{display:none}
+.augment-comparison{display:block;margin:5px 0;color:#b9c7d9;font-size:12px}
+
+@media(min-width:1120px){
+  .climb-layout{display:grid;grid-template-columns:minmax(0,1fr) 244px;gap:16px;align-items:start}
+  .component-rail{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+}
+@media(max-width:1119px){
+  .wrap{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+  .component-rail{
+    position:fixed;z-index:8;inset-inline:12px;bottom:calc(8px + env(safe-area-inset-bottom));
+    max-width:440px;margin-inline:auto;display:flex;flex-direction:column-reverse;
+    border-color:#4f6659;box-shadow:0 3px 20px #0009
+  }
+  .component-heading{display:none}
+  #component-toggle{
+    display:flex;align-items:center;gap:8px;width:100%;min-height:42px;
+    padding:6px 12px;border:0;border-radius:0;background:#1a3025;text-align:left;font-size:13px
+  }
+  #component-total{margin-left:auto;color:#b9d0bf;font-size:12px}
+  #component-toggle[aria-expanded=true] .component-chevron{transform:rotate(180deg)}
+  #component-toggle[aria-expanded=false]+#bench{display:none}
+  .component-rail .benchgrid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:50dvh;overflow:auto;padding:8px}
+  #toast{bottom:calc(62px + env(safe-area-inset-bottom));pointer-events:none}
+}
 
 @media(max-width:680px){
   .topbar{min-height:0;padding:10px 12px;gap:8px}
@@ -692,6 +717,7 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
     const item = planItems.map(id => byId[id]).find(item => item?.name.length > 5 && normalized.includes(Academy.normalizeName(item.name)));
     const grants = /\b(?:gain|grants?|choose|receive)\b/i.test(text);
     const casters = carries.filter(unit => /Caster/i.test(unit.role));
+    const level = Number(style.match(leveling)?.[1]);
 
     if (component && grants) return {points: 4, text: 'Offers a component your current targets need', detail: component.name};
     if (item && /gain|grant|holders|give|receive|choose|works/i.test(text)) {
@@ -705,13 +731,15 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
       }
       return {points: Math.min(4, Math.ceil(breadth / 2)), text: 'Random components can fill your remaining recipes'};
     }
-    if (/\bxp\b|\blevel up\b/i.test(text) && leveling.test(style)) {
+    if (level && /\b(?:buying|buy) XP\b|\bXP costs?\b/i.test(text)) {
+      return {points: 7, text: `More efficient XP purchases help you reach level ${level}`};
+    }
+    if (level && /\bxp\b|\blevel up\b/i.test(text)) {
       return {points: 7, text: 'Extra XP helps reach the levels your comp needs'};
     }
     if (/\bshop rerolls?\b|\bshop refresh(?:es)?\b|\bfree rerolls?\b|duplicator/i.test(text) && /reroll/i.test(style)) {
       return {points: 5, text: 'Shop rerolls or extra copies help find your upgrades'};
     }
-    const level = Number(style.match(leveling)?.[1]);
     if (/\bgain \d+ gold\b/i.test(text) && level && !/item|component|champion|combat/i.test(text)) {
       const payoffLevel = Number(text.match(/reach level (\d+)/i)?.[1]);
       if (payoffLevel > level) return;
@@ -800,9 +828,12 @@ module.exports = function createCompFinder(model) {
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
     augmentOptions(round){
       const order = a => a.stages?.includes(round) ? 0 : a.stages?.length ? 1 : 2;
+      const displayText = text => text.replace(/\s+/g,' ').trim();
       const variants = new Map();
       for (const augment of Academy.snapshot.augments || []) {
-        const key = JSON.stringify([augment.name, augment.tier, augment.description]);
+        const key = JSON.stringify([
+          displayText(augment.name), augment.tier, displayText(augment.description)
+        ]);
         const choices = variants.get(key) || [];
         choices.push(augment);
         variants.set(key, choices);
@@ -965,6 +996,8 @@ module.exports = function createCompFinder(model) {
       const augmentMatches=heldAugments.map(id=>{
         const augment=this.augment(id);
         const match=augmentFit.score(augment||{apiName:id},guide,heldContext);
+        // A held Academy recommendation is a stronger commitment signal than an offer.
+        if(match.academy)match.points+=10;
         return {id,name:augment?.name||id,...match};
       });
       const requirements=this.requirements(plan,guide);
@@ -986,9 +1019,8 @@ module.exports = function createCompFinder(model) {
       if(heldAugments.length&&!augmentFit.hasRecommendations(guide))reasons.push({points:0,text:'No Academy augment data for this comp — scored from item, economy and combat rules.'});
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
       const fitScore=Number(reasons.reduce((sum,reason)=>sum+reason.points,0).toFixed(2));
-      const ownedFit=ownedReasons.reduce((sum,reason)=>sum+reason.points,0);
       return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatches,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
-        score:tierScore+fitScore,fitScore,ownedFit,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
+        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
     signalCount(plan){
@@ -1021,26 +1053,21 @@ module.exports = function createCompFinder(model) {
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
       if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&r.augmentMatches.some(a=>a.academy||a.recommended))&&
         (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
-      for(const r of rows){
-        r.baseTierRank=this.tierRank(r.unlocked?'A':r.guide.tier);
-        r.recommendationTierRank=r.baseTierRank;
-      }
-      for(const r of rows){
-        if(r.blocked||r.missingEmblems.length)continue;
-        // Compare against original tiers before sorting so promotions cannot cycle.
-        for(let target=r.baseTierRank-1;target>=0;target--){
-          const better=rows.filter(other=>!other.blocked&&other.baseTierRank===target);
-          const gap=tierFitGap*(r.baseTierRank-target);
-          if(better.some(other=>Math.round((r.fitScore-other.fitScore)*100)<gap*100||r.ownedFit-other.ownedFit<gap))break;
-          r.recommendationTierRank=target;
-        }
-      }
+      const tierRank = row => this.tierRank(row.unlocked?'A':row.guide.tier);
       const rankable=rows.filter(r=>!r.blocked).length;
-      const ranked=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
-        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||a.recommendationTierRank-b.recommendationTierRank||b.fitScore-a.fitScore||a.baseTierRank-b.baseTierRank||a.guide.title.localeCompare(b.guide.title));
-      for(const [index,row] of ranked.entries()){
-        if(row.recommendationTierRank===row.baseTierRank)continue;
-        row.passedTier=ranked.slice(index+1).find(other=>!other.blocked&&other.baseTierRank<row.baseTierRank&&other.baseTierRank>=row.recommendationTierRank);
+      const initial=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
+        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||tierRank(a)-tierRank(b)||b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title));
+      const ranked=[];
+      for(const row of initial){
+        // Insert before the first higher-tier row this comp clears. A pairwise
+        // sort can cycle when two close gaps add up to one qualifying gap.
+        const index=row.blocked||row.missingEmblems.length?-1:ranked.findIndex(other=>
+          tierRank(other)<tierRank(row)&&Math.round((row.fitScore-other.fitScore)*100)>=tierFitGap*100);
+        if(index<0)ranked.push(row);
+        else{
+          row.passedTier=ranked[index];
+          ranked.splice(index,0,row);
+        }
       }
       return ranked;
     },
@@ -1594,6 +1621,11 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
       });
     },
     receive(plan,q) {q.done=true;q.received=true;q.used={};q.usedSources={};},
+    markMade(plan,q) {
+      if(q.done)return false;
+      if(!Tracker.complete(plan,q,byId[q.item]))this.receive(plan,q);
+      return true;
+    },
     newGame(plan,keep) {
       return {queue:keep?plan.queue.map(q=>({...q,done:false,received:false,used:{}})):[],owned:{},pins:keep?[...plan.pins]:[]};
     }
@@ -2160,7 +2192,18 @@ LootTracker.ensure(state);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const icon=(id,cls='')=>`<img class="icon ${cls}" src="${byId[id].icon}" alt="" width="38" height="38">`;
 const btn=(action,id,label,text,cls='',disabled=false)=>`<button data-action="${action}" data-id="${id}" data-focus="${action}-${id}" aria-label="${esc(label)}" title="${esc(label)}" class="${cls}" ${disabled?'disabled':''}>${text}</button>`;
-document.getElementById('app').innerHTML=`<header class="topbar"><div class="brand"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2 29 9v14l-13 7L3 23V9Z" stroke="currentColor" stroke-width="1.8"/><path d="m16 8 7 4v8l-7 4-7-4v-8Z" stroke="currentColor" stroke-width="1.8"/></svg><div><h1 id="app-title">Carousel</h1><div id="comp-fit" hidden></div><small>Ctrl + V anywhere to import</small></div></div><div class="topright"><button data-action="help" class="helpbutton">How it works</button></div></header><main class="wrap"><div class="pagehead"><div class="actions"><button data-action="undo" id="undo" class="quiet" disabled>↶ Undo</button><button data-action="reset" class="quiet">New game</button></div></div><div id="storage-warning"></div><div id="next-build" hidden></div><div class="workspace"><section class="centercol" aria-labelledby="queue-title"><div class="queuehead"><div><h2 id="queue-title">Build Queue</h2></div></div><div id="queue"></div><div id="completed"></div></section><aside class="rightcol panel shopping" aria-labelledby="shopping-title"><div class="panelhead"><h2 id="shopping-title">Carousel priorities</h2></div><p class="shoppingintro">The components your builds still need.</p><div id="shopping" class="shoppinglist"></div><div class="shoppingfoot">★ Pin within planned needs or alternatives.</div></aside></div><section class="bench panel" aria-labelledby="bench-title"><div class="panelhead"><h2 id="bench-title">Your component bench</h2></div><p class="benchnote">Add your loose components here. Making an item uses the tracked ingredients from this bench.</p><div id="bench" class="benchgrid"></div></section><footer class="footer"><span id="saved">Saved in this browser · Export a backup before moving this file</span><span>Bundled recipes · Patch ${esc(DATA.patch)} · verified ${esc(DATA.curatedAt)} · <a href="https://tftacademy.com/api/assets/items?set=${DATA.set}" target="_blank" rel="noopener">${esc(DATA.source)}</a><span id="recipe-freshness"> · may be stale</span></span></footer></main><div class="toast" id="toast" role="status" aria-live="polite"></div><dialog id="help"><h2>A little planning. A better carousel.</h2><ol><li>Drag a card by its grip to reorder. Reset order restores the recommended sequence without changing targets. Keyboard: focus the grip, press Space, move with arrow keys, then Enter; Escape cancels. Loose components are reserved from the top down; each component counts only once.</li><li>Add components on your bench, or click <b>Got one</b> on your carousel priorities. Green ingredients are already covered. Click a missing ingredient in a build to record one.</li><li>Track both recipe components, then click <b>Mark made</b> to spend them. Use <b>Received item</b> for a finished item you got whole.</li><li>Star a component to prioritize it within planned needs or alternatives. Stars do not change your build order.</li></ol><p>This is a manual tracker. No live-game connection or API key is used. Progress stays in this browser; other devices have their own tracker.</p><p>Comp plans can include emblems and special items; items without a recipe do not add component needs. Offline tracking uses saved recipes. Current comp recommendations require a successful live refresh.</p><p>Item assets belong to Riot Games. This companion is not endorsed by Riot Games.</p><div class="dialogactions"><button data-action="close-help" class="primary">Got it</button></div></dialog>`;
+const componentRail=`<aside class="component-rail panel" aria-label="Component bench">
+  <div class="component-heading"><h2>Components</h2><small><kbd>1</kbd>–<kbd>8</kbd> add · <kbd>Shift</kbd> + number removes</small></div>
+  <button id="component-toggle" type="button" aria-expanded="false" aria-controls="bench">
+    <strong>Components</strong><span id="component-total"></span><span class="component-chevron" aria-hidden="true">⌃</span>
+  </button>
+  <div id="bench" class="benchgrid"></div>
+</aside>`;
+document.getElementById('app').innerHTML=`<header class="topbar"><div class="brand"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2 29 9v14l-13 7L3 23V9Z" stroke="currentColor" stroke-width="1.8"/><path d="m16 8 7 4v8l-7 4-7-4v-8Z" stroke="currentColor" stroke-width="1.8"/></svg><div><h1 id="app-title">Carousel</h1><div id="comp-fit" hidden></div><small>Ctrl + V anywhere to import</small></div></div><div class="topright"><button data-action="help" class="helpbutton">How it works</button></div></header><main class="wrap"><div class="pagehead"><div class="actions"><button data-action="undo" id="undo" class="quiet" disabled>↶ Undo</button><button data-action="reset" class="quiet">New game</button></div></div><div id="storage-warning"></div><div class="climb-layout"><div class="climb-plan"><div id="next-build" hidden></div><div class="workspace"><section class="centercol" aria-labelledby="queue-title"><div class="queuehead"><div><h2 id="queue-title">Build Queue</h2></div></div><div id="queue"></div><div id="completed"></div></section><aside class="rightcol panel shopping" aria-labelledby="shopping-title"><div class="panelhead"><h2 id="shopping-title">Carousel priorities</h2></div><p class="shoppingintro">The components your builds still need.</p><div id="shopping" class="shoppinglist"></div><div class="shoppingfoot">★ Pin within planned needs or alternatives.</div></aside></div></div>${componentRail}</div><section class="bench panel" aria-labelledby="game-decisions-title"><div class="panelhead"><h2 id="game-decisions-title">Game decisions</h2></div></section><footer class="footer"><span id="saved">Saved in this browser · Export a backup before moving this file</span><span>Bundled recipes · Patch ${esc(DATA.patch)} · verified ${esc(DATA.curatedAt)} · <a href="https://tftacademy.com/api/assets/items?set=${DATA.set}" target="_blank" rel="noopener">${esc(DATA.source)}</a><span id="recipe-freshness"> · may be stale</span></span></footer></main><div class="toast" id="toast" role="status" aria-live="polite"></div><dialog id="help"><h2>A little planning. A better carousel.</h2><ol><li>Drag a card by its grip to reorder. Reset order restores the recommended sequence without changing targets. Keyboard: focus the grip, press Space, move with arrow keys, then Enter; Escape cancels. Loose components are reserved from the top down; each component counts only once.</li><li>Add components on your bench, or click <b>Got one</b> on your carousel priorities. Green ingredients are already covered. Click a missing ingredient in a build to record one.</li><li><b>Mark made</b> completes a queued item. A full recipe on the bench is spent automatically.</li><li>Star a component to prioritize it within planned needs or alternatives. Stars do not change your build order.</li></ol><p>This is a manual tracker. No live-game connection or API key is used. Progress stays in this browser; other devices have their own tracker.</p><p>Comp plans can include emblems and special items; items without a recipe do not add component needs. Offline tracking uses saved recipes. Current comp recommendations require a successful live refresh.</p><p>Item assets belong to Riot Games. This companion is not endorsed by Riot Games.</p><div class="dialogactions"><button data-action="close-help" class="primary">Got it</button></div></dialog>`;
+const componentToggle=document.getElementById('component-toggle');
+componentToggle.addEventListener('click',()=>{
+ componentToggle.setAttribute('aria-expanded',String(componentToggle.getAttribute('aria-expanded')==='false'));
+});
 function render(){
  const focus=document.activeElement?.dataset.focus;
  QueueOrder.ensure(state);
@@ -2174,12 +2217,14 @@ function render(){
  }else{
    nextBuild.innerHTML='<span class="next-build-label">Next item</span><strong>Queue complete</strong>';
  }
- document.getElementById('queue').innerHTML=a.rows.map((q,n)=>{const i=byId[q.item],ready=i.recipe.length===2&&q.slots.every(c=>c.have);return `<article class="qcard" data-queue-uid="${q.uid}" aria-label="${esc(i.name)} · ${esc(q.champion||'Unassigned')}"><div class="qtop"><button class="queue-grip" aria-label="Reorder ${esc(i.name)}" aria-describedby="queue-drag-help" aria-pressed="false" data-focus="drag-${q.uid}">⠿</button>${icon(i.id)}<div class="itemtitle"><h3>${esc(i.name)}</h3>${q.champion?`<small class="item-owner">For ${q.earlyChampion&&q.earlyChampion!==q.champion?`${IconUI.championLabel(q.earlyChampion)} → `:''}${IconUI.championLabel(q.champion)}</small>`:'<small class="item-owner">Unassigned</small>'}</div><div class="recipe">${q.slots.map((c,idx)=>`${idx?'<span class="plus">+</span>':''}${c.have?`<span class="componentpill have" title="${esc(byId[c.id].name)} reserved for this item">${icon(c.id)}<span aria-hidden="true">✓</span></span>`:`<button class="componentpill" data-action="gain" data-id="${c.id}" data-focus="slot-${q.uid}-${idx}" aria-label="Record one ${esc(byId[c.id].name)} received">${icon(c.id)}<span aria-hidden="true">+</span></button>`}`).join('')}</div>${btn('remove',q.uid,`Remove ${i.name}`,'×','remove')}</div><div class="qbottom">${btn('make',q.uid,i.special?`Record ${i.name} received; no components used`:`Mark ${i.name} made; uses tracked ingredients`,i.special?'✓ Received':ready?'✓ Ready · Mark made':'✓ Mark made',`make ${ready?'ready':''}`)}</div></article>`;}).join('')||`<div class="empty"><div class="emptyicon" aria-hidden="true">${done.length?'✓':'+'}</div><h3>${done.length?'Every build, checked off.':'No items queued yet'}</h3><p>${done.length?'Your completed items are tracked above.':'Choose a comp in Explore builds or paste an Academy team code.'}</p></div>`;
+ document.getElementById('queue').innerHTML=a.rows.map((q,n)=>{const i=byId[q.item],ready=i.recipe.length===2&&q.slots.every(c=>c.have);return `<article class="qcard" data-queue-uid="${q.uid}" aria-label="${esc(i.name)} · ${esc(q.champion||'Unassigned')}"><div class="qtop"><button class="queue-grip" aria-label="Reorder ${esc(i.name)}" aria-describedby="queue-drag-help" aria-pressed="false" data-focus="drag-${q.uid}">⠿</button>${icon(i.id)}<div class="itemtitle"><h3>${esc(i.name)}</h3>${q.champion?`<small class="item-owner">For ${q.earlyChampion&&q.earlyChampion!==q.champion?`${IconUI.championLabel(q.earlyChampion)} → `:''}${IconUI.championLabel(q.champion)}</small>`:'<small class="item-owner">Unassigned</small>'}</div><div class="recipe">${q.slots.map((c,idx)=>`${idx?'<span class="plus">+</span>':''}${c.have?`<span class="componentpill have" title="${esc(byId[c.id].name)} reserved for this item">${icon(c.id)}<span aria-hidden="true">✓</span></span>`:`<button class="componentpill" data-action="gain" data-id="${c.id}" data-focus="slot-${q.uid}-${idx}" aria-label="Record one ${esc(byId[c.id].name)} received">${icon(c.id)}<span aria-hidden="true">+</span></button>`}`).join('')}</div>${btn('remove',q.uid,`Remove ${i.name}`,'×','remove')}</div><div class="qbottom">${btn('make',q.uid,i.special?`Record ${i.name} received; no components used`:`Mark ${i.name} made`,i.special?'✓ Received':ready?'✓ Ready · Mark made':'✓ Mark made',`make ${ready?'ready':''}`)}</div></article>`;}).join('')||`<div class="empty"><div class="emptyicon" aria-hidden="true">${done.length?'✓':'+'}</div><h3>${done.length?'Every build, checked off.':'No items queued yet'}</h3><p>${done.length?'Your completed items are tracked above.':'Choose a comp in Explore builds or paste an Academy team code.'}</p></div>`;
  document.getElementById('completed').innerHTML=done.map(q=>`<div class="completeitem" role="listitem" title="${esc(byId[q.item].name)}${q.champion?' · '+esc(q.champion):''}" aria-label="${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(q.item)}${btn('restore',q.uid,`Restore ${byId[q.item].name}${q.champion?' for '+q.champion:''} to queue and return its tracked ingredients`,'Restore','quiet')}</div>`).join('');
  const needs=Object.entries(a.needs).sort(([x,v],[y,w])=>(Number(state.pins.includes(y))-Number(state.pins.includes(x)))||v.rank-w.rank||Academy.componentPreference(state,x)-Academy.componentPreference(state,y)||w.count-v.count||LootTracker.compare(state,x,y)||componentOrder.indexOf(x)-componentOrder.indexOf(y));
  document.getElementById('shopping').innerHTML=needs.map(([id,n])=>`<div class="need ${state.pins.includes(id)?'pinned':''}"><div class="needtop">${icon(id)}<div class="needname">${esc(byId[id].name)}<small title="${esc(n.items.join(', '))}">For ${esc(n.items[0])}${n.items.length>1?` +${n.items.length-1}`:''}</small></div><span class="needed" aria-label="${n.count} needed">×${n.count}</span></div><div class="needactions"><button class="pin ${state.pins.includes(id)?'active':''}" data-action="pin" data-id="${id}" data-focus="pin-${id}" aria-label="Prioritize ${esc(byId[id].name)}" aria-pressed="${state.pins.includes(id)}">${state.pins.includes(id)?'★':'☆'}</button>${btn('gain',id,`Record one ${byId[id].name} received`,'+ Got one','got')}</div></div>`).join('')||`<div class="shopempty" style="grid-column:1/-1"><b>${a.rows.some(q=>byId[q.item].special)?'No components left to chase.':a.rows.length?'You have the ingredients.':done.length?'All planned items made.':'Your shopping list starts here.'}</b>${a.rows.length?'Check off your items as you make them.':'Add a build to see which components to collect.'}</div>`;
  document.getElementById('bench').innerHTML=components.map(c=>`<div class="benchitem ${(state.owned[c.id]||0)?'has':''}">${icon(c.id)}<strong>${esc(c.name)}</strong><div class="counter">${btn('lose',c.id,`Remove one ${c.name}`,'−','',!(state.owned[c.id]>0))}<output aria-label="${esc(c.name)} owned">${state.owned[c.id]||0}</output>${btn('gain',c.id,`Add one ${c.name}`,'+','',(state.owned[c.id]||0)>=99)}</div></div>`).join('');
  document.getElementById('undo').disabled=!history.length;
+ const componentTotal=components.reduce((sum,c)=>sum+(state.owned[c.id]||0),0);
+ document.getElementById('component-total').textContent=`${componentTotal} in hand`;
  document.getElementById('storage-warning').innerHTML=storageOK?'':'<p class="storagewarn">Browser storage is unavailable or could not be read. Keep this tab open and use Export backup to preserve your tracker.</p>';
  document.getElementById('saved').textContent=storageOK?'Saved in this browser · Export a backup before moving this file':'Session only · Changes may not survive closing this tab';
  if(focus) document.querySelector(`[data-focus="${CSS.escape(focus)}"]`)?.focus({preventScroll:true});
@@ -2233,7 +2278,7 @@ function applyItemPivot(apply,message,onApplied){
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const {action,id}=b.dataset,q=state.queue.find(q=>q.uid===id);
  if(action==='help'){document.getElementById('help').showModal();return;}
  if(action==='close-help'){document.getElementById('help').close();return;}
- if(action==='reset'){mutate(()=>state={queue:[],owned:{},pins:[]},'New game. Queue and bench cleared.');document.dispatchEvent(new Event('carousel-new-game'));return;}
+ if(action==='reset'){componentToggle.setAttribute('aria-expanded','false');mutate(()=>state={queue:[],owned:{},pins:[]},'New game. Queue and bench cleared.');document.dispatchEvent(new Event('carousel-new-game'));return;}
  if(action==='undo'){if(history.length){state=JSON.parse(history.pop());save();render();toast('Last change undone.');}return;}
  if(action==='gain'&&(state.owned[id]||0)<99)mutate(()=>LootTracker.gain(state,id,b.closest('#shopping')?'carousel':b.closest('#bench')?'loot':'other'),`${byId[id].name} collected.`);
  if(action==='lose'&&state.owned[id]>0)mutate(()=>LootTracker.remove(state,id),`${byId[id].name} removed from bench.`);
@@ -2242,10 +2287,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
  if(action==='make'&&q&&!q.done){
    const item=byId[q.item];
    if(!Academy.canEquip(state,q.champion,q.item)){toast(q.champion+' has no room for this item.');return;}
-   if(!item.special&&!Tracker.canCraft(state.owned,item)){toast('Record both recipe components before marking '+item.name+' made.');return;}
-   mutate(()=>item.special?OfflineTracker.receive(state,q):Tracker.complete(state,q,item),`${item.name} ${item.special?'received':'marked made'}.`);
+   mutate(()=>OfflineTracker.markMade(state,q),`${item.name} ${item.special?'received':'marked made'}.`);
  }
- if(action==='restore'&&q&&q.done)mutate(()=>Tracker.restore(state,q),`${byId[q.item].name} returned to queue${q.received?'':'; recorded ingredients returned to bench'}.`);
+ if(action==='restore'&&q&&q.done)mutate(()=>Tracker.restore(state,q),`${byId[q.item].name} returned to queue${Object.values(q.used||{}).some(Boolean)?'; recorded ingredients returned to bench':''}.`);
 });
 render();
 
@@ -2493,21 +2537,11 @@ const AcademyUI=(() => {
 })();
 
 (() => {
-  const bench=document.querySelector('.bench');
-  document.getElementById('bench-title').textContent='Component bench';
-  document.querySelector('.benchnote').innerHTML='<kbd>1</kbd>–<kbd>8</kbd> add · <kbd>Shift</kbd> + number removes';
-  bench.querySelector('.panelhead').append(bench.querySelector('.benchnote'));
-  const owned=document.createElement('div');owned.id='owned-bench';owned.className='owned-bench';
-  owned.setAttribute('aria-label','Loose components in hand');bench.append(owned);
-  function drawOwned(){
-    const held=components.filter(c=>(state.owned[c.id]||0)>0);
-    owned.innerHTML='<span class="owned-bench-label">In hand</span><div class="owned-bench-items" role="list">'+(held.length?held.map(c=>`<span class="owned-component" role="listitem" data-owned-component="${c.id}" aria-label="${esc(c.name)}: ${state.owned[c.id]}" title="${esc(c.name)}">${icon(c.id)}<b>×${state.owned[c.id]}</b></span>`).join(''):'<span class="owned-bench-empty">No loose components</span>')+'</div>';
-  }
   const completed=document.createElement('section');completed.id='completed-strip';completed.className='completed-strip';completed.setAttribute('aria-labelledby','completed-heading');
   completed.innerHTML='<h2 id="completed-heading">Completed <span id="completed-total"></span></h2>';
   const list=document.getElementById('completed');document.querySelector('.queuehead').before(completed);completed.append(list);list.setAttribute('role','list');
   const oldRender=render;
-  render=function(){oldRender();drawOwned();const count=state.queue.filter(q=>q.done).length;completed.hidden=!count;document.getElementById('completed-total').textContent=count;};
+  render=function(){oldRender();const count=state.queue.filter(q=>q.done).length;completed.hidden=!count;document.getElementById('completed-total').textContent=count;};
   render();
 })();
 
@@ -2798,7 +2832,7 @@ const DialogDismiss = {
   <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
-  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads unless a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points and ${CompFinder.tierFitGap} more points from your owned items, champions and chosen augments per tier crossed.</p></details>`;
+  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads until a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points from your items, champions and augments.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
   const boardEditor=exploreInputs.querySelector('.explore-board');
@@ -2955,7 +2989,7 @@ const DialogDismiss = {
         return `<span class="finder-augment-match" title="${esc(label)}" aria-label="${esc(label)}">${augmentIcon(a.id)}<b aria-hidden="true">★</b></span>`;
       }).join('');
       const passed=r.passedTier;
-      const promotion=passed?`Fit moves ahead of ${passed.guide.title} by ${Number((r.fitScore-passed.fitScore).toFixed(2))} points, with a ${Number((r.ownedFit-passed.ownedFit).toFixed(2))}-point lead from owned resources.`:'';
+      const promotion=passed?`Fit moves ahead of ${passed.guide.title} by ${Number((r.fitScore-passed.fitScore).toFixed(2))} points.`:'';
       const breakdown=[
         `<li>Academy tier ${esc(tier)} · ranking priority</li>`,
         promotion?`<li>${esc(promotion)}</li>`:'',
@@ -3103,8 +3137,10 @@ const AugmentUI=(()=>{
       const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
       const fit=best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid||r?.offRound?'Check offer':r?.academy?'Academy match':r?.contextual?'Contextual fit':'Limited evidence';
       const reasons=reroll?[reroll.reason,...r.reasons.slice(1).map(x=>x.text)]:(r?.reasons||[]).map(x=>x.text);
+      const comparisonNote=reroll||r?.contextual
+        ?`<small class="augment-comparison">Reroll advice compares known ${badge(a).toLowerCase()} augments at ${AugmentAdvisor.stages[o.round]}. Your in-game pool may differ.</small>`:'';
       const rounds=(r?.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
-      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${reasons.map(text=>`<span>${esc(text)}</span>`).join('')}${rounds}</div><details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>${r?.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button></article>`;
+      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${reasons.map(text=>`<span>${esc(text)}</span>`).join('')}${rounds}</div>${comparisonNote}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>${r?.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button></article>`;
     }).join('');
     document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();

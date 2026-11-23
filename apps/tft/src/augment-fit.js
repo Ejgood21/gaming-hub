@@ -29,6 +29,7 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
     const item = planItems.map(id => byId[id]).find(item => item?.name.length > 5 && normalized.includes(Academy.normalizeName(item.name)));
     const grants = /\b(?:gain|grants?|choose|receive)\b/i.test(text);
     const casters = carries.filter(unit => /Caster/i.test(unit.role));
+    const level = Number(style.match(leveling)?.[1]);
 
     if (component && grants) return {points: 4, text: 'Offers a component your current targets need', detail: component.name};
     if (item && /gain|grant|holders|give|receive|choose|works/i.test(text)) {
@@ -42,13 +43,15 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
       }
       return {points: Math.min(4, Math.ceil(breadth / 2)), text: 'Random components can fill your remaining recipes'};
     }
-    if (/\bxp\b|\blevel up\b/i.test(text) && leveling.test(style)) {
+    if (level && /\b(?:buying|buy) XP\b|\bXP costs?\b/i.test(text)) {
+      return {points: 7, text: `More efficient XP purchases help you reach level ${level}`};
+    }
+    if (level && /\bxp\b|\blevel up\b/i.test(text)) {
       return {points: 7, text: 'Extra XP helps reach the levels your comp needs'};
     }
     if (/\bshop rerolls?\b|\bshop refresh(?:es)?\b|\bfree rerolls?\b|duplicator/i.test(text) && /reroll/i.test(style)) {
       return {points: 5, text: 'Shop rerolls or extra copies help find your upgrades'};
     }
-    const level = Number(style.match(leveling)?.[1]);
     if (/\bgain \d+ gold\b/i.test(text) && level && !/item|component|champion|combat/i.test(text)) {
       const payoffLevel = Number(text.match(/reach level (\d+)/i)?.[1]);
       if (payoffLevel > level) return;

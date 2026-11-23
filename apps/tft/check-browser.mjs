@@ -57,6 +57,15 @@ try {
   const choose = title => suggestion(title).locator('[data-choose-comp]').click();
   const alternate = page.locator('.pivot-section');
   const savedPlan = () => page.evaluate(()=>JSON.parse(localStorage.getItem('carousel-tracker-v1')));
+  const owned = name => page.locator(`#bench output[aria-label="${name} owned"]`);
+  const add = name => page.getByRole('button',{name:'Add one '+name,exact:true}).click();
+  const toggle = page.locator('#component-toggle');
+  const bench = page.locator('#bench');
+  const rod = 'Needlessly Large Rod', vest = 'Chain Vest';
+  const inViewport = locator => locator.evaluate(el=>{
+    const {top,bottom,height}=el.getBoundingClientRect();
+    return height>0&&top>=0&&bottom<=innerHeight;
+  });
   // An offline queue created before the free-form picker was removed.
   await page.addInitScript(() => {
     localStorage.setItem('carousel-tracker-v1', JSON.stringify({
@@ -75,9 +84,10 @@ try {
 
   await page.getByRole('button',{name:'Got one B.F. Sword from carousel',exact:true}).click();
   await page.locator('#queue [data-action="make"]').click();
-  await page.getByRole('status').filter({hasText:'Record both recipe components'}).waitFor();
+  assert.equal(await page.locator('#completed .completeitem[aria-label^="Infinity Edge"]').count(),1);
+  assert.equal(await owned('B.F. Sword').textContent(),'1');
+  await page.locator('#undo').click();
   assert.deepEqual(await page.locator('#queue .qcard h3').allTextContents(),['Infinity Edge']);
-  assert.equal(await page.getByRole('status',{name:'B.F. Sword owned',exact:true}).textContent(),'1');
 
   await page.locator('#explore-unit-search').fill('Caitlyn');
   await page.locator('[data-add-unit="DA_18_Caitlyn"]').click();
@@ -96,7 +106,7 @@ try {
   assert.notEqual(next,before);
   await pivotAction.click();
   assert.equal(await page.locator('#app-title').textContent(),next);
-  assert.equal(await page.getByRole('status',{name:'B.F. Sword owned',exact:true}).textContent(),'1');
+  assert.equal(await owned('B.F. Sword').textContent(),'1');
   assert.equal(await page.locator('#completed .completeitem[aria-label^="Guinsoo"]').count(),1);
   await page.locator('#undo').click();
   assert.equal(await page.locator('#app-title').textContent(),before);
@@ -152,6 +162,50 @@ try {
 
   const card = name => page.locator('#queue .qcard').filter({has:page.getByRole('heading',{name,exact:true})});
   const holders = name => card(name).locator('.item-owner').allTextContents();
+  const hero = page.locator('#next-build');
+  for(const width of [390,1440]){
+    await page.setViewportSize({width,height:844});
+    await page.evaluate(()=>scrollTo(0,0));
+    const heroTop=(await hero.boundingBox()).y;
+    if(width===390){
+      assert.equal(await inViewport(toggle),true);
+      assert.equal(await bench.isVisible(),false);
+      await toggle.click();
+    }else{
+      assert.equal(await toggle.isVisible(),false);
+      const target=await hero.boundingBox();
+      assert.ok((await bench.boundingBox()).x>=target.x+target.width);
+    }
+    assert.equal(await inViewport(bench),true);
+    assert.equal((await hero.boundingBox()).y,heroTop);
+    await add(rod);
+    assert.equal(await owned(rod).textContent(),'1');
+    await page.getByRole('button',{name:'Remove one '+rod,exact:true}).click();
+    assert.equal(await owned(rod).textContent(),'0');
+    assert.equal(await page.evaluate(()=>scrollY),0);
+    if(width===390)await toggle.click();
+  }
+  await page.setViewportSize({width:390,height:844});
+
+  const lockedFit = async () => Number((await page.locator('#comp-fit').innerText()).split('Fit score ').at(-1));
+  const markCrownguard = async () => {
+    const fit=await lockedFit();
+    await card('Crownguard').getByRole('button',{name:'Mark Crownguard made',exact:true}).click();
+    assert.equal(await page.locator('#completed .completeitem[aria-label^="Crownguard"]').count(),1);
+    assert.ok(await lockedFit()>fit);
+    assert.equal(await owned(rod).textContent(),'0');
+    assert.equal(await owned(vest).textContent(),'0');
+    await page.locator('#undo').click();
+  };
+  await markCrownguard();
+  await toggle.click();
+  await add(rod);
+  await add(vest);
+  await toggle.click();
+  await markCrownguard();
+  await page.locator('#undo').click();
+  await page.locator('#undo').click();
+
   const originalQueue = (await savedPlan()).queue;
   assert.equal(originalQueue.length,10);
   assert.deepEqual([originalQueue[0],originalQueue[2]].map(q=>[q.item,q.champion]),[['SpearOfShojin','Ivern'],['BlueBuff','Alune']]);
@@ -231,7 +285,7 @@ try {
   assert.equal(await page.locator('#app-title').textContent(),'Coven Elise');
   await page.getByRole('button',{name:'Pin Tear of the Goddess',exact:true}).click();
   await page.getByRole('button',{name:'Got one Tear of the Goddess from carousel',exact:true}).click();
-  assert.equal(await page.getByRole('status',{name:'Tear of the Goddess owned',exact:true}).textContent(),'1');
+  assert.equal(await owned('Tear of the Goddess').textContent(),'1');
   await checkWidth('.pivot-section, .qcard, .queue-champion, .board-panel, .need');
   const readyFixture=fixture;
   let releaseRefresh;
@@ -257,8 +311,23 @@ try {
   await azirStars.click();
   await page.getByRole('button',{name:'Explore builds',exact:true}).click();
   assert.equal(await azirStars.getAttribute('aria-pressed'),'true');
+
+  fixture=liveFixture({metaPatch:'18.7',omitAcademyPatch:true,allowOtherUnits:true,
+    guides:[{...mamawood,augments:[{apiName:'DA_UpwardMobility'}]},apFast9]});
+  await startGame();
+  await choose('Mamawood');
+  await augmentOpen.click();
+  for(const name of ['Lucky Gloves','Flowing Tears','Deadlier Caps']){
+    await offerSearch.fill(name);
+    await page.locator('#augment-search-results').getByText(name,{exact:true}).click();
+  }
+  const offerCard = name => page.locator('.augment-offer').filter({has:page.getByRole('button',{name:new RegExp('Change offer \\d+: '+name+'$')})});
+  await offerCard('Lucky Gloves').getByText('Consider reroll · if available',{exact:true}).waitFor();
+  await offerCard('Lucky Gloves').getByText(/known prismatic augments at 2-1/).waitFor();
+  await offerCard('Flowing Tears').getByText('Contextual fit',{exact:true}).waitFor();
+  await offerCard('Flowing Tears').getByText(/known silver augments at 2-1/).waitFor();
   assert.deepEqual(errors,[]);
-  console.log('390px passed for Explore, comp and item pivots, queue, board, carousel, augments, and refresh. No console errors.');
+  console.log('390px passed for Explore, comp and item pivots, queue, board, carousel, augments, and refresh. Components passed at 390px and 1440px. No console errors.');
 } catch (error) {
   if(errors.length)console.error(errors);
   throw error;
