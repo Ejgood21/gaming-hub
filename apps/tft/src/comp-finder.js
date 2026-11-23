@@ -183,7 +183,10 @@ module.exports = function createCompFinder(model) {
     alternative(plan){
       const activeId=plan.activeComp?.id||plan.activeComp?.guide?.id;
       if(!activeId)return;
-      return this.ranked(plan).find(row=>row.guide.id!==activeId&&!row.blocked&&(row.unlocked||row.fitScore>0));
+      const rows=this.ranked(plan);
+      const active=rows.find(row=>row.guide.id===activeId);
+      return rows.find(row=>row.guide.id!==activeId&&!row.blocked&&(row.unlocked||row.fitScore>0)&&
+        (!active||active.blocked||row.fitScore>active.fitScore));
     },
     recommendations(plan){
       const rows=this.ranked(plan);

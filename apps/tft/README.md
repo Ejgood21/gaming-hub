@@ -41,6 +41,8 @@ opened directly. The original 8,133,298-byte seed was verified against SHA-256
   you have its structured required item, emblem or augment. The guide names
   that requirement. X guides with an unmet requirement remain Situational.
   The Academy tier list also shows the source's other tiers for reference.
+  Academy's published Situational row badges are saved by guide ID and patch
+  in `data/academy-secondary-tiers-18.7.json` for display alongside X.
 - MetaTFT builds use ranked queue, current patch, the last three days and
   Platinum+ ranks. Recommendations and pivots use builds fetched for the
   verified set and patch. The saved MetaTFT snapshot is from patch 18.3 and

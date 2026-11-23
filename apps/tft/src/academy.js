@@ -2,7 +2,7 @@
 
 const {academySource, validAcademy} = require('./snapshots');
 
-module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlanner, requireLive}) {
+module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlanner, secondaryTiers, requireLive}) {
   const coreRecipes=new Map(DATA.items.filter(i=>!i.academyOnly).map(i=>[i.id,[...i.recipe]]));
   /* Public TFT Academy data. Team codes contain champions, never item builds. */
   return {
@@ -44,7 +44,13 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
       return this.snapshot.guides.find(g=>g.id===(plan.activeComp?.id||plan.activeComp?.guide?.id));
     },
     secondaryTier(guide){
-      if(guide.tier!=='X'||this.snapshot.set!==ACADEMY_BUNDLED.set)return null;
+      if(guide.tier!=='X')return null;
+      const {set,patch}=this.snapshot;
+      if(secondaryTiers?.set===set&&secondaryTiers.patch===patch){
+        const badge=secondaryTiers.tiers[guide.id];
+        if(/^[ABC]$/.test(badge))return {tier:badge,patch,fromXRow:true};
+      }
+      if(set!==ACADEMY_BUNDLED.set)return null;
       const saved=ACADEMY_BUNDLED.guides.find(g=>g.id===guide.id);
       return /^[SABC]$/.test(saved?.tier)?{tier:saved.tier,patch:ACADEMY_BUNDLED.patch}:null;
     },

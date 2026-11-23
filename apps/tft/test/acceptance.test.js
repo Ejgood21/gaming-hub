@@ -9,7 +9,9 @@ const academy = require('../data/academy-18.3b.json');
 const metaFile = require('../data/metatft-18.3b.json');
 const meta = decodeMetaSnapshot(metaFile);
 const core = require('../data/core-items.json');
+const secondaryTiers = require('../data/academy-secondary-tiers-18.7.json');
 const liveFixture = require('../test-support/live-fixture');
+const {apFast9, mamawood, covenElise, solarEclipse, currentUnits, darkRitual} = require('../test-support/p16-comps');
 
 const model = () => createModel({academy, meta, core});
 const guide = title => academy.guides.find(g => g.title === title);
@@ -160,14 +162,44 @@ test('an active comp exposes a current alternative with positive fit and preserv
   assert.deepEqual(input.queue.filter(q=>q.done).map(q=>q.item), ['GuinsoosRageblade']);
 });
 
+test('six one-star units have no better pivot on AP Fast 9 until a better fit is available', () => {
+  const {Academy, CompFinder} = model();
+  const equalFit = {...apFast9,id:'equal-fit',title:'Comparable AP comp'};
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[apFast9,mamawood,covenElise,solarEclipse,equalFit]});
+  const input = plan({currentUnits});
+  const rows = CompFinder.ranked(input);
+  assert.equal(rows[0].guide.title,'AP Fast 9');
+  assert.ok(rows[0].fitScore>0);
+  assert.equal(rows.find(row=>row.guide.id===equalFit.id)?.fitScore,rows[0].fitScore);
+  CompFinder.choose(input,mamawood.id);
+  assert.equal(CompFinder.alternative(input)?.guide.title,'AP Fast 9');
+  CompFinder.choose(input,apFast9.id);
+  assert.equal(CompFinder.alternative(input),undefined);
+  input.firstAugment = darkRitual;
+  assert.equal(CompFinder.alternative(input)?.guide.title,'Coven Elise');
+});
+
 test('a pivot reuses a pending copy while preserving separate holders', () => {
   const {DATA, PivotPlanner} = model();
   const original = queue('BlueBuff',{champion:'Diana'});
   const existing = queue('IonicSpark',{champion:'Diana',recommendedOrder:2});
   const other = queue('IonicSpark',{uid:'tank-spark',champion:'Lux'});
   const input = plan({queue:[original,existing,other]});
+  const before = structuredClone(input);
   assert.equal(PivotPlanner.replace(input,original.uid,existing.item,DATA.items), true);
   assert.deepEqual(input.queue, [existing,other]);
+  assert.deepEqual(PivotPlanner.addedQueueCopies(before,input), []);
+});
+
+test('pivoting Ivern from Shojin to Blue Buff flags Alune’s existing copy', () => {
+  const {DATA, PivotPlanner} = model();
+  const input = plan({queue:[queue('SpearOfShojin',{champion:'Ivern'}),queue('BlueBuff',{champion:'Alune'})]});
+  const next = structuredClone(input);
+  assert.equal(PivotPlanner.replace(next,'SpearOfShojin','BlueBuff',DATA.items),true);
+  assert.deepEqual(next.queue.map(q=>[q.item,q.champion]),[['BlueBuff','Ivern'],['BlueBuff','Alune']]);
+  assert.deepEqual(PivotPlanner.addedQueueCopies(input,next),[
+    {item:'BlueBuff',added:[next.queue[0]],existing:[next.queue[1]]}
+  ]);
 });
 
 test('Mark made and Build instead require the full recipe before changing inventory', () => {
@@ -207,6 +239,21 @@ test('X guides get a dated secondary badge only from the same Academy guide and 
   assert.equal(Academy.secondaryTier({...x,id:'different-guide'}), null);
   Academy.useSnapshot({...Academy.snapshot,set:19});
   assert.equal(Academy.secondaryTier(x), null);
+});
+
+test('Academy X-row badges are patch-scoped and take precedence over saved tiers', () => {
+  const {Academy} = createModel({academy,meta,core,secondaryTiers});
+  const veigar = {...guide('Elderwood Veigar'),tier:'X'};
+  const noBadge = {...covenElise,id:'unknown-x-guide'};
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[covenElise,solarEclipse,veigar,noBadge]});
+  assert.deepEqual(Academy.secondaryTier(covenElise),{tier:'B',patch:'18.7',fromXRow:true});
+  assert.deepEqual(Academy.secondaryTier(solarEclipse),{tier:'A',patch:'18.7',fromXRow:true});
+  assert.deepEqual(Academy.secondaryTier(veigar),{tier:'A',patch:'18.7',fromXRow:true});
+  assert.equal(Academy.secondaryTier(noBadge),null);
+  assert.equal(Academy.secondaryTier({...solarEclipse,tier:'A'}),null);
+  Academy.useSnapshot({...Academy.snapshot,patch:'18.8'});
+  assert.deepEqual(Academy.secondaryTier(veigar),{tier:'B',patch:'18.3b'});
+  assert.equal(Academy.secondaryTier(covenElise),null);
 });
 
 test('A10: featured augment beats unlisted offers with positive Academy evidence', () => {
@@ -423,7 +470,7 @@ test('pivot profiles use emblem traits, radiant base roles and artifact effects'
 });
 
 test('file mode uses the embedded snapshots without a relative file fetch', async () => {
-  const fallback = {academy,meta,core};
+  const fallback = {academy,meta,core,secondaryTiers};
   const snapshots = await loadSnapshots(fallback, 'file:///Carousel.html', () => {
     assert.fail('file mode must not fetch sibling snapshot files');
   });

@@ -3,7 +3,7 @@ function academyTierBadges(guide,label=guide.tier){
   if(guide.tier!=='X')return primary;
   const secondary=Academy.secondaryTier(guide);
   return primary+(secondary
-    ?` <span class="academy-tier tier-${secondary.tier}" title="Saved Academy tier">${secondary.tier} · Patch ${esc(secondary.patch)}</span>`
+    ?` <span class="academy-tier tier-${secondary.tier}" title="${secondary.fromXRow?'Academy Situational row badge':'Saved Academy tier'}">${secondary.tier} · Patch ${esc(secondary.patch)}</span>`
     :' <span class="academy-tier">Secondary tier unavailable</span>');
 }
 

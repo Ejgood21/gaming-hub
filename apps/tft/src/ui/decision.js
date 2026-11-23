@@ -68,9 +68,14 @@ const DecisionUI = (()=>{
   document.getElementById('champion-pivot-search').addEventListener('input',e=>{pivotQuery=e.target.value;drawPivot();});
   document.addEventListener('click',e=>{
     let b=e.target.closest('[data-tempo]');if(b)mutate(()=>state.tempo=b.dataset.tempo,b.dataset.tempo==='urgent'?'Prioritizing useful crafts now.':'Balanced planning.');
-    b=e.target.closest('#craft-plan');if(b){const result=get().craft;if(result.actions.length)mutate(()=>DecisionPlanner.execute(state,result),'Items recorded. Remaining targets updated; Undo restores the whole change.');}
-    b=e.target.closest('[data-batch-champion]');if(b){const action=get().craft.actions.find(a=>a.choice.champion===b.dataset.batchChampion);if(action)mutate(()=>DecisionPlanner.execute(state,{actions:[action]}),'Pivot crafted and remaining targets adjusted.');}
-    b=e.target.closest('[data-plan-pivot],[data-build-pivot],[data-owned-pivot]');if(b){const id=b.dataset.planPivot||b.dataset.buildPivot||b.dataset.ownedPivot,mode=b.dataset.buildPivot?'craft':b.dataset.ownedPivot?'owned':'plan';if(!DecisionPlanner.pivot(state,pivotChampion,id))return;let applied=false;mutate(()=>applied=DecisionPlanner.applyPivot(state,pivotChampion,id,mode),'Champion plan updated. Completed items kept.');if(applied){pivot.close();MetaReference.filter(id);drawIntents();}}
+    b=e.target.closest('#craft-plan');if(b){const result=get().craft;if(result.actions.length)applyItemPivot(next=>DecisionPlanner.execute(next,result),'Items recorded. Remaining targets updated; Undo restores the whole change.');}
+    b=e.target.closest('[data-batch-champion]');if(b){const action=get().craft.actions.find(a=>a.choice.champion===b.dataset.batchChampion);if(action)applyItemPivot(next=>DecisionPlanner.execute(next,{actions:[action]}),'Pivot crafted and remaining targets adjusted.');}
+    b=e.target.closest('[data-plan-pivot],[data-build-pivot],[data-owned-pivot]');if(b){
+      const id=b.dataset.planPivot||b.dataset.buildPivot||b.dataset.ownedPivot,mode=b.dataset.buildPivot?'craft':b.dataset.ownedPivot?'owned':'plan';
+      if(applyItemPivot(next=>DecisionPlanner.applyPivot(next,pivotChampion,id,mode),'Champion plan updated. Completed items kept.')){
+        pivot.close();MetaReference.filter(id);drawIntents();
+      }
+    }
     b=e.target.closest('#clear-pivot-intent');if(b)mutate(()=>{delete state.pivotIntents?.[Academy.normalizeName(MetaReference.selected())];},'Pivot target released. Current queue kept.');
 
   });

@@ -93,7 +93,7 @@
     const choice=MetaBuilds.suggest(state,q.uid,MetaBuilds.dataFor(q));
     if(!choice||choice.item.id!==b.dataset.readyPivot||!OfflineTracker.canCraft(state.owned,choice.item)){draw();return;}
     const name=byId[q.item].name;
-    mutate(()=>{PivotPlanner.replace(state,q.uid,choice.item.id,DATA.items,true);q.received=false;},`${choice.item.name} built instead of ${name}.`);
+    applyItemPivot(next=>PivotPlanner.replace(next,q.uid,choice.item.id,DATA.items,true),`${choice.item.name} built instead of ${name}.`);
   });
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Build instead</b> beneath a queued item offers a one-click, craftable pivot. MetaTFT suggestions rank three-item builds around your champion’s equipped items, then show the best craftable pivot. Only S/A builds with at least 100 games qualify. The three small icons show the full build; other unbuilt targets may differ. With no strong match, no pivot is suggested. Generic similarity is only used for items without an assigned champion. Undo restores the original item and ingredients.</li>');
   render();
