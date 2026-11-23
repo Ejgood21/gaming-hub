@@ -23,8 +23,8 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
         pins:[...new Set((Array.isArray(value.pins)?value.pins:[]).filter(id=>componentOrder.includes(id)))]
       };
     },
-    recipeCounts(item) { return item.recipe.reduce((n,id)=>(n[id]=(n[id]||0)+1,n),{}); },
-    canCraft(owned,item) {return item.recipe.length===2&&Object.entries(this.recipeCounts(item)).every(([id,n])=>(owned[id]||0)>=n);},
+    recipeCounts:Tracker.recipeCounts,
+    canCraft:Tracker.canCraft,
     craftOptions(plan) {
       const allocated=Tracker.allocate(plan,DATA.items);
       const options=allocated.rows.filter(q=>this.canCraft(plan.owned,byId[q.item])&&Academy.canEquip(plan,q.champion,q.item));

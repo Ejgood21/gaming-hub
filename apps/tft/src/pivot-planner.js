@@ -1,6 +1,7 @@
 'use strict';
 
-module.exports = function createPivotPlanner({Tracker}) {
+module.exports = function createPivotPlanner(model) {
+  const {Tracker}=model;
   /* Local role/recipe heuristics; not a tier list or a champion-specific item guide. */
   const roles={
     AdaptiveHelm:['mana','tank','AP','AD'],ArchangelsStaff:['AP','scaling'],Bloodthirster:['sustain','AD','AP','fighter'],BlueBuff:['mana','AP','AD'],BrambleVest:['tank','armor'],Crownguard:['AP','tank'],Deathblade:['AD'],DragonsClaw:['tank','magic-defense'],GuardianAngel:['AD','survival'],SpectralGauntlet:['sunder','tank'],GargoyleStoneplate:['tank','armor','magic-defense'],MadredsBloodrazor:['AD','AP','anti-tank'],GuinsoosRageblade:['attack-speed','scaling'],UnstableConcoction:['sustain','AD','AP','crit'],HextechGunblade:['sustain','AP','AD','team-heal'],InfinityEdge:['AD','crit'],IonicSpark:['shred','tank','AP'],JeweledGauntlet:['AP','crit'],RunaansHurricane:['AD','attack-speed','scaling'],LastWhisper:['sunder','AD'],Morellonomicon:['anti-heal','AP'],Leviathan:['mana','AP','attack-speed'],FrozenHeart:['tank','mana'],PowerGauntlet:['crit','AD','AP'],Quicksilver:['attack-speed','survival'],RabadonsDeathcap:['AP'],RapidFireCannon:['anti-heal','attack-speed'],SpearOfShojin:['mana','AP','AD'],Redemption:['tank','sustain'],NightHarvester:['tank','survival'],SteraksGage:['fighter','AD','survival'],RedBuff:['anti-heal','tank'],ForceOfNature:['team-size'],TacticiansRing:['team-size'],TacticiansScepter:['team-size'],ThiefsGloves:['flex'],TitansResolve:['fighter','AD','AP','scaling'],StatikkShiv:['shred','AP'],WarmogsArmor:['tank']
@@ -74,6 +75,15 @@ module.exports = function createPivotPlanner({Tracker}) {
   function replace(state,uid,id,items,built=false){
     const q=state.queue.find(q=>q.uid===uid),item=items.find(i=>i.id===id);
     if(!q||q.done||!item||q.item===id)return false;
+    if(built&&!Tracker.canCraft(state.owned,item))return false;
+    const holder=model.Academy.normalizeName(q.champion||'');
+    const existing=state.queue.find(row=>!row.done&&row.item===id&&
+      model.Academy.normalizeName(row.champion||'')===holder);
+    if(existing){
+      state.queue=state.queue.filter(row=>row!==q);
+      if(built)Tracker.complete(state,existing,item);
+      return true;
+    }
     q.academyItem||=q.item;q.planSource='manual';q.pivotFrom=q.item;q.item=id;delete q.earlyChampion;q.used={};q.done=false;
     if(built)Tracker.complete(state,q,item);
     return true;

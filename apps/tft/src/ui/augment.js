@@ -14,7 +14,7 @@ const AugmentUI=(()=>{
     const o=offers(),norm=Academy.normalizeName(query);list.hidden=!norm;
     searchRows=norm?AugmentAdvisor.catalog(state,o.round).filter(a=>!o.ids.includes(a.apiName)&&Academy.normalizeName(a.name).includes(norm)).sort((a,b)=>Number(!Academy.normalizeName(a.name).startsWith(norm))-Number(!Academy.normalizeName(b.name).startsWith(norm))||a.name.localeCompare(b.name)).slice(0,7):[];
     searchIndex=Math.max(0,Math.min(searchIndex,searchRows.length-1));
-    list.innerHTML=searchRows.map((a,n)=>`<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(a.description)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`).join('')||'<p>No match for this round. Check the round or try another part of the name.</p>';
+    list.innerHTML=searchRows.map((a,n)=>`<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(a.description)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query,o.round))+'</p>';
   }
   function draw(){
     drawSelected();if(!modal.open)return;
@@ -26,7 +26,7 @@ const AugmentUI=(()=>{
     document.getElementById('augment-search-label').textContent='Offer '+(activeSlot+1)+' · type a few letters, Enter';
     document.getElementById('augment-offers').innerHTML=o.ids.map((id,slot)=>{
       const a=CompFinder.augment(id),r=comparison.rows.find(r=>r.slot===slot),best=comparison.best?.slot===slot&&['take','lean'].includes(comparison.action),reroll=comparison.reroll?.slot===slot;
-      if(!a)return `<article class="augment-offer empty-offer ${slot===activeSlot?'active-slot':''}"><button data-offer-edit="${slot}"><span>${slot+1}</span>${id?'Augment unavailable · replace offer':'Add offer '+(slot+1)}</button></article>`;
+      if(!a)return `<article class="augment-offer empty-offer ${slot===activeSlot?'active-slot':''}"><button data-offer-edit="${slot}"><span>${slot+1}</span>${id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
       const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
       return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid?'Check offer':r?.evidence?'Contextual fit':'Limited evidence'}</div><div class="augment-reasons">${(r?.reasons||[]).slice(0,2).map(x=>`<span>${esc(x.text)}</span>`).join('')}</div>${r?.items?.length?'<div class="augment-related">'+r.items.slice(0,3).map(id=>`<span title="${esc(byId[id].name)}">${icon(id)}</span>`).join('')+'</div>':''}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>Took this</button></article>`;
     }).join('');

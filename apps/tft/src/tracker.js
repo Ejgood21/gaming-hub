@@ -1,7 +1,12 @@
 'use strict';
 
 module.exports = function createTracker({LootTracker}) {
+  const recipeCounts=item=>item.recipe.reduce((counts,id)=>(counts[id]=(counts[id]||0)+1,counts),{});
+  const canCraft=(owned,item)=>item.recipe.length===2&&
+    Object.entries(recipeCounts(item)).every(([id,count])=>(owned[id]||0)>=count);
   return {
+    recipeCounts,
+    canCraft,
     allocate(state, items) {
       const remaining = {...state.owned};
       const needs = {};
@@ -18,9 +23,11 @@ module.exports = function createTracker({LootTracker}) {
       return {rows, needs, remaining};
     },
     complete(state, q, item) {
+      if(q.done||!canCraft(state.owned,item))return false;
       q.used = {}; q.usedSources={}; q.received = false;
-      for (const id of item.recipe) if ((state.owned[id] || 0) > 0) { (q.usedSources[id]||=[]).push(LootTracker.take(state,id)); state.owned[id]--; q.used[id] = (q.used[id] || 0) + 1; }
+      for (const id of item.recipe) { (q.usedSources[id]||=[]).push(LootTracker.take(state,id)); state.owned[id]--; q.used[id] = (q.used[id] || 0) + 1; }
       q.done = true;
+      return true;
     },
     restore(state, q) {
       const h=LootTracker.ensure(state);

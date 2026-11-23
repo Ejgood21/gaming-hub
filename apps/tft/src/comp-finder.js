@@ -180,6 +180,11 @@ module.exports = function createCompFinder(model) {
         this.heldAugments(plan).filter(id=>this.augment(id)).length+
         componentOrder.reduce((sum,id)=>sum+Math.max(0,Number(plan.owned[id])||0),0);
     },
+    alternative(plan){
+      const activeId=plan.activeComp?.id||plan.activeComp?.guide?.id;
+      if(!activeId)return;
+      return this.ranked(plan).find(row=>row.guide.id!==activeId&&!row.blocked&&(row.unlocked||row.fitScore>0));
+    },
     recommendations(plan){
       const rows=this.ranked(plan);
       const highest=Academy.isCurrent()?Academy.snapshot.guides.map(g=>g.tier).filter(tier=>['S','A','B'].includes(tier)).sort((a,b)=>this.tierRank(a)-this.tierRank(b))[0]:null;

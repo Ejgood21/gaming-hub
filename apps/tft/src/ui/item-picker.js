@@ -57,7 +57,7 @@
     document.getElementById('pivot-results').innerHTML=results.map(r=>{
       const i=r.item,costs={...pool};
       const recipe=i.recipe.map(c=>{const have=(costs[c]||0)>0;if(have)costs[c]--;return `<span class="pivot-ingredient ${have?'have':''}" aria-label="${esc(byId[c].name)} ${have?'owned':'needed'}">${icon(c)}<span>${shortNames[c]}${have?' ✓':''}</span></span>`;}).join('<b>+</b>');
-      return `<article class="pivot-option"><div class="pivot-itemhead">${icon(i.id)}<h3>${esc(i.name)}</h3>${ranks.has(i.id)?`<small class="pivot-meta-tier">MetaTFT ${ranks.get(i.id).tier}${ranks.get(i.id).rankFilter==='ALL'?' · all ranks':''}</small>`:''}</div><div class="pivot-recipe">${recipe||'Received item'}<small>${esc(r.reasons.filter(reason=>reason.points).map(reason=>reason.text).join(' · '))}</small></div><div class="pivot-actions"><button data-pivot-item="${i.id}" data-pivot-kind="plan">Plan instead</button>${i.recipe.length===2?`<button class="primary" data-pivot-item="${i.id}" data-pivot-kind="built">Build instead</button>`: ''}</div></article>`;
+      return `<article class="pivot-option"><div class="pivot-itemhead">${icon(i.id)}<h3>${esc(i.name)}</h3>${ranks.has(i.id)?`<small class="pivot-meta-tier">MetaTFT ${ranks.get(i.id).tier}${ranks.get(i.id).rankFilter==='ALL'?' · all ranks':''}</small>`:''}</div><div class="pivot-recipe">${recipe||'Received item'}<small>${esc(r.reasons.filter(reason=>reason.points).map(reason=>reason.text).join(' · '))}</small></div><div class="pivot-actions"><button data-pivot-item="${i.id}" data-pivot-kind="plan">Plan instead</button>${i.recipe.length===2?`<button class="primary" data-pivot-item="${i.id}" data-pivot-kind="built" ${Tracker.canCraft(state.owned,i)?'':'disabled title="Track both recipe components first"'}>Build instead</button>`: ''}</div></article>`;
     }).join('')||'<p class="emptysearch">No matching items.</p>';
   }
   function openPivot(uid){targetId=uid;pivotQuery='';document.getElementById('pivot-search').value='';drawCandidates();dialog.showModal();document.getElementById('pivot-results').scrollTop=0;}
@@ -69,7 +69,7 @@
     const b=e.target.closest('[data-pivot-item]');if(!b)return;
     const target=state.queue.find(q=>q.uid===targetId&&!q.done);if(!target){dialog.close();return;}
     const id=b.dataset.pivotItem,built=b.dataset.pivotKind==='built',original=byId[target.item].name;
-    if(!Academy.canEquip(state,target.champion,id))return;
+    if(!Academy.canEquip(state,target.champion,id)||built&&!Tracker.canCraft(state.owned,byId[id]))return;
     mutate(()=>PivotPlanner.replace(state,targetId,id,DATA.items,built),`${byId[id].name} ${built?'built':'planned'} instead of ${original}.`);
     dialog.close();
   });

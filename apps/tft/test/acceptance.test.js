@@ -9,6 +9,7 @@ const academy = require('../data/academy-18.3b.json');
 const metaFile = require('../data/metatft-18.3b.json');
 const meta = decodeMetaSnapshot(metaFile);
 const core = require('../data/core-items.json');
+const liveFixture = require('../test-support/live-fixture');
 
 const model = () => createModel({academy, meta, core});
 const guide = title => academy.guides.find(g => g.title === title);
@@ -137,6 +138,75 @@ test('A9: component anvil preserves priority and records the receipt as other', 
   DecisionPlanner.receiveAnvil(input, offers[0]);
   assert.deepEqual(input.lootHistory.loose.BFSword, ['other']);
   assert.equal(input.lootHistory.counts.BFSword, undefined);
+});
+
+test('an active comp exposes a current alternative with positive fit and preserves inventory on switch', () => {
+  const {Academy, CompFinder} = model();
+  const activeComp = {id:guide('Ahri Morgana').id};
+  const input = plan({activeComp,currentUnits:[caitlyn],owned:{RecurveBow:1},
+    queue:[queue('GuinsoosRageblade',{done:true}),queue('BlueBuff')]});
+  assert.equal(CompFinder.alternative(plan()), undefined);
+  assert.equal(CompFinder.alternative(plan({activeComp})), undefined);
+  const alternative = CompFinder.alternative(input);
+  assert.ok(alternative && alternative.guide.id !== activeComp.id && !alternative.blocked);
+  assert.ok(alternative.fitScore > 0);
+  const unverified = createModel({academy, meta, core, requireLive:true});
+  assert.equal(unverified.CompFinder.alternative(input), undefined);
+
+  CompFinder.choose(input, alternative.guide.id);
+  assert.equal(input.activeComp.id, alternative.guide.id);
+  assert.equal(input.activeComp.patch, Academy.snapshot.patch);
+  assert.deepEqual(input.owned, {RecurveBow:1});
+  assert.deepEqual(input.queue.filter(q=>q.done).map(q=>q.item), ['GuinsoosRageblade']);
+});
+
+test('a pivot reuses a pending copy while preserving separate holders', () => {
+  const {DATA, PivotPlanner} = model();
+  const original = queue('BlueBuff',{champion:'Diana'});
+  const existing = queue('IonicSpark',{champion:'Diana',recommendedOrder:2});
+  const other = queue('IonicSpark',{uid:'tank-spark',champion:'Lux'});
+  const input = plan({queue:[original,existing,other]});
+  assert.equal(PivotPlanner.replace(input,original.uid,existing.item,DATA.items), true);
+  assert.deepEqual(input.queue, [existing,other]);
+});
+
+test('Mark made and Build instead require the full recipe before changing inventory', () => {
+  const {byId, DATA, Tracker, PivotPlanner} = model();
+  const q = queue('InfinityEdge');
+  const input = plan({queue:[q],owned:{BFSword:1}});
+  const before = structuredClone(input);
+  assert.equal(Tracker.complete(input,q,byId[q.item]), false);
+  assert.deepEqual(input,before);
+
+  assert.equal(PivotPlanner.replace(input,q.uid,'Deathblade',DATA.items,true), false);
+  assert.deepEqual(input,before);
+  input.owned.SparringGloves = 1;
+  assert.equal(Tracker.complete(input,q,byId[q.item]), true);
+  assert.equal(q.done, true);
+  assert.deepEqual(q.used, {BFSword:1,SparringGloves:1});
+  assert.deepEqual(input.owned, {BFSword:0,SparringGloves:0});
+});
+
+test('augment search distinguishes a later-round entry from missing evidence', () => {
+  const {AugmentAdvisor} = model();
+  assert.match(AugmentAdvisor.searchNotice('Jeweled Lotus',0), /Jeweled Lotus I · Academy lists 3-2, 4-2/);
+  assert.match(AugmentAdvisor.searchNotice('Mana Flow',0), /Limited evidence/);
+  assert.equal(AugmentAdvisor.catalog(plan(),0).some(a=>a.name.startsWith('Jeweled Lotus')), false);
+  assert.equal(AugmentAdvisor.catalog(plan(),1).filter(a=>a.name.startsWith('Jeweled Lotus')).length, 2);
+});
+
+test('X guides get a dated secondary badge only from the same Academy guide and set', () => {
+  const {Academy} = model();
+  const elderwood = guide('Aphelios Elderwood');
+  assert.equal(elderwood.tier, 'B');
+  assert.equal(Academy.secondaryTier(elderwood), null);
+  const x = {...elderwood,tier:'X'};
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[x,guide('Inferno Fast 9')]});
+  assert.deepEqual(Academy.secondaryTier(x), {tier:'B',patch:'18.3b'});
+  assert.equal(Academy.secondaryTier(guide('Inferno Fast 9')), null);
+  assert.equal(Academy.secondaryTier({...x,id:'different-guide'}), null);
+  Academy.useSnapshot({...Academy.snapshot,set:19});
+  assert.equal(Academy.secondaryTier(x), null);
 });
 
 test('A10: featured augment beats unlisted offers with positive Academy evidence', () => {
@@ -275,45 +345,6 @@ test('an X guide can use a featured emblem outside its board or a held structure
   assert.equal(CompFinder.evaluate(plan({queue:[queue('EdgeOfNight',{done:true})]}),rivals).blocked, true);
   assert.equal(CompFinder.evaluate(plan({chosenAugments:['','','DA_18_RivalsAugment']}),rivals).unlocked, true);
 });
-
-const liveFixtureUpdated = Date.parse('2026-10-01T12:00:00Z');
-function liveFixture({academyPatch = '18.3b', metaPatch = '18.3b', metaSet = 18, omitAcademyPatch = false,
-                      staleGuideDates = false, fail = false, timeout = false} = {}) {
-  const updated = staleGuideDates ? '2026-09-26T12:00:00Z' : academy.sourceUpdated;
-  const liveGuides = academy.guides.map(g=>({...g,isPublic:true,updated}));
-  const fetchJSON = async url => {
-    if (fail) throw new TypeError('Network error');
-    if (timeout) throw new DOMException('Timed out','TimeoutError');
-    const {pathname, searchParams} = new URL(url);
-    let data;
-    if (pathname.endsWith('__data.json')) {
-      if (omitAcademyPatch) return {type:'opaque'};
-      data = {nodes:[{data:[{patch:1},academyPatch]}]};
-    } else if (pathname.endsWith('/api/tierlist/comps')) {
-      data = {guides:liveGuides};
-    } else if (pathname.includes('/api/assets/')) {
-      const kind = pathname.split('/').at(-1);
-      assert.equal(searchParams.get('set'), '18');
-      data = {[kind]:academy[kind]};
-    } else {
-      assert.equal(searchParams.get('unit'), 'DA_18_Ashe');
-      const patch = metaPatch.slice(0,4), revision = metaPatch.slice(4);
-      data = {unit:'DA_18_Ashe',tft_set:'TFTSet'+metaSet,updated:liveFixtureUpdated};
-      if (pathname.endsWith('_overall')) {
-        data.games = [{day:1,count:1200,patch:[patch,revision]},
-          {day:2,count:1200,patch:[patch,revision]},{day:3,count:1200,patch:['18.2','']}];
-        data.levels = [{lvl_items:[2,3],places:[120,120,120,120,120,120,120,120]}];
-      } else {
-        const places = [12,11,10,10,8,6,4,2];
-        data.build_games = [{patch,b_patch_version:revision}];
-        data.items = [{places}];
-        data.builds = [{buildNames:'DA_HandOfJustice|DA_IonicSpark|DA_JeweledGauntlet',places}];
-      }
-    }
-    return {ok:true,json:async()=>data};
-  };
-  return fetchJSON;
-}
 
 test('live success adopts a matching 18.3b source and current MetaTFT builds', async () => {
   const m = createModel({academy, meta, core, requireLive: true});
