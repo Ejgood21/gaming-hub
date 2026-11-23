@@ -14,13 +14,11 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     eligible(a,round){return !a.stages?.length||a.stages.includes(this.stages[round]);},
     catalog(plan,round){const held=new Set(this.held(plan));return (Academy.snapshot.augments||[]).filter(a=>!held.has(a.apiName)&&this.eligible(a,round)).sort((a,b)=>a.name.localeCompare(b.name));},
-    searchNotice(query,round){
+    searchNotice(query){
       const term=Academy.normalizeName(query);
       if(!term)return 'Type an augment name to search.';
       const matches=(Academy.snapshot.augments||[]).filter(a=>Academy.normalizeName(a.name).includes(term));
-      if(!matches.length)return 'Limited evidence · No TFT Academy entry matches this name.';
-      if(matches.some(a=>this.eligible(a,round)))return 'No remaining matches for this offer.';
-      return matches.slice(0,3).map(a=>a.name+' · Academy lists '+a.stages.join(', ')).join(' / ');
+      return matches.length?'No remaining matches for this offer.':'Limited evidence · No TFT Academy entry matches this name.';
     },
     context(plan){
       const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan,{allowSparse:true}),routes=ranked.filter(r=>!r.blocked).slice(0,8);
@@ -31,7 +29,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       const {plan,guide,units,pending,done,needs,urgent,held}=ctx,reasons=[],links=[];let score=0,evidence=0,conflict=false;
       const add=(points,text)=>{score+=points;reasons.push({points,text});};
       if(held.includes(a.apiName))return {augment:a,score:-999,evidence:0,reasons:[{text:'Already selected'}],invalid:true};
-      if(!this.eligible(a,round))return {augment:a,score:-999,evidence:0,reasons:[{text:'Not listed for this augment round'}],invalid:true};
+      if(!this.eligible(a,round))return {augment:a,score:-999,evidence:0,reasons:[{text:'Academy lists '+a.stages.join(', ')}],offRound:true};
       const endorses=g=>(g.augments||[]).some(x=>x.apiName===a.apiName)||g.mainAugment?.apiName===a.apiName;
       if(guide&&endorses(guide)){
         add(guide.mainAugment?.apiName===a.apiName?58:42,guide.mainAugment?.apiName===a.apiName?'Academy featured augment for your comp':'Academy recommends this for your comp');evidence=3;
@@ -76,7 +74,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     compare(plan,offers=this.ensure(plan)){
       const ctx=this.context(plan),round=offers.round,rows=offers.ids.map((id,slot)=>({a:CompFinder.augment(id),slot})).filter(x=>x.a).map(({a,slot})=>({...this.evaluate(a,ctx,round),slot})).sort((a,b)=>b.score-a.score||a.slot-b.slot);
-      const valid=rows.filter(r=>!r.invalid),best=valid[0],seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
+      const valid=rows.filter(r=>!r.invalid&&!r.offRound),best=valid[0],seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
       let action='enter',message='Enter your three offered augments.',reroll=null;
       if(best){
         const complete=offers.ids.every(Boolean)&&valid.length===3;
@@ -85,7 +83,9 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
         // will appear. Missing annotations alone never justify a reroll.
         const weakest=[...valid].reverse().find(r=>r.evidence>0&&(r.conflict||r.score<20));
         const better=weakest&&alternatives.filter(r=>r.augment.tier===weakest.augment.tier&&r.evidence>=2&&r.score>=best.score+16&&r.score>=32).sort((a,b)=>b.score-a.score)[0];
-        if(!complete){action='partial';message='Add all three offers to compare. Current best fit shown below.';}
+        if(!complete){action='partial';message=offers.ids.every(Boolean)
+          ?'Some offers have limited round evidence. The supported fit is shown below.'
+          :'Add all three offers to compare. Current best fit shown below.';}
         else if(best.score>=38&&best.evidence>=2){action='take';message='Take '+best.augment.name+' — strongest supported fit.';}
         else if(better&&weakest){action='reroll';reroll={slot:weakest.slot,example:better};message='Consider rerolling '+weakest.augment.name+' if available. Keep '+best.augment.name+' as your fallback.';}
         else if(best.evidence>0&&best.score>=8){action='lean';message='Lean '+best.augment.name+'. No strong reason to spend a reroll from the available data.';}
@@ -95,7 +95,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     record(plan,slot){
       const offers=this.ensure(plan),id=offers.ids[slot],a=CompFinder.augment(id);
-      if(!a||!this.eligible(a,offers.round)||this.held(plan).includes(id))return false;
+      if(!a||this.held(plan).includes(id))return false;
       const selected=this.slots(plan);selected[offers.round]=id;plan.chosenAugments=selected;plan.firstAugment=selected[0];
       plan.augmentOffers={round:Math.min(2,offers.round+1),ids:['','',''],seen:[]};return true;
     }

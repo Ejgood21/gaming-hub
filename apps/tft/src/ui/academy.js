@@ -7,7 +7,7 @@ function academyTierBadges(guide,label=guide.tier){
     :' <span class="academy-tier">Secondary tier unavailable</span>');
 }
 
-(() => {
+const AcademyUI=(() => {
   let intent=0,controller,checking=true,error='';
   const bar=document.createElement('div');bar.className='academy-bar';
   bar.innerHTML='<a id="academy-tierlist" href="https://tftacademy.com/tierlist/comps" aria-haspopup="dialog">TFT Academy ↗</a><button id="refresh-live-data" class="quiet">Refresh live data</button><span id="academy-status" role="status"></span>';
@@ -80,7 +80,13 @@ function academyTierBadges(guide,label=guide.tier){
     let choice;
     try{choice=QuickImport.choose(code,state);}catch(e){feedback.textContent=e.message;feedback.classList.add('error');return;}
     let counts;
-    mutate(()=>{counts=QuickImport.replace(state,choice,code);},`${choice.guide.title} imported. Bench and completed items kept.`);
+    mutate(()=>{
+      counts=QuickImport.replace(state,choice,code);
+      const playable=new Set(CompFinder.champions().map(unit=>unit.apiName));
+      const imported=state.activeComp.guide.finalComp.filter(unit=>playable.has(unit.apiName));
+      state.currentUnits=CompFinder.units({currentUnits:imported})
+        .map(({apiName,stars})=>({apiName,stars}));
+    },`${choice.guide.title} imported. Current champions updated. Inventory kept.`);
     document.dispatchEvent(new Event('carousel-comp-imported'));
     feedback.textContent=`${counts.pending} targets${counts.covered?' · '+counts.covered+' already owned':''}.`+
       (choice.variants>1?` ${choice.variants} guides share this code. Using ${choice.guide.title}.`:'');
@@ -99,4 +105,5 @@ function academyTierBadges(guide,label=guide.tier){
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="undo"],#apply-import')){intent++;feedback.textContent='';feedback.classList.remove('error');}},true);
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy; component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Loose components and completed items stay; matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>Only exact champion matches are imported. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
   void refreshData(plannedSet());
+  return {isChecking:()=>checking};
 })();

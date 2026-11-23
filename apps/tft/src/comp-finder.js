@@ -6,7 +6,7 @@ module.exports = function createCompFinder(model) {
      Academy owns the comp tier, item order and recommended augment lists. */
   return {
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
-    augments(){return (Academy.snapshot.augments||[]).filter(a=>!a.stages?.length||a.stages.includes('2-1')).sort((a,b)=>a.name.localeCompare(b.name));},
+    augments(){return [...(Academy.snapshot.augments||[])].sort((a,b)=>a.name.localeCompare(b.name));},
     augment(id){return (Academy.snapshot.augments||[]).find(a=>a.apiName===id);},
     units(plan){
       const byUnit=new Map();for(const u of plan.currentUnits||[]){const c=Academy.snapshot.champions.find(c=>c.apiName===u.apiName);if(!c)continue;const stars=Math.max(1,Math.min(3,Number(u.stars)||1));if(stars>(byUnit.get(u.apiName)?.stars||0))byUnit.set(u.apiName,{...c,stars});}return [...byUnit.values()];

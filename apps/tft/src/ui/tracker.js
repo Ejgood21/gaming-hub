@@ -34,18 +34,48 @@ function render(){
 function save(){QueueOrder.ensure(state);try{localStorage.setItem(KEY,JSON.stringify(state));storageOK=true;}catch(e){storageOK=false;}}
 let toastTimer;function toast(s){document.getElementById('toast').textContent=s;clearTimeout(toastTimer);toastTimer=setTimeout(()=>document.getElementById('toast').textContent='',2400);}
 function mutate(fn,message){history.push(JSON.stringify(state));if(history.length>40)history.shift();fn();save();render();if(message)toast(message);}
-function applyItemPivot(apply,message){
+const itemPivotConfirm=document.createElement('dialog');
+itemPivotConfirm.setAttribute('aria-labelledby','item-pivot-confirm-title');
+itemPivotConfirm.setAttribute('aria-describedby','item-pivot-confirm-message');
+itemPivotConfirm.innerHTML=`<h2 id="item-pivot-confirm-title">Confirm item pivot</h2>
+ <p id="item-pivot-confirm-message"></p><form method="dialog" class="dialogactions">
+ <button value="cancel" autofocus>Cancel</button><button value="confirm" class="primary">Confirm</button></form>`;
+document.body.append(itemPivotConfirm);
+let pendingItemPivot;
+itemPivotConfirm.querySelector('form').addEventListener('submit',event=>{
+ event.preventDefault();
+ const commit=pendingItemPivot;
+ pendingItemPivot=null;
+ itemPivotConfirm.close();
+ if(event.submitter?.value==='confirm')commit?.();
+});
+itemPivotConfirm.addEventListener('close',()=>{if(!itemPivotConfirm.open)pendingItemPivot=null;});
+function applyItemPivot(apply,message,onApplied){
+ if(itemPivotConfirm.open)return;
  const next=structuredClone(state);
- if(!apply(next))return false;
+ if(!apply(next))return;
  const holders=rows=>rows.map(q=>q.champion||'an unassigned holder').join(', ');
  const warnings=PivotPlanner.addedQueueCopies(state,next).map(({item,added,existing})=>{
    const name=byId[item].name;
    return existing.length?`${name} is already queued for ${holders(existing)}. Also queue it for ${holders(added)}?`
      :`Queue ${name} for ${holders(added)}? Each assignment needs its own copy.`;
  });
- if(warnings.length&&!window.confirm(warnings.join('\n\n')))return false;
- mutate(()=>{state=next;},message);
- return true;
+ if(!warnings.length){
+   mutate(()=>{state=next;},message);
+   onApplied?.();
+   return;
+ }
+ const before=JSON.stringify(state),revision=Academy.revision;
+ pendingItemPivot=()=>{
+   if(Academy.revision!==revision||JSON.stringify(state)!==before){
+     toast('The plan changed. Review the pivot again.');
+     return;
+   }
+   mutate(()=>{state=next;},message);
+   onApplied?.();
+ };
+ itemPivotConfirm.querySelector('p').textContent=warnings.join('\n\n');
+ itemPivotConfirm.showModal();
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const {action,id}=b.dataset,q=state.queue.find(q=>q.uid===id);
  if(action==='help'){document.getElementById('help').showModal();return;}

@@ -179,10 +179,26 @@ test('six one-star units have no better pivot on AP Fast 9 until a better fit is
   assert.equal(CompFinder.alternative(input)?.guide.title,'Coven Elise');
 });
 
-test('a pivot reuses a pending copy while preserving separate holders', () => {
+test('pivoting Shojin to Adaptive Helm in AP Fast 9 flags a second Ivern copy', () => {
+  const {Academy, CompFinder, DATA, PivotPlanner} = model();
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[apFast9]});
+  const input = plan({currentUnits});
+  CompFinder.choose(input,apFast9.id);
+  const shojin=input.queue.find(q=>q.item==='SpearOfShojin'&&q.champion==='Ivern');
+  const existing=input.queue.find(q=>q.item==='AdaptiveHelm'&&q.champion==='Ivern');
+  assert.equal(input.queue.length,10);
+  const next=structuredClone(input);
+  assert.equal(PivotPlanner.replace(next,shojin.uid,'AdaptiveHelm',DATA.items),true);
+  assert.equal(next.queue.length,10);
+  const added=next.queue.find(q=>q.uid===shojin.uid);
+  assert.deepEqual([added.item,added.champion],['AdaptiveHelm','Ivern']);
+  assert.deepEqual(PivotPlanner.addedQueueCopies(input,next),[{item:'AdaptiveHelm',added:[added],existing:[existing]}]);
+});
+
+test('an unassigned pivot still reuses an existing unassigned target', () => {
   const {DATA, PivotPlanner} = model();
-  const original = queue('BlueBuff',{champion:'Diana'});
-  const existing = queue('IonicSpark',{champion:'Diana',recommendedOrder:2});
+  const original = queue('BlueBuff');
+  const existing = queue('IonicSpark',{recommendedOrder:2});
   const other = queue('IonicSpark',{uid:'tank-spark',champion:'Lux'});
   const input = plan({queue:[original,existing,other]});
   const before = structuredClone(input);
@@ -219,10 +235,17 @@ test('Mark made and Build instead require the full recipe before changing invent
   assert.deepEqual(input.owned, {BFSword:0,SparringGloves:0});
 });
 
-test('augment search distinguishes a later-round entry from missing evidence', () => {
-  const {AugmentAdvisor} = model();
-  assert.match(AugmentAdvisor.searchNotice('Jeweled Lotus',0), /Jeweled Lotus I · Academy lists 3-2, 4-2/);
-  assert.match(AugmentAdvisor.searchNotice('Mana Flow',0), /Limited evidence/);
+test('a reported Jeweled Lotus I is recordable even when Academy lists later rounds', () => {
+  const {AugmentAdvisor,CompFinder} = model();
+  const lotus='DA_JeweledLotus_I';
+  const input=plan({augmentOffers:{round:0,ids:[lotus,'',''],seen:[]}});
+  const comparison=AugmentAdvisor.compare(input);
+  assert.equal(comparison.rows[0].offRound,true);
+  assert.equal(comparison.best,undefined);
+  assert.equal(AugmentAdvisor.record(input,0),true);
+  assert.deepEqual(input.chosenAugments,[lotus,'','']);
+  assert.ok(CompFinder.augments().some(a=>a.apiName===lotus));
+  assert.match(AugmentAdvisor.searchNotice('Mana Flow'), /Limited evidence/);
   assert.equal(AugmentAdvisor.catalog(plan(),0).some(a=>a.name.startsWith('Jeweled Lotus')), false);
   assert.equal(AugmentAdvisor.catalog(plan(),1).filter(a=>a.name.startsWith('Jeweled Lotus')).length, 2);
 });
