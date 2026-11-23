@@ -250,6 +250,83 @@ test('a reported Jeweled Lotus I is recordable even when Academy lists later rou
   assert.equal(AugmentAdvisor.catalog(plan(),1).filter(a=>a.name.startsWith('Jeweled Lotus')).length, 2);
 });
 
+test('Deadlier Caps at 3-2 explains the mismatch and offers 2-1', () => {
+  const {AugmentAdvisor} = model();
+  const id = 'DA_DeadlierCaps';
+  const input = plan({augmentOffers:{round:1,ids:[id,'',''],seen:[]}});
+  const wrong = AugmentAdvisor.compare(input);
+  assert.equal(wrong.action,'partial');
+  assert.equal(wrong.best,undefined);
+  assert.match(wrong.rows[0].reasons[0].text,/Deadlier Caps is listed by Academy for 2-1, not 3-2/);
+  assert.deepEqual(wrong.rows[0].rounds,[0]);
+  input.augmentOffers.round = wrong.rows[0].rounds[0];
+  assert.equal(AugmentAdvisor.compare(input).best.augment.apiName,id);
+});
+
+test('Rod and Vest with Woven Magic change the top-three fit scores and show the augment credit', () => {
+  const {Academy, CompFinder} = model();
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[apFast9,mamawood,guide('Ahri Morgana')]});
+  const input = plan({owned:{NeedlesslyLargeRod:1,ChainVest:1}});
+  const topThree = () => CompFinder.ranked(input).slice(0,3);
+  const results = rows => rows.map(r=>[r.guide.id,r.fitScore]);
+  const before = topThree();
+  assert.equal(before.length,3);
+  input.firstAugment = 'DA_WovenMagic';
+  const after = topThree();
+  assert.notDeepEqual(results(after),results(before));
+  const fast9 = after.find(r=>r.guide.id===apFast9.id);
+  const credit = fast9.reasons.find(r=>r.text.startsWith('Augment: Woven Magic'));
+  assert.ok(credit.points>0);
+  assert.match(credit.text,/Rules-based fit.*Component generation/);
+  assert.equal(fast9.fitScore,before.find(r=>r.guide.id===apFast9.id).fitScore+credit.points);
+  assert.ok(fast9.augmentMatches[0].recommended);
+  assert.ok(fast9.reasons.some(r=>r.text.includes('No Academy augment data for this comp')));
+  assert.equal(fast9.reasons.reduce((sum,r)=>sum+r.points,0),fast9.fitScore);
+  assert.deepEqual(input.owned,{NeedlesslyLargeRod:1,ChainVest:1});
+});
+
+test('owned resources need a 12-point fit and resource lead over a higher tier', () => {
+  const {Academy, CompFinder} = model();
+  const upper = {...mamawood,tier:'S'}, lower = {...apFast9,tier:'A'};
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[upper,lower]});
+  const input = plan({owned:{NeedlesslyLargeRod:1,ChainVest:1}});
+  const [tierWinner,close] = CompFinder.ranked(input);
+  assert.equal(tierWinner.guide.id,upper.id);
+  assert.ok(close.fitScore>tierWinner.fitScore&&close.fitScore-tierWinner.fitScore<12);
+  input.queue.push(queue('BlueBuff',{done:true}));
+  input.currentUnits = [{apiName:'DA_18_Alune',stars:2}];
+  const [fitWinner,runnerUp] = CompFinder.ranked(input);
+  assert.equal(fitWinner.guide.id,lower.id);
+  assert.equal(runnerUp.guide.id,upper.id);
+  assert.ok(fitWinner.fitScore-runnerUp.fitScore>=12);
+  assert.ok(fitWinner.ownedFit-runnerUp.ownedFit>=12);
+  assert.equal(fitWinner.passedTier.guide.id,upper.id);
+});
+
+test('Lucky Gloves and Flowing Tears get the same contextual verdict for needed components', () => {
+  const {Academy, AugmentAdvisor} = model();
+  const liveGuide = {...apFast9,augments:[{apiName:'DA_UpwardMobility'}]};
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[liveGuide]});
+  const input = plan({activeComp:{guide:liveGuide},queue:[queue('JeweledGauntlet'),queue('BlueBuff')]});
+  const choice = AugmentAdvisor.compare(input,{round:0,ids:['DA_LuckyGloves','DA_FlowingTears','DA_DeadlierCaps'],seen:[]});
+  assert.equal(choice.action,'reroll');
+  for (const row of choice.rows.slice(0,2)) {
+    assert.equal(row.contextual,true);
+    assert.match(row.reasons[0].text,/Offers a component your current targets need/);
+    assert.ok(!choice.rerolls.some(r=>r.slot===row.slot));
+  }
+  assert.deepEqual(choice.rerolls.map(r=>r.slot),[2]);
+  assert.match(choice.rerolls[0].reason,/No Academy match.*Upward Mobility/);
+  const backed = AugmentAdvisor.compare(input,{round:0,ids:['DA_LuckyGloves','DA_FlowingTears','DA_UpwardMobility'],seen:[]});
+  assert.equal(backed.action,'take');
+  assert.equal(backed.best.augment.name,'Upward Mobility');
+  assert.match(backed.best.reasons[0].text,/Academy recommends this augment for AP Fast 9/);
+  const unannotated = AugmentAdvisor.compare(plan({activeComp:{guide:apFast9}}),{round:0,ids:['DA_FlowingTears','',''],seen:[]});
+  assert.match(unannotated.academyNotice,/Academy lists no recommended augment for this comp/);
+  assert.equal(unannotated.rows[0].contextual,true);
+  assert.notEqual(unannotated.action,'take');
+});
+
 test('X guides get a dated secondary badge only from the same Academy guide and set', () => {
   const {Academy} = model();
   const elderwood = guide('Aphelios Elderwood');
@@ -288,8 +365,8 @@ test('A10: featured augment beats unlisted offers with positive Academy evidence
   const choice = AugmentAdvisor.compare(inputs, {round:0, ids:[comp.mainAugment.apiName,...others.map(a=>a.apiName)], seen:[]});
   assert.equal(choice.action, 'take');
   assert.equal(choice.best.augment.apiName, comp.mainAugment.apiName);
-  assert.ok(choice.best.score >= 38 && choice.best.evidence >= 2);
-  assert.ok(choice.rows.slice(1).every(row => row.evidence === 0 && row.score === 0));
+  assert.equal(choice.best.academy,'featured');
+  assert.ok(choice.rows.slice(1).every(row => !row.academy));
 });
 
 test('A14: stale MetaTFT is available to the reference and excluded from pivots', () => {

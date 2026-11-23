@@ -544,103 +544,207 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
 'use strict';
 
 module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DATA}) {
-  /* Evidence-led offer comparison. Academy endorsements are the strongest signal.
-     Description-based adjustments are explicitly local heuristics. Neither these
-     scores nor the candidate catalog represent win rates or a reroll distribution. */
+  const stages = ['2-1', '3-2', '4-2'];
+  const {augmentFit} = CompFinder;
+
   return {
-    stages:['2-1','3-2','4-2'],
+    stages,
     held(plan){return CompFinder.heldAugments(plan);},
     slots(plan){return [plan.firstAugment||plan.chosenAugments?.[0]||'',plan.chosenAugments?.[1]||'',plan.chosenAugments?.[2]||''];},
     ensure(plan){
       if(!plan.augmentOffers||!Array.isArray(plan.augmentOffers.ids))plan.augmentOffers={round:Math.max(0,this.slots(plan).findIndex(id=>!id)),ids:['','',''],seen:[]};
       return plan.augmentOffers;
     },
-    eligible(a,round){return !a.stages?.length||a.stages.includes(this.stages[round]);},
-    catalog(plan,round){const held=new Set(this.held(plan));return (Academy.snapshot.augments||[]).filter(a=>!held.has(a.apiName)&&this.eligible(a,round)).sort((a,b)=>a.name.localeCompare(b.name));},
+    eligible(augment,round){return !augment.stages?.length||augment.stages.includes(stages[round]);},
+    catalog(plan,round){
+      const held=this.held(plan);
+      return CompFinder.augmentOptions(stages[round]).filter(a=>this.eligible(a,round)&&!a.ids.some(id=>held.includes(id)));
+    },
+    roundNotice(augment,round){
+      return `${augment.name} is listed by Academy for ${augment.stages.join(' and ')}, not ${stages[round]}.`;
+    },
     searchNotice(query){
       const term=Academy.normalizeName(query);
       if(!term)return 'Type an augment name to search.';
-      const matches=(Academy.snapshot.augments||[]).filter(a=>Academy.normalizeName(a.name).includes(term));
-      return matches.length?'No remaining matches for this offer.':'Limited evidence · No TFT Academy entry matches this name.';
+      const matches=(Academy.snapshot.augments||[]).some(a=>Academy.normalizeName(a.name).includes(term));
+      return matches?'No remaining matches for this offer.':'Limited evidence · No TFT Academy entry matches this name.';
     },
     context(plan){
-      const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan,{allowSparse:true}),routes=ranked.filter(r=>!r.blocked).slice(0,8);
-      const units=CompFinder.units(plan),pending=plan.queue.filter(q=>!q.done),done=plan.queue.filter(q=>q.done),needs=Tracker.allocate(plan,DATA.items).needs;
-      return {plan,guide,ranked,routes,units,pending,done,needs,urgent:plan.tempo==='urgent',held:this.held(plan)};
+      const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan,{allowSparse:true});
+      const routes=ranked.filter(r=>!r.blocked).slice(0,8);
+      const primary=guide?ranked.find(r=>r.guide.id===guide.id):routes[0];
+      const targets=guide&&plan.queue.length?plan.queue.filter(q=>!q.done):primary?.remaining||[];
+      const placed=guide?plan.queue.filter(q=>q.done).map(q=>q.item):primary?.placements.map(p=>p.item)||[];
+      const fitGuide=guide||primary?.guide;
+      return {guide,fitGuide,routes,ranked,held:this.held(plan),urgent:plan.tempo==='urgent',
+        fit:augmentFit.context(plan,fitGuide,targets,placed),
+        needs:Tracker.allocate(plan,DATA.items).needs};
     },
-    evaluate(a,ctx,round){
-      const {plan,guide,units,pending,done,needs,urgent,held}=ctx,reasons=[],links=[];let score=0,evidence=0,conflict=false;
-      const add=(points,text)=>{score+=points;reasons.push({points,text});};
-      if(held.includes(a.apiName))return {augment:a,score:-999,evidence:0,reasons:[{text:'Already selected'}],invalid:true};
-      if(!this.eligible(a,round))return {augment:a,score:-999,evidence:0,reasons:[{text:'Academy lists '+a.stages.join(', ')}],offRound:true};
-      const endorses=g=>(g.augments||[]).some(x=>x.apiName===a.apiName)||g.mainAugment?.apiName===a.apiName;
-      if(guide&&endorses(guide)){
-        add(guide.mainAugment?.apiName===a.apiName?58:42,guide.mainAugment?.apiName===a.apiName?'Academy featured augment for your comp':'Academy recommends this for your comp');evidence=3;
-      }else if(!guide){
-        // Keep item/board fit dominant. An augment can also open a specifically
-        // gated Academy route, without pretending any promised items are owned.
-        const options=ctx.ranked.filter(r=>endorses(r.guide)&&(!r.blocked||r.missingAugment===a.apiName&&r.missingEmblems.length===0)).map(r=>({...r,adjusted:r.fitScore+(r.missingAugment===a.apiName?40:0)})).sort((a,b)=>b.adjusted-a.adjusted);
-        if(options.length){
-          const best=options[0],nearBest=ctx.routes[0]?.fitScore||0,closeness=Math.max(0,1-Math.max(0,nearBest-best.adjusted)/50);
-          add(14+closeness*20,'Academy match: '+best.guide.title);evidence=2;links.push(best.guide);
-          if(best.keepers.length||best.matched.length||best.specialMatches.length){add(Math.min(9,best.unitScore/6+best.itemScore/12),'That route fits your recorded units or completed items');}
-        }
+    evaluate(augment,ctx,round){
+      const {guide,fitGuide,routes,ranked,held,urgent,fit,needs}=ctx;
+      if(held.includes(augment.apiName))return {augment,reasons:[{text:'Already selected'}],invalid:true};
+      if(!this.eligible(augment,round))return {
+        augment,reasons:[{text:this.roundNotice(augment,round)}],offRound:true,
+        rounds:augment.stages.map(stage=>stages.indexOf(stage)).filter(index=>index>=0)
+      };
+
+      const {apiName:id,description:text}=augment;
+      const endorses=g=>augmentFit.recommendation(g,id);
+      const route=guide?null:routes.find(row=>endorses(row.guide))||
+        ranked.find(row=>row.missingAugment===id&&!row.missingEmblems.length&&endorses(row.guide));
+      const match=augmentFit.score(augment,route?.guide||fitGuide,fit);
+      const reasons=[{text:match.academy ?
+        `${match.text} for ${route?.guide.title||fitGuide.title}` :
+        match.points?`Rules-based fit · ${match.text}${match.detail?' · '+match.detail:''}`:match.text}];
+      let score=match.points;
+      if(urgent&&/after (?:\d+|every)|next \d+ rounds|every \d+ player|hatches in/i.test(text)&&!/\bnow\b/i.test(text)){
+        score-=3;reasons.push({text:'Delayed payoff while you need strength now'});
       }
-      const text=a.description||'',lower=text.toLowerCase(),normal=Academy.normalizeName(text),style=(guide?.style||ctx.routes[0]?.guide.style||'').toLowerCase();
-      // Explicit item names provide a narrow, auditable connection. No inferred
-      // inventory grants; an offer and even a chosen augment are not receipts.
-      const referenced=DATA.items.filter(i=>i.name.length>5&&normal.includes(Academy.normalizeName(i.name)));
-      const ownedRefs=referenced.filter(i=>done.some(q=>Academy.itemMatches(i.id,q.item))),targetRefs=referenced.filter(i=>pending.some(q=>q.item===i.id));
-      const reward=/\bgain\b|choose .*items?|item anvil/i.test(text),itemBuff=/grant|always give|permanently gain|holders|your .*gain/i.test(text);
-      if(ownedRefs.length&&itemBuff){add(12,'Works with an item you already own');evidence=Math.max(evidence,1);}
-      else if(targetRefs.length&&reward){add(9,'Mentions an item in your build queue');evidence=Math.max(evidence,1);}
-      const componentAliases={BFSword:['bfsword'],RecurveBow:['recurvebow'],NeedlesslyLargeRod:['needlesslylargerod'],TearOfTheGoddess:['tearofthegoddess'],ChainVest:['chainvest'],NegatronCloak:['negatroncloak'],GiantsBelt:['giantsbelt'],SparringGloves:['sparringgloves']};
-      const parts=Object.entries(componentAliases).filter(([id,aliases])=>needs[id]&&aliases.some(n=>normal.includes(n))).map(([id])=>id);
-      if(parts.length&&reward){add(Math.min(10,parts.reduce((s,id)=>s+Math.min(3,needs[id].count)*3,0)),'Offers a component your current targets need');evidence=Math.max(evidence,1);}
-      const reroll=/reroll/.test(style),leveling=/fast\s*[89]|fast\s*10/.test(style),shop=/shop (?:reroll|refresh)|free reroll/.test(lower),xp=/\bxp\b|level up/.test(lower);
-      if(reroll&&shop){add(8,'Shop rerolls support your reroll route');evidence=Math.max(evidence,1);}
-      if(leveling&&xp){add(8,'XP supports your leveling route');evidence=Math.max(evidence,1);}
-      const unfinishedStars=units.some(u=>u.stars<3&&(guide?.finalComp||[]).some(c=>c.apiName===u.apiName&&c.stars===3));
-      if(unfinishedStars&&/duplicator|shop reroll|free reroll/.test(lower)){add(5,'Helps pursue an unfinished star upgrade');evidence=Math.max(evidence,1);}
-      const delayed=/after (?:\d+|every)|next \d+ rounds|every \d+ player|hatches in/.test(lower),immediateCombat=/^(?:your team|your units|allies|combat start|when an enemy dies)/i.test(text)&&/damage|attack speed|armor|magic resist|omnivamp|healed|shield|mana/.test(lower);
-      if(urgent&&delayed&&!/\bnow\b/.test(lower)){add(-12,'Delayed payoff while you need strength now');conflict=true;evidence=Math.max(evidence,1);}
-      if(urgent&&immediateCombat){add(7,'Combat effect supports strength now');evidence=Math.max(evidence,1);}
-      // Broad repeated effects are noted, not treated as worthless duplicates.
-      const prior=held.map(id=>CompFinder.augment(id)?.description||'').join(' ').toLowerCase();
-      if(/omnivamp/.test(lower)&&/omnivamp/.test(prior)){add(-3,'Already have an Omnivamp augment; additional value may be smaller');}
-      if(/after losing your combat/.test(lower)&&urgent){add(-8,'Rewards losses rather than immediate board strength');conflict=true;evidence=Math.max(evidence,1);}
-      if(/cannot choose your carousel/.test(lower)&&Object.values(needs).reduce((s,n)=>s+n.count,0)>0){add(-8,'Gives up choosing the carousel components you need');conflict=true;evidence=Math.max(evidence,1);}
-      if(/permanently transform/.test(lower)&&units.some(u=>u.stars>=2)){add(-10,'Transforms your recorded upgraded units');conflict=true;evidence=Math.max(evidence,1);}
-      if(!reasons.length)reasons.push({points:0,text:'No specific match in the available data'});
-      reasons.sort((a,b)=>Math.abs(b.points||0)-Math.abs(a.points||0));
-      return {augment:a,score,evidence,conflict,reasons,links,items:[...new Set([...ownedRefs,...targetRefs].map(i=>i.id))],components:parts,invalid:false};
+      if(/cannot choose your carousel/i.test(text)&&Object.values(needs).some(n=>n.count>0)){
+        score-=3;reasons.push({text:'Gives up choosing the carousel components you need'});
+      }
+      const prior=held.map(id=>CompFinder.augment(id)?.description||'').join(' ');
+      if(/omnivamp/i.test(text)&&/omnivamp/i.test(prior)){
+        score-=1;reasons.push({text:'Already have an Omnivamp augment'});
+      }
+      return {augment,score,academy:match.academy,contextual:!match.academy&&match.points>0,reasons};
     },
     compare(plan,offers=this.ensure(plan)){
-      const ctx=this.context(plan),round=offers.round,rows=offers.ids.map((id,slot)=>({a:CompFinder.augment(id),slot})).filter(x=>x.a).map(({a,slot})=>({...this.evaluate(a,ctx,round),slot})).sort((a,b)=>b.score-a.score||a.slot-b.slot);
-      const valid=rows.filter(r=>!r.invalid&&!r.offRound),best=valid[0],seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
-      let action='enter',message='Enter your three offered augments.',reroll=null;
-      if(best){
-        const complete=offers.ids.every(Boolean)&&valid.length===3;
-        const alternatives=this.catalog(plan,round).filter(a=>!seen.has(a.apiName)).map(a=>this.evaluate(a,ctx,round));
-        // A same-rarity, same-stage fit comparison is not a claim the replacement
-        // will appear. Missing annotations alone never justify a reroll.
-        const weakest=[...valid].reverse().find(r=>r.evidence>0&&(r.conflict||r.score<20));
-        const better=weakest&&alternatives.filter(r=>r.augment.tier===weakest.augment.tier&&r.evidence>=2&&r.score>=best.score+16&&r.score>=32).sort((a,b)=>b.score-a.score)[0];
-        if(!complete){action='partial';message=offers.ids.every(Boolean)
-          ?'Some offers have limited round evidence. The supported fit is shown below.'
-          :'Add all three offers to compare. Current best fit shown below.';}
-        else if(best.score>=38&&best.evidence>=2){action='take';message='Take '+best.augment.name+' — strongest supported fit.';}
-        else if(better&&weakest){action='reroll';reroll={slot:weakest.slot,example:better};message='Consider rerolling '+weakest.augment.name+' if available. Keep '+best.augment.name+' as your fallback.';}
-        else if(best.evidence>0&&best.score>=8){action='lean';message='Lean '+best.augment.name+'. No strong reason to spend a reroll from the available data.';}
-        else{action='unknown';message='No clear pick or reroll edge. Missing matches do not mean these augments are bad.';}
+      const ctx=this.context(plan),round=offers.round;
+      const rows=offers.ids.flatMap((id,slot)=>{
+        const augment=CompFinder.augment(id);
+        return augment?[{...this.evaluate(augment,ctx,round),slot}]:[];
+      });
+      const valid=rows.filter(r=>!r.invalid&&!r.offRound).sort((a,b)=>
+        Number(!!b.academy)-Number(!!a.academy)||b.score-a.score||a.slot-b.slot);
+      const complete=offers.ids.every(Boolean)&&valid.length===3;
+      const best=valid[0],rerolls=[];
+      let action='enter',message='Enter your three offered augments.';
+      if(best?.academy){
+        action='take';
+        message=`Take ${best.augment.name} — best Academy-backed fit${complete?'':' among the offers entered'}.`;
+      }else if(complete){
+        const seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
+        const alternatives=this.catalog(plan,round).filter(a=>!a.ids.some(id=>seen.has(id)))
+          .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
+        for(const row of valid.filter(r=>!r.contextual)){
+          const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
+          if(example)rerolls.push({slot:row.slot,reason:`No Academy match or item, economy or combat fit. Same-rarity Academy match in the catalog: ${example.augment.name}.`});
+        }
+        if(rerolls.length){
+          action='reroll';
+          const names=rerolls.map(r=>rows.find(row=>row.slot===r.slot).augment.name);
+          message=`Consider rerolling ${names.join(' or ')} if available. See each offer for its reason.`;
+        }else if(best.contextual&&best.score>0){
+          action='lean';
+          message=`Lean ${best.augment.name} — rules-based fit.`;
+        }else{
+          action='unknown';
+          message='No clear pick or reroll edge from the available data.';
+        }
+      }else if(rows.length){
+        action='partial';
+        message=rows.some(r=>r.offRound)?'Check the round on the marked offer.':'Add all three offers to compare their fit.';
       }
-      return {rows,best,action,message,reroll,round};
+      const academyNotice=ctx.fitGuide&&!augmentFit.hasRecommendations(ctx.fitGuide) ?
+        `Academy lists no recommended augment for this comp (${ctx.fitGuide.title}). Fit uses item, economy and combat rules.` : '';
+      return {rows,best,action,message,rerolls,round,academyNotice};
     },
     record(plan,slot){
       const offers=this.ensure(plan),id=offers.ids[slot],a=CompFinder.augment(id);
       if(!a||this.held(plan).includes(id))return false;
       const selected=this.slots(plan);selected[offers.round]=id;plan.chosenAugments=selected;plan.firstAugment=selected[0];
       plan.augmentOffers={round:Math.min(2,offers.round+1),ids:['','',''],seen:[]};return true;
+    }
+  };
+};
+
+},
+"./augment-fit": (module, require) => {
+'use strict';
+
+module.exports = function createAugmentFit({Academy, DATA, byId}) {
+  const manaItems = new Set(['BlueBuff', 'SpearOfShojin', 'AdaptiveHelm', 'NashorsTooth', 'ProtectorsVow']);
+  const leveling = /fast\s*(8|9|10)\b/i;
+  const recommendation = (guide, id) => guide?.mainAugment?.apiName === id ? 'featured' :
+    guide?.augments?.some(a => a.apiName === id) ? 'listed' : '';
+
+  function context(plan, guide, targets, placedItems) {
+    const needed = {};
+    for (const {item} of targets) {
+      for (const part of byId[item]?.recipe || []) needed[part] = (needed[part] || 0) + 1;
+    }
+    for (const part of Object.keys(needed)) needed[part] = Math.max(0, needed[part] - (plan.owned[part] || 0));
+    const champions = new Map(Academy.snapshot.champions.map(unit => [unit.apiName, unit]));
+    const carries = (guide?.finalComp || []).flatMap(unit => {
+      const champion = champions.get(unit.apiName);
+      return champion&&(unit.items.length||unit.apiName===guide.mainChampion?.apiName) ?
+        [{...champion,boardIndex:unit.boardIndex}] : [];
+    });
+    const planItems = [...new Set([...targets.map(t => t.item), ...placedItems])];
+    return {needed, carries, planItems, style: `${guide?.style || ''} ${guide?.title || ''}`};
+  }
+
+  function rule(augment, {needed, carries, planItems, style}) {
+    const text = augment.description || '';
+    const normalized = Academy.normalizeName(text);
+    const component = DATA.components.find(part => needed[part.id] && normalized.includes(Academy.normalizeName(part.name)));
+    const item = planItems.map(id => byId[id]).find(item => item?.name.length > 5 && normalized.includes(Academy.normalizeName(item.name)));
+    const grants = /\b(?:gain|grants?|choose|receive)\b/i.test(text);
+    const casters = carries.filter(unit => /Caster/i.test(unit.role));
+
+    if (component && grants) return {points: 4, text: 'Offers a component your current targets need', detail: component.name};
+    if (item && /gain|grant|holders|give|receive|choose|works/i.test(text)) {
+      return {points: 5, text: 'Supports an item in your build', detail: item.name};
+    }
+    if (/\b(?:random (?:item )?components?|component anvils?|gain \d+ (?:item )?components?|choose \d+ of \d+ components?)\b/i.test(text) && grants) {
+      const breadth = Object.values(needed).filter(Boolean).length;
+      if (!breadth) return;
+      if (/\bmana spent\b/i.test(text) && casters.length && planItems.some(id => manaItems.has(id))) {
+        return {points: Math.min(8, 3 + casters.length + Math.floor(breadth / 3)), text: 'Component generation feeds your item plan and rewards Mana spent by your casters'};
+      }
+      return {points: Math.min(4, Math.ceil(breadth / 2)), text: 'Random components can fill your remaining recipes'};
+    }
+    if (/\bxp\b|\blevel up\b/i.test(text) && leveling.test(style)) {
+      return {points: 7, text: 'Extra XP helps reach the levels your comp needs'};
+    }
+    if (/\bshop rerolls?\b|\bshop refresh(?:es)?\b|\bfree rerolls?\b|duplicator/i.test(text) && /reroll/i.test(style)) {
+      return {points: 5, text: 'Shop rerolls or extra copies help find your upgrades'};
+    }
+    const level = Number(style.match(leveling)?.[1]);
+    if (/\bgain \d+ gold\b/i.test(text) && level && !/item|component|champion|combat/i.test(text)) {
+      const payoffLevel = Number(text.match(/reach level (\d+)/i)?.[1]);
+      if (payoffLevel > level) return;
+      return payoffLevel ? {points: 4, text: `Gold at level ${payoffLevel} rewards your leveling route`} :
+        {points: 4, text: 'Extra gold helps fund leveling'};
+    }
+    if (/\b(?:their holders|holders of|will always give your champions ideal items)\b/i.test(text)) return;
+    if (!/\b(?:gains?|gaining|grants?|gets?|deal|have|receive|increase)\b/i.test(text)) return;
+    const cost = Number(text.match(/(?:your|allied) (\d)-cost champions/i)?.[1]);
+    const backRow = /back row/i.test(text);
+    const eligible = carries.filter(unit => (!cost||unit.cost===cost)&&(!backRow||unit.boardIndex>=21));
+    const benefits = [
+      [/\b(?:starting mana|mana regen|restore mana|gain \d+ mana)\b/i, unit => /Caster/i.test(unit.role), 'Mana helps your casters use their abilities'],
+      [/\bability power\b/i, unit => /Magic (?!Tank)/i.test(unit.role), 'Ability Power supports your magic damage dealers'],
+      [/\battack damage\b/i, unit => /Attack (?!Tank)/i.test(unit.role), 'Attack Damage supports your physical damage dealers'],
+      [/\battack speed\b/i, unit => /Marksman/i.test(unit.role), 'Attack Speed supports your marksmen'],
+      [/\b(?:damage amp|critical strike)\b/i, unit => !/Tank/i.test(unit.role), 'Combat stats support your damage dealers'],
+      [/\b(?:armor|magic resist|durability|max health)\b/i, unit => /Tank/i.test(unit.role), 'Defensive stats support your tanks']
+    ];
+    const benefit = benefits.find(([effect, role]) => effect.test(text) && eligible.some(role));
+    if (benefit) return {points: 4, text: benefit[2], detail: [...new Set(eligible.filter(benefit[1]).map(unit => unit.name))].join(', ')};
+  }
+
+  return {
+    context,
+    recommendation,
+    hasRecommendations: guide => !!(guide?.mainAugment?.apiName || guide?.augments?.length),
+    score(augment, guide, fitContext) {
+      const academy = recommendation(guide, augment.apiName);
+      if (academy === 'featured') return {points: 18, text: 'Academy featured augment', academy};
+      if (academy === 'listed') return {points: 14, text: 'Academy recommends this augment', academy};
+      const match = rule(augment, fitContext);
+      return match ? {...match, recommended: match.points >= 3} : {points: 0, text: 'No specific item, economy or combat match'};
     }
   };
 };
@@ -682,13 +786,33 @@ module.exports = {exportBackup, reviewBackup, maxBackupBytes};
 "./comp-finder": (module, require) => {
 'use strict';
 
+const createAugmentFit = require('./augment-fit');
+const tierFitGap = 12;
+
 module.exports = function createCompFinder(model) {
   const {Academy, DATA, byId, MetaBuilds, OfflineTracker, componentOrder, academyTier} = model;
+  const augmentFit = createAugmentFit(model);
   /* Personal fit is a transparent heuristic, not a performance tier or win rate.
      Academy owns the comp tier, item order and recommended augment lists. */
   return {
+    augmentFit,
+    tierFitGap,
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
-    augments(){return [...(Academy.snapshot.augments||[])].sort((a,b)=>a.name.localeCompare(b.name));},
+    augmentOptions(round){
+      const order = a => a.stages?.includes(round) ? 0 : a.stages?.length ? 1 : 2;
+      const variants = new Map();
+      for (const augment of Academy.snapshot.augments || []) {
+        const key = JSON.stringify([augment.name, augment.tier, augment.description]);
+        const choices = variants.get(key) || [];
+        choices.push(augment);
+        variants.set(key, choices);
+      }
+      return [...variants.values()].map(choices => {
+        choices.sort((a,b) => order(a) - order(b));
+        return {...choices[0], ids: choices.map(a => a.apiName)};
+      }).sort((a,b) => a.name.localeCompare(b.name));
+    },
+    augments(){return this.augmentOptions('2-1');},
     augment(id){return (Academy.snapshot.augments||[]).find(a=>a.apiName===id);},
     units(plan){
       const byUnit=new Map();for(const u of plan.currentUnits||[]){const c=Academy.snapshot.champions.find(c=>c.apiName===u.apiName);if(!c)continue;const stars=Math.max(1,Math.min(3,Number(u.stars)||1));if(stars>(byUnit.get(u.apiName)?.stars||0))byUnit.set(u.apiName,{...c,stars});}return [...byUnit.values()];
@@ -783,7 +907,7 @@ module.exports = function createCompFinder(model) {
       }
       // Sparse item entry does not establish that the whole future board is missing.
       const boardCoverage=Math.min(1,owned.size/4);
-      return {missingCore,executionPenalty:Math.min(18,executionPenalty)*boardCoverage};
+      return {missingCore,executionPenalty:Math.round(Math.min(18,executionPenalty)*boardCoverage*100)/100};
     },
     evaluate(plan,guide){
       const build=Academy.build(guide),remaining=build.entries.map((e,n)=>({...e,priority:n}));
@@ -836,25 +960,35 @@ module.exports = function createCompFinder(model) {
         remaining.splice(0,remaining.length,...rest);
       }
       const componentFit=this.componentFit(plan,remaining),{used,ready}=componentFit,componentScore=componentFit.score;
-      const matchedAugments=this.heldAugments(plan).filter(id=>(guide.augments||[]).some(a=>a.apiName===id)||guide.mainAugment?.apiName===id),augmentMatch=matchedAugments.length>0;
+      const heldAugments=this.heldAugments(plan);
+      const heldContext=heldAugments.length&&augmentFit.context(plan,guide,remaining,[...placements,...earlyMatches].map(p=>p.item));
+      const augmentMatches=heldAugments.map(id=>{
+        const augment=this.augment(id);
+        const match=augmentFit.score(augment||{apiName:id},guide,heldContext);
+        return {id,name:augment?.name||id,...match};
+      });
       const requirements=this.requirements(plan,guide);
       const tierScore=academyTier(requirements.unlocked?'A':guide.tier).score,board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
       const names=ids=>[...new Set(ids.map(id=>byId[id]?.name||id))].join(', ');
       const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
-      const reasons=[
-        {points:Math.min(96,itemScore),text:'Completed item fit: '+itemNames},
-        {points:board.unitScore,text:'Board fit: '+unitNames},
-        {points:Math.min(36,componentScore),text:'Loose components: '+names(used)},
-        {points:Math.min(36,matchedAugments.length*24),text:'Academy augment fit: '+matchedAugments.map(id=>this.augment(id)?.name||id).join(', ')},
+      const ownedReasons=[
+        {points:Math.min(96,itemScore),text:'Completed items'+(itemNames?' · '+itemNames:'')},
+        {points:board.unitScore,text:'Champions owned'+(unitNames?' · '+unitNames:'')},
+        {points:Math.min(36,componentScore),text:'Loose components'+(used.length?' · '+names(used):'')},
+        ...augmentMatches.map(a=>({points:a.points,text:`Augment: ${a.name} — ${a.academy?'':'Rules-based fit · '}${a.text}${a.detail?' · '+a.detail:''}`}))
+      ];
+      const reasons=[...ownedReasons,...[
         {points:-Math.min(18,unmatched.length*6),text:'Off-plan items: '+names(unmatched)},
         {points:-requirements.requirementPenalty,text:[requirements.gateReason,requirements.missingEmblems.length?'Missing emblems: '+names(requirements.missingEmblems):''].filter(Boolean).join(' · ')},
         {points:-execution.executionPenalty,text:'Missing core units or upgrades: '+execution.missingCore.map(u=>u.name).join(', ')}
-      ].filter(reason=>reason.points);
+      ].filter(reason=>reason.points)];
+      if(heldAugments.length&&!augmentFit.hasRecommendations(guide))reasons.push({points:0,text:'No Academy augment data for this comp — scored from item, economy and combat rules.'});
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
-      const fitScore=reasons.reduce((sum,reason)=>sum+reason.points,0);
-      return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatch,matchedAugments,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
-        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
+      const fitScore=Number(reasons.reduce((sum,reason)=>sum+reason.points,0).toFixed(2));
+      const ownedFit=ownedReasons.reduce((sum,reason)=>sum+reason.points,0);
+      return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatches,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
+        score:tierScore+fitScore,fitScore,ownedFit,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
     signalCount(plan){
@@ -881,36 +1015,34 @@ module.exports = function createCompFinder(model) {
           'Add your first augment after choosing it to check for a more specific direction.'
         ]};
     },
-    strongFit(row){
-      const finalItems=row.placements.length,upgradedCore=row.keepers.filter(u=>u.core&&u.stars>=2),upgraded=row.keepers.filter(u=>u.stars>=2);
-      // One generic component, emblem, augment or 1-star unit cannot trigger a
-      // cross-tier promotion. Require substantial, positively matched resources.
-      const substantial=finalItems>=2||(finalItems>=1&&upgradedCore.length>=1)||upgradedCore.some(u=>u.stars===3)||upgraded.length>=3;
-      return substantial&&row.fitScore>=60&&!row.blocked&&!row.missingEmblems.length&&!row.missingAugment;
-    },
     ranked(plan,{allowSparse=false}={}){
       if(!Academy.isCurrent())return [];
       const rows=Academy.snapshot.guides.filter(g=>['S','A','B','X'].includes(g.tier))
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
-      if(!allowSparse&&!rows.some(r=>r.unlocked)&&
+      if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&r.augmentMatches.some(a=>a.academy||a.recommended))&&
         (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
       for(const r of rows){
         r.baseTierRank=this.tierRank(r.unlocked?'A':r.guide.tier);
         r.recommendationTierRank=r.baseTierRank;
-        r.strongFit=this.strongFit(r);
       }
       for(const r of rows){
-        if(!r.strongFit)continue;
-        // Beat the strongest original-tier candidate by 30 fit points per tier.
+        if(r.blocked||r.missingEmblems.length)continue;
+        // Compare against original tiers before sorting so promotions cannot cycle.
         for(let target=r.baseTierRank-1;target>=0;target--){
           const better=rows.filter(other=>!other.blocked&&other.baseTierRank===target);
-          if(better.length&&r.fitScore<Math.max(...better.map(other=>other.fitScore))+30*(r.baseTierRank-target))break;
+          const gap=tierFitGap*(r.baseTierRank-target);
+          if(better.some(other=>Math.round((r.fitScore-other.fitScore)*100)<gap*100||r.ownedFit-other.ownedFit<gap))break;
           r.recommendationTierRank=target;
         }
       }
       const rankable=rows.filter(r=>!r.blocked).length;
-      return rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
+      const ranked=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
         .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||a.recommendationTierRank-b.recommendationTierRank||b.fitScore-a.fitScore||a.baseTierRank-b.baseTierRank||a.guide.title.localeCompare(b.guide.title));
+      for(const [index,row] of ranked.entries()){
+        if(row.recommendationTierRank===row.baseTierRank)continue;
+        row.passedTier=ranked.slice(index+1).find(other=>!other.blocked&&other.baseTierRank<row.baseTierRank&&other.baseTierRank>=row.recommendationTierRank);
+      }
+      return ranked;
     },
     componentFit(plan,entries){
       let beam=[{pool:{...plan.owned},score:0,used:[],ready:[]}];
@@ -2585,7 +2717,7 @@ const AcademyUI=(() => {
   const center=document.querySelector('.centercol'),queueColumn=document.createElement('div');queueColumn.className='plan-queue';
   while(center.firstChild)queueColumn.append(center.firstChild);center.append(queueColumn);
   const overview=document.createElement('aside');overview.className='plan-overview';overview.setAttribute('aria-label','Academy build progress and advice');center.append(overview);
-  overview.innerHTML='<section class="board-panel panel"><div class="board-heading"><span id="board-source-status" class="source-notice"></span><button id="board-source" class="quiet">Academy original ↗</button></div><div id="position-board"></div><div class="board-legend"><span>○ Planned</span><span>◐ Components ready</span><span>✓ Completed</span><span>↔ Adjusted plan</span></div><div id="board-extras"></div></section><section class="tips-panel panel"><div class="tips-heading"><h2>Academy tips</h2></div><div id="academy-tips"></div></section>';
+  overview.innerHTML='<section class="board-panel panel"><div class="board-heading"><span id="board-source-status" class="source-notice"></span><a id="board-source" target="_blank" rel="noopener noreferrer">Academy original ↗</a></div><div id="position-board"></div><div class="board-legend"><span>○ Planned</span><span>◐ Components ready</span><span>✓ Completed</span><span>↔ Adjusted plan</span></div><div id="board-extras"></div></section><section class="tips-panel panel"><div class="tips-heading"><h2>Academy tips</h2></div><div id="academy-tips"></div></section>';
   const origin=document.createElement('div');origin.className='academy-order';origin.innerHTML='<button id="restore-academy" class="quiet">Reset targets to Academy</button>';overview.prepend(origin);origin.prepend(document.getElementById('academy-priority'));
   document.getElementById('restore-academy').addEventListener('click',()=>mutate(()=>PlanAdvisor.restoreAcademy(state),'Academy targets restored. Inventory kept.'));
   const diagnostics=document.createElement('details');diagnostics.className='data-diagnostics';diagnostics.innerHTML='<summary>MetaTFT connection details</summary><p>Live checks run for assigned champions after a verified refresh, on focus, and while this tab is visible. Stats can guide pivots for 15 minutes. A failed check makes prior stats stale reference.</p><p>Host: <code>api-hc.metatft.com</code><br>Endpoints: <code>unit_detail_overall</code> and <code>unit_detail_items</code>. Filters: ranked, Platinum+, current patch, last 3 days, three-item builds. No API key.</p><div id="meta-diagnostics"></div>';
@@ -2608,7 +2740,9 @@ const AcademyUI=(() => {
     const current=Academy.live&&activePatch===Academy.snapshot.patch&&Academy.currentGuide(state);
     document.getElementById('board-source-status').textContent=current?'':`Saved plan${activePatch?' · Patch '+activePatch:''}`;
     document.getElementById('restore-academy').disabled=!Academy.currentGuide(state);
-    document.getElementById('board-source').setAttribute('aria-label','View original '+guide.title+' guide inside the app');
+    const source=document.getElementById('board-source'),sourceGuide=Academy.currentGuide(state)||guide;
+    source.href='https://tftacademy.com/tierlist/comps'+(sourceGuide.compSlug?'/'+encodeURIComponent(sourceGuide.compSlug):'');
+    source.setAttribute('aria-label','View original '+guide.title+' guide on TFT Academy (opens in a new tab)');
     const holders=Academy.equipment(state),allocated=Tracker.allocate(state,DATA.items),rows=new Map(allocated.rows.map(q=>[q.uid,q]));
     const names=new Set(guide.finalComp.map(c=>champIcon(c).name));
     const plan=state.queue.filter(q=>names.has(q.done?holders.get(q.uid):q.champion));
@@ -2635,7 +2769,6 @@ const AcademyUI=(() => {
     document.getElementById('meta-diagnostics').innerHTML=MetaBuilds.connections().map(s=>`<p><b>${IconUI.championLabel(Academy.snapshot.champions.find(c=>c.apiName===s.unit)?.name||s.unit)}</b> · ${esc(s.source||'no data')} · checked ${new Date(s.checked).toLocaleTimeString()}${s.error?`<br><span class="connection-error">${esc(s.error)} · saved stats are reference only</span>`:''}</p>`).join('')||'<p>No requests yet. Import a comp or choose a champion in S/A item builds.</p>';
   }
   overview.addEventListener('click',e=>{
-    if(e.target.closest('#board-source')){const guide=Academy.guide(state);if(guide)MetaReference.openPage('https://tftacademy.com/tierlist/comps/'+encodeURIComponent(guide.compSlug),guide.title+' · TFT Academy');}
     const target=e.target.closest('[data-board-target]');if(target)PivotDialog.open(target.dataset.boardTarget);
   });
   const oldRender=render;render=function(){oldRender();renderBoard();drawConnections();
@@ -2665,7 +2798,7 @@ const DialogDismiss = {
   <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
-  <details class="finder-method"><summary>How this is ranked · Academy tier, then your fit</summary><p>Academy tier leads the ranking. Your items, units and augments rank comps within each tier. A lower-tier comp can move ahead only with substantial matching resources and a clear fit advantage. Matches use its final board, alternate items, early holders, featured item and recommended carriers. All remaining item recipes are checked; each loose component counts once. Emblems count as whole items, radiants cover their normal versions, and special items never turn back into components. Missing emblems, required situational augments, core units and star upgrades reduce readiness. Current MetaTFT S/A item builds supplement Academy. An X-tier guide moves up when you own its required item or hold its required augment. A suggested carrier is a destination, not an equipped-item claim. Aim here keeps the Academy baseline; review alternate carriers in the plan. This is a fit estimate, not a win probability: economy, stage and lobby contesting are not tracked.</p></details>`;
+  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads unless a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points and ${CompFinder.tierFitGap} more points from your owned items, champions and chosen augments per tier crossed.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
   const boardEditor=exploreInputs.querySelector('.explore-board');
@@ -2689,7 +2822,15 @@ const DialogDismiss = {
   });
   const select=panel.querySelector('select');select.innerHTML='<option value="">Not chosen yet</option>';
   const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query));
-  select.addEventListener('change',()=>mutate(()=>{state.firstAugment=select.value;state.chosenAugments||=['','',''];state.chosenAugments[0]=select.value;},'First augment updated.'));
+  select.addEventListener('change',()=>{
+    const id=select.value,augment=CompFinder.augment(id);
+    if(augment&&id!==state.firstAugment&&!AugmentAdvisor.eligible(augment,0)){
+      select.value=state.firstAugment||'';
+      AugmentUI.open(0,id);
+      return;
+    }
+    mutate(()=>{state.firstAugment=id;state.chosenAugments||=['','',''];state.chosenAugments[0]=id;},'First augment updated.');
+  });
   panel.querySelector('#finder-more').addEventListener('click',()=>{expanded=!expanded;draw();});
   panel.parentElement.addEventListener('click',e=>{
     const b=e.target.closest('[data-choose-comp]');if(!b)return;
@@ -2787,10 +2928,20 @@ const DialogDismiss = {
     if(panel.hidden){picker.close();return;}
     document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>`<span class="explore-owned" title="${esc(byId[q.item].name)}">${icon(q.item)}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${esc(byId[q.item].name)}">×</button></span>`).join('')||'<span class="finder-note">No completed items recorded</span>';
     if(itemsDialog.open)drawItemsDialog();
-    const catalog=CompFinder.augments(),signature=catalog.map(a=>a.apiName+a.name).join('|')+'|'+(state.firstAugment||'');
-    if(signature!==catalogSignature){catalogSignature=signature;select.innerHTML='<option value="">Not chosen yet</option>'+catalog.map(a=>`<option value="${esc(a.apiName)}">${esc(a.name)}</option>`).join('');if(state.firstAugment&&!catalog.some(a=>a.apiName===state.firstAugment))select.insertAdjacentHTML('beforeend',`<option value="${esc(state.firstAugment)}">${esc(CompFinder.augment(state.firstAugment)?.name||'Saved augment (unavailable)')}</option>`);select.value=state.firstAugment||'';picker.refresh();}
-    const {rows,tierNotice,notice,guidance}=CompFinder.recommendations(state),selected=CompFinder.augment(state.firstAugment),hasMatch=rows.some(r=>r.augmentMatch);
-    const note=panel.querySelector('#augment-note');note.textContent=CompFinder.heldAugments(state).length?(hasMatch?'★ = Academy recommends one of your chosen augments.':'No listed augment match · using your board and items.'):'Optional · select your 2-1 augment.';note.title=selected?.description||'';
+    const selected=state.firstAugment||'';
+    const catalog=CompFinder.augments().map(a=>({...a,value:a.ids.includes(selected)?selected:a.apiName}));
+    const signature=JSON.stringify(catalog.map(a=>[a.value,a.name]))+'|'+selected;
+    if(signature!==catalogSignature){
+      catalogSignature=signature;
+      select.innerHTML='<option value="">Not chosen yet</option>'+catalog.map(a=>`<option value="${esc(a.value)}">${esc(a.name)}</option>`).join('');
+      if(selected&&!catalog.some(a=>a.value===selected))select.insertAdjacentHTML('beforeend',`<option value="${esc(selected)}">Saved augment (unavailable)</option>`);
+      select.value=selected;picker.refresh();
+    }
+    const {rows,tierNotice,notice,guidance}=CompFinder.recommendations(state);
+    const note=panel.querySelector('#augment-note');
+    const held=CompFinder.heldAugments(state).length,hasMatch=rows.some(r=>r.augmentMatches.some(a=>a.academy||a.recommended));
+    note.textContent=held?(hasMatch?'★ marks an Academy recommendation or a rules-based augment fit.':'Review each fit score for your augment’s contribution.'):'Optional · select your 2-1 augment.';
+    note.title=CompFinder.augment(selected)?.description||'';
     panel.querySelector('#finder-tier-notice').textContent=tierNotice;
     panel.querySelector('.finder-list-heading').hidden=!rows.length;
     panel.querySelector('#comp-suggestions').innerHTML=(expanded?rows:rows.slice(0,5)).map((r,n)=>{
@@ -2799,7 +2950,18 @@ const DialogDismiss = {
       const special=r.specialMatches.map(s=>`<span class="special-destination" title="${esc(s.source)}">${chips([s.item])}<span>→</span>${IconUI.championLabel(s.champion)}<small>${esc(s.source)}</small></span>`).join('');
       const needs=[r.missingEmblems.length?`<span>Plan needs ${chips(r.missingEmblems)}</span>`:'',r.craftableEmblems.length?`<span>Emblem ready ${chips(r.craftableEmblems)}</span>`:'',r.missingAugment?`<span>Needs ${augmentIcon(r.missingAugment)} ${esc(CompFinder.augment(r.missingAugment)?.name||'required augment')}</span>`:'',r.missingCore.length?`<span>Aim for ${unitChips(r.missingCore.map(u=>({...u,stars:u.targetStars})))}</span>`:''].filter(Boolean).join('');
       const noFit=Object.values(state.owned).some(n=>n>0)||CompFinder.units(state).length?'No strong match yet':'Add items or units to personalize';
-      return `<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${r.augmentMatch?`<span class="finder-augment-match" title="Academy recommended augment" aria-label="Academy recommends your augment">${augmentIcon(r.matchedAugments[0])}<b aria-hidden="true">★</b></span>`:''}</div><div class="finder-fit">${fit||'<span class="muted">'+(r.augmentMatch?'Recommended augment match':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}${r.reasons.some(reason=>reason.points)?`<details class="finder-method"><summary>Fit score ${Number(r.fitScore.toFixed(2))}</summary><ul>${r.reasons.filter(reason=>reason.points).map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`).join('')}</ul></details>`:''}</div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
+      const stars=r.augmentMatches.filter(a=>a.academy||a.recommended).map(a=>{
+        const label=a.name+' · '+(a.academy?'Academy recommendation':'Rules-based augment fit');
+        return `<span class="finder-augment-match" title="${esc(label)}" aria-label="${esc(label)}">${augmentIcon(a.id)}<b aria-hidden="true">★</b></span>`;
+      }).join('');
+      const passed=r.passedTier;
+      const promotion=passed?`Fit moves ahead of ${passed.guide.title} by ${Number((r.fitScore-passed.fitScore).toFixed(2))} points, with a ${Number((r.ownedFit-passed.ownedFit).toFixed(2))}-point lead from owned resources.`:'';
+      const breakdown=[
+        `<li>Academy tier ${esc(tier)} · ranking priority</li>`,
+        promotion?`<li>${esc(promotion)}</li>`:'',
+        ...r.reasons.map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`)
+      ].join('');
+      return `<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div><div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}<details class="finder-method"><summary>Fit score ${Number(r.fitScore.toFixed(2))}</summary><ul>${breakdown}</ul></details></div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;
@@ -2907,7 +3069,7 @@ const AugmentUI=(()=>{
   const button=document.createElement('button');button.id='augment-open';button.textContent='Augment choices';document.querySelector('.decision-controls').append(button);
   const selected=document.createElement('div');selected.id='chosen-augments';selected.className='chosen-augments';document.querySelector('.decision-controls').after(selected);
   const modal=document.createElement('dialog');modal.id='augment-dialog';modal.setAttribute('aria-labelledby','augment-title');
-  modal.innerHTML='<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div><div class="augment-stage" role="group" aria-label="Augment round"></div><div id="augment-verdict" role="status" aria-live="polite"></div><div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div><div id="augment-offers"></div><details class="augment-method"><summary>How this is compared</summary><p>Academy’s comp-specific recommendations lead. Your items, components, current units and stars inform nearby comp routes. Descriptions add smaller adjustments for matching items, leveling/reroll plans, previously chosen augments, and Need strength now. Existing MetaTFT item evidence contributes through comp fit; these are not MetaTFT augment statistics.</p><p>Reroll advice compares other known augments of the same rarity and round. It does not know your actual replacement pool or remaining rerolls. “No data” never means “bad.” Choosing an augment records it only; promised items and units are not added to inventory.</p><p id="augment-source"></p></details>';
+  modal.innerHTML='<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div><div class="augment-stage" role="group" aria-label="Augment round"></div><div id="augment-verdict" role="status" aria-live="polite"></div><div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div><div id="augment-offers"></div><details class="augment-method"><summary>How this is compared</summary><p>Academy’s comp recommendations lead. When Academy does not list an offer for your comp, its description is checked against your item recipes, leveling or reroll plan, and combat roles.</p><p>Reroll advice requires an offer with no fit and an unseen Academy match of the same rarity and round in the catalog. Actual rerolls depend on your in-game pool. Record any rewards on the bench when received.</p><p id="augment-source"></p></details>';
   document.body.append(modal);
   const input=document.getElementById('augment-offer-search'),list=document.getElementById('augment-search-results');
   const badge=a=>['','Silver','Gold','Prismatic'][a.tier]||'Augment';
@@ -2918,11 +3080,11 @@ const AugmentUI=(()=>{
     const o=offers(),norm=Academy.normalizeName(query);list.hidden=!norm;
     const held=AugmentAdvisor.held(state);
     const relevance=name=>name===norm?0:name.startsWith(norm)?1:2;
-    searchRows=norm?CompFinder.augments().filter(a=>!held.includes(a.apiName)&&!o.ids.includes(a.apiName)&&Academy.normalizeName(a.name).includes(norm))
+    searchRows=norm?CompFinder.augmentOptions(AugmentAdvisor.stages[o.round]).filter(a=>!a.ids.some(id=>held.includes(id)||o.ids.includes(id))&&Academy.normalizeName(a.name).includes(norm))
       .sort((a,b)=>relevance(Academy.normalizeName(a.name))-relevance(Academy.normalizeName(b.name))||a.name.localeCompare(b.name)).slice(0,7):[];
     searchIndex=Math.max(0,Math.min(searchIndex,searchRows.length-1));
     const results=searchRows.map((a,n)=>{
-      const detail=AugmentAdvisor.eligible(a,o.round)?a.description:'Academy lists '+a.stages.join(', ');
+      const detail=AugmentAdvisor.eligible(a,o.round)?a.description:AugmentAdvisor.roundNotice(a,o.round);
       return `<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(detail)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`;
     }).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query))+'</p>';
     if(results!==lastSearchResults){list.innerHTML=results;lastSearchResults=results;}
@@ -2932,25 +3094,36 @@ const AugmentUI=(()=>{
     const o=offers(),comparison=getResult(),logged=AugmentAdvisor.slots(state)[o.round];
     modal.querySelector('.augment-stage').innerHTML=AugmentAdvisor.stages.map((s,n)=>`<button data-augment-round="${n}" aria-pressed="${o.round===n}">${n+1}${['st','nd','rd'][n]} · ${s}${AugmentAdvisor.slots(state)[n]?' ✓':''}</button>`).join('');
     const verdict=document.getElementById('augment-verdict');verdict.dataset.action=comparison.action;verdict.textContent=comparison.message;
-    if(comparison.reroll){const hint=document.createElement('small');hint.textContent='Stronger same-rarity fits exist in the catalog; their appearance is not guaranteed.';verdict.append(hint);}
+    if(comparison.academyNotice){const hint=document.createElement('small');hint.textContent=comparison.academyNotice;verdict.append(hint);}
     if(logged){const hint=document.createElement('small');hint.textContent='This round is already recorded. Taking a different augment replaces that record.';verdict.append(hint);}
     document.getElementById('augment-search-label').textContent='Offer '+(activeSlot+1)+' · type a few letters, Enter';
     document.getElementById('augment-offers').innerHTML=o.ids.map((id,slot)=>{
-      const a=CompFinder.augment(id),r=comparison.rows.find(r=>r.slot===slot),best=comparison.best?.slot===slot&&['take','lean'].includes(comparison.action),reroll=comparison.reroll?.slot===slot;
+      const a=CompFinder.augment(id),r=comparison.rows.find(r=>r.slot===slot),best=comparison.best?.slot===slot&&comparison.action==='take',reroll=comparison.rerolls.find(row=>row.slot===slot);
       if(!a)return `<article class="augment-offer empty-offer ${slot===activeSlot?'active-slot':''}"><button data-offer-edit="${slot}"><span>${slot+1}</span>${id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
       const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
-      const fit=best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid||r?.offRound?'Check offer':r?.evidence?'Contextual fit':'Limited evidence';
-      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${(r?.reasons||[]).slice(0,2).map(x=>`<span>${esc(x.text)}</span>`).join('')}</div>${r?.items?.length?'<div class="augment-related">'+r.items.slice(0,3).map(id=>`<span title="${esc(byId[id].name)}">${icon(id)}</span>`).join('')+'</div>':''}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>Took this</button></article>`;
+      const fit=best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid||r?.offRound?'Check offer':r?.academy?'Academy match':r?.contextual?'Contextual fit':'Limited evidence';
+      const reasons=reroll?[reroll.reason,...r.reasons.slice(1).map(x=>x.text)]:(r?.reasons||[]).map(x=>x.text);
+      const rounds=(r?.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
+      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${reasons.map(text=>`<span>${esc(text)}</span>`).join('')}${rounds}</div><details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>${r?.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button></article>`;
     }).join('');
     document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
-  function open(round){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';input.value='';contextKey='';modal.showModal();draw();input.focus();}
+  function open(round,id){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';input.value='';contextKey='';modal.showModal();if(id)add(id);draw();input.focus();}
   function add(id){
     const o=offers(),a=CompFinder.augment(id);if(!a||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
     const slot=activeSlot;query='';input.value='';searchIndex=0;
     mutate(()=>{offers().ids[slot]=id;},'Offer '+(slot+1)+' entered.');
     const next=offers().ids.findIndex((id,n)=>n>slot&&!id);activeSlot=next>=0?next:Math.max(0,offers().ids.findIndex(id=>!id));draw();input.focus();
+  }
+  function enterAt(round,id){
+    const a=CompFinder.augment(id);
+    if(!a||!AugmentAdvisor.eligible(a,round))return;
+    if(modal.open){
+      query='';input.value='';activeSlot=1;
+      mutate(()=>{state.augmentOffers={round,ids:[id,'',''],seen:[]};});
+      input.focus();
+    }else open(round,id);
   }
   button.addEventListener('click',()=>open());
   input.addEventListener('input',e=>{query=e.target.value;searchIndex=0;search();});
@@ -2960,6 +3133,7 @@ const AugmentUI=(()=>{
     b=e.target.closest('[data-edit-augment]');if(b)open(Number(b.dataset.editAugment));
     b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;query='';input.value='';activeSlot=0;mutate(()=>state.augmentOffers={round,ids:['','',''],seen:[]},'Augment round changed.');input.focus();}
     b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);query='';input.value='';draw();input.focus();}
+    b=e.target.closest('[data-offer-move]');if(b)enterAt(Number(b.dataset.offerMove),b.dataset.augmentId);
     b=e.target.closest('[data-offer-replace]');if(b){activeSlot=Number(b.dataset.offerReplace);query='';input.value='';mutate(()=>{const o=offers(),id=o.ids[activeSlot];if(id&&!o.seen.includes(id))o.seen.push(id);o.ids[activeSlot]='';},'Enter the new offer after rerolling in game.');input.focus();}
     b=e.target.closest('[data-augment-take]');if(b){let recorded=false;mutate(()=>{recorded=AugmentAdvisor.record(state,Number(b.dataset.augmentTake));},'Augment recorded. Enter any item rewards when received.');if(recorded)modal.close();}
   });
@@ -3066,7 +3240,7 @@ const AnvilUI=(()=>{
   };
   const banner = document.createElement('div');
   banner.className = 'opener-banner';
-  banner.innerHTML = '<small>Opener guidance · Patch 18.3b</small><p id="opener-guidance"></p>';
+  banner.innerHTML = '<small>Opener guidance · Patch 18.3b snapshot</small><p id="opener-guidance"></p>';
   const guidance = banner.querySelector('p');
   const workspace = document.querySelector('.workspace');
   const shopping = document.querySelector('.shopping');
