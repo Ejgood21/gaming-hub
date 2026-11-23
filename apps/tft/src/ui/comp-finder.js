@@ -5,7 +5,7 @@
   <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
-  <details class="finder-method"><summary>How this is ranked · Academy tier, then your fit</summary><p>Academy tier leads the ranking. Your items, units and augments rank comps within each tier. A lower-tier comp can move ahead only with substantial matching resources and a clear fit advantage. Matches use its final board, alternate items, early holders, featured item and recommended carriers. All remaining item recipes are checked; each loose component counts once. Emblems count as whole items, radiants cover their normal versions, and special items never turn back into components. Missing emblems, required situational augments, core units and star upgrades reduce readiness. Current MetaTFT S/A item builds supplement Academy. An X-tier guide moves up when you own its required item or hold its required augment. A suggested carrier is a destination, not an equipped-item claim. Aim here keeps the Academy baseline; review alternate carriers in the plan. This is a fit estimate, not a win probability: economy, stage and lobby contesting are not tracked.</p></details>`;
+  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads unless a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points and ${CompFinder.tierFitGap} more points from your owned items, champions and chosen augments per tier crossed.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
   const boardEditor=exploreInputs.querySelector('.explore-board');
@@ -29,7 +29,15 @@
   });
   const select=panel.querySelector('select');select.innerHTML='<option value="">Not chosen yet</option>';
   const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query));
-  select.addEventListener('change',()=>mutate(()=>{state.firstAugment=select.value;state.chosenAugments||=['','',''];state.chosenAugments[0]=select.value;},'First augment updated.'));
+  select.addEventListener('change',()=>{
+    const id=select.value,augment=CompFinder.augment(id);
+    if(augment&&id!==state.firstAugment&&!AugmentAdvisor.eligible(augment,0)){
+      select.value=state.firstAugment||'';
+      AugmentUI.open(0,id);
+      return;
+    }
+    mutate(()=>{state.firstAugment=id;state.chosenAugments||=['','',''];state.chosenAugments[0]=id;},'First augment updated.');
+  });
   panel.querySelector('#finder-more').addEventListener('click',()=>{expanded=!expanded;draw();});
   panel.parentElement.addEventListener('click',e=>{
     const b=e.target.closest('[data-choose-comp]');if(!b)return;
@@ -127,10 +135,20 @@
     if(panel.hidden){picker.close();return;}
     document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>`<span class="explore-owned" title="${esc(byId[q.item].name)}">${icon(q.item)}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${esc(byId[q.item].name)}">×</button></span>`).join('')||'<span class="finder-note">No completed items recorded</span>';
     if(itemsDialog.open)drawItemsDialog();
-    const catalog=CompFinder.augments(),signature=catalog.map(a=>a.apiName+a.name).join('|')+'|'+(state.firstAugment||'');
-    if(signature!==catalogSignature){catalogSignature=signature;select.innerHTML='<option value="">Not chosen yet</option>'+catalog.map(a=>`<option value="${esc(a.apiName)}">${esc(a.name)}</option>`).join('');if(state.firstAugment&&!catalog.some(a=>a.apiName===state.firstAugment))select.insertAdjacentHTML('beforeend',`<option value="${esc(state.firstAugment)}">${esc(CompFinder.augment(state.firstAugment)?.name||'Saved augment (unavailable)')}</option>`);select.value=state.firstAugment||'';picker.refresh();}
-    const {rows,tierNotice,notice,guidance}=CompFinder.recommendations(state),selected=CompFinder.augment(state.firstAugment),hasMatch=rows.some(r=>r.augmentMatch);
-    const note=panel.querySelector('#augment-note');note.textContent=CompFinder.heldAugments(state).length?(hasMatch?'★ = Academy recommends one of your chosen augments.':'No listed augment match · using your board and items.'):'Optional · select your 2-1 augment.';note.title=selected?.description||'';
+    const selected=state.firstAugment||'';
+    const catalog=CompFinder.augments().map(a=>({...a,value:a.ids.includes(selected)?selected:a.apiName}));
+    const signature=JSON.stringify(catalog.map(a=>[a.value,a.name]))+'|'+selected;
+    if(signature!==catalogSignature){
+      catalogSignature=signature;
+      select.innerHTML='<option value="">Not chosen yet</option>'+catalog.map(a=>`<option value="${esc(a.value)}">${esc(a.name)}</option>`).join('');
+      if(selected&&!catalog.some(a=>a.value===selected))select.insertAdjacentHTML('beforeend',`<option value="${esc(selected)}">Saved augment (unavailable)</option>`);
+      select.value=selected;picker.refresh();
+    }
+    const {rows,tierNotice,notice,guidance}=CompFinder.recommendations(state);
+    const note=panel.querySelector('#augment-note');
+    const held=CompFinder.heldAugments(state).length,hasMatch=rows.some(r=>r.augmentMatches.some(a=>a.academy||a.recommended));
+    note.textContent=held?(hasMatch?'★ marks an Academy recommendation or a rules-based augment fit.':'Review each fit score for your augment’s contribution.'):'Optional · select your 2-1 augment.';
+    note.title=CompFinder.augment(selected)?.description||'';
     panel.querySelector('#finder-tier-notice').textContent=tierNotice;
     panel.querySelector('.finder-list-heading').hidden=!rows.length;
     panel.querySelector('#comp-suggestions').innerHTML=(expanded?rows:rows.slice(0,5)).map((r,n)=>{
@@ -139,7 +157,18 @@
       const special=r.specialMatches.map(s=>`<span class="special-destination" title="${esc(s.source)}">${chips([s.item])}<span>→</span>${IconUI.championLabel(s.champion)}<small>${esc(s.source)}</small></span>`).join('');
       const needs=[r.missingEmblems.length?`<span>Plan needs ${chips(r.missingEmblems)}</span>`:'',r.craftableEmblems.length?`<span>Emblem ready ${chips(r.craftableEmblems)}</span>`:'',r.missingAugment?`<span>Needs ${augmentIcon(r.missingAugment)} ${esc(CompFinder.augment(r.missingAugment)?.name||'required augment')}</span>`:'',r.missingCore.length?`<span>Aim for ${unitChips(r.missingCore.map(u=>({...u,stars:u.targetStars})))}</span>`:''].filter(Boolean).join('');
       const noFit=Object.values(state.owned).some(n=>n>0)||CompFinder.units(state).length?'No strong match yet':'Add items or units to personalize';
-      return `<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${r.augmentMatch?`<span class="finder-augment-match" title="Academy recommended augment" aria-label="Academy recommends your augment">${augmentIcon(r.matchedAugments[0])}<b aria-hidden="true">★</b></span>`:''}</div><div class="finder-fit">${fit||'<span class="muted">'+(r.augmentMatch?'Recommended augment match':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}${r.reasons.some(reason=>reason.points)?`<details class="finder-method"><summary>Fit score ${Number(r.fitScore.toFixed(2))}</summary><ul>${r.reasons.filter(reason=>reason.points).map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`).join('')}</ul></details>`:''}</div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
+      const stars=r.augmentMatches.filter(a=>a.academy||a.recommended).map(a=>{
+        const label=a.name+' · '+(a.academy?'Academy recommendation':'Rules-based augment fit');
+        return `<span class="finder-augment-match" title="${esc(label)}" aria-label="${esc(label)}">${augmentIcon(a.id)}<b aria-hidden="true">★</b></span>`;
+      }).join('');
+      const passed=r.passedTier;
+      const promotion=passed?`Fit moves ahead of ${passed.guide.title} by ${Number((r.fitScore-passed.fitScore).toFixed(2))} points, with a ${Number((r.ownedFit-passed.ownedFit).toFixed(2))}-point lead from owned resources.`:'';
+      const breakdown=[
+        `<li>Academy tier ${esc(tier)} · ranking priority</li>`,
+        promotion?`<li>${esc(promotion)}</li>`:'',
+        ...r.reasons.map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`)
+      ].join('');
+      return `<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div><div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}<details class="finder-method"><summary>Fit score ${Number(r.fitScore.toFixed(2))}</summary><ul>${breakdown}</ul></details></div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;

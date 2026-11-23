@@ -8,7 +8,7 @@
   };
   const banner = document.createElement('div');
   banner.className = 'opener-banner';
-  banner.innerHTML = '<small>Opener guidance · Patch 18.3b</small><p id="opener-guidance"></p>';
+  banner.innerHTML = '<small>Opener guidance · Patch 18.3b snapshot</small><p id="opener-guidance"></p>';
   const guidance = banner.querySelector('p');
   const workspace = document.querySelector('.workspace');
   const shopping = document.querySelector('.shopping');

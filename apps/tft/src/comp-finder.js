@@ -1,12 +1,32 @@
 'use strict';
 
+const createAugmentFit = require('./augment-fit');
+const tierFitGap = 12;
+
 module.exports = function createCompFinder(model) {
   const {Academy, DATA, byId, MetaBuilds, OfflineTracker, componentOrder, academyTier} = model;
+  const augmentFit = createAugmentFit(model);
   /* Personal fit is a transparent heuristic, not a performance tier or win rate.
      Academy owns the comp tier, item order and recommended augment lists. */
   return {
+    augmentFit,
+    tierFitGap,
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
-    augments(){return [...(Academy.snapshot.augments||[])].sort((a,b)=>a.name.localeCompare(b.name));},
+    augmentOptions(round){
+      const order = a => a.stages?.includes(round) ? 0 : a.stages?.length ? 1 : 2;
+      const variants = new Map();
+      for (const augment of Academy.snapshot.augments || []) {
+        const key = JSON.stringify([augment.name, augment.tier, augment.description]);
+        const choices = variants.get(key) || [];
+        choices.push(augment);
+        variants.set(key, choices);
+      }
+      return [...variants.values()].map(choices => {
+        choices.sort((a,b) => order(a) - order(b));
+        return {...choices[0], ids: choices.map(a => a.apiName)};
+      }).sort((a,b) => a.name.localeCompare(b.name));
+    },
+    augments(){return this.augmentOptions('2-1');},
     augment(id){return (Academy.snapshot.augments||[]).find(a=>a.apiName===id);},
     units(plan){
       const byUnit=new Map();for(const u of plan.currentUnits||[]){const c=Academy.snapshot.champions.find(c=>c.apiName===u.apiName);if(!c)continue;const stars=Math.max(1,Math.min(3,Number(u.stars)||1));if(stars>(byUnit.get(u.apiName)?.stars||0))byUnit.set(u.apiName,{...c,stars});}return [...byUnit.values()];
@@ -101,7 +121,7 @@ module.exports = function createCompFinder(model) {
       }
       // Sparse item entry does not establish that the whole future board is missing.
       const boardCoverage=Math.min(1,owned.size/4);
-      return {missingCore,executionPenalty:Math.min(18,executionPenalty)*boardCoverage};
+      return {missingCore,executionPenalty:Math.round(Math.min(18,executionPenalty)*boardCoverage*100)/100};
     },
     evaluate(plan,guide){
       const build=Academy.build(guide),remaining=build.entries.map((e,n)=>({...e,priority:n}));
@@ -154,25 +174,35 @@ module.exports = function createCompFinder(model) {
         remaining.splice(0,remaining.length,...rest);
       }
       const componentFit=this.componentFit(plan,remaining),{used,ready}=componentFit,componentScore=componentFit.score;
-      const matchedAugments=this.heldAugments(plan).filter(id=>(guide.augments||[]).some(a=>a.apiName===id)||guide.mainAugment?.apiName===id),augmentMatch=matchedAugments.length>0;
+      const heldAugments=this.heldAugments(plan);
+      const heldContext=heldAugments.length&&augmentFit.context(plan,guide,remaining,[...placements,...earlyMatches].map(p=>p.item));
+      const augmentMatches=heldAugments.map(id=>{
+        const augment=this.augment(id);
+        const match=augmentFit.score(augment||{apiName:id},guide,heldContext);
+        return {id,name:augment?.name||id,...match};
+      });
       const requirements=this.requirements(plan,guide);
       const tierScore=academyTier(requirements.unlocked?'A':guide.tier).score,board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
       const names=ids=>[...new Set(ids.map(id=>byId[id]?.name||id))].join(', ');
       const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
-      const reasons=[
-        {points:Math.min(96,itemScore),text:'Completed item fit: '+itemNames},
-        {points:board.unitScore,text:'Board fit: '+unitNames},
-        {points:Math.min(36,componentScore),text:'Loose components: '+names(used)},
-        {points:Math.min(36,matchedAugments.length*24),text:'Academy augment fit: '+matchedAugments.map(id=>this.augment(id)?.name||id).join(', ')},
+      const ownedReasons=[
+        {points:Math.min(96,itemScore),text:'Completed items'+(itemNames?' · '+itemNames:'')},
+        {points:board.unitScore,text:'Champions owned'+(unitNames?' · '+unitNames:'')},
+        {points:Math.min(36,componentScore),text:'Loose components'+(used.length?' · '+names(used):'')},
+        ...augmentMatches.map(a=>({points:a.points,text:`Augment: ${a.name} — ${a.academy?'':'Rules-based fit · '}${a.text}${a.detail?' · '+a.detail:''}`}))
+      ];
+      const reasons=[...ownedReasons,...[
         {points:-Math.min(18,unmatched.length*6),text:'Off-plan items: '+names(unmatched)},
         {points:-requirements.requirementPenalty,text:[requirements.gateReason,requirements.missingEmblems.length?'Missing emblems: '+names(requirements.missingEmblems):''].filter(Boolean).join(' · ')},
         {points:-execution.executionPenalty,text:'Missing core units or upgrades: '+execution.missingCore.map(u=>u.name).join(', ')}
-      ].filter(reason=>reason.points);
+      ].filter(reason=>reason.points)];
+      if(heldAugments.length&&!augmentFit.hasRecommendations(guide))reasons.push({points:0,text:'No Academy augment data for this comp — scored from item, economy and combat rules.'});
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
-      const fitScore=reasons.reduce((sum,reason)=>sum+reason.points,0);
-      return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatch,matchedAugments,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
-        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
+      const fitScore=Number(reasons.reduce((sum,reason)=>sum+reason.points,0).toFixed(2));
+      const ownedFit=ownedReasons.reduce((sum,reason)=>sum+reason.points,0);
+      return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatches,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
+        score:tierScore+fitScore,fitScore,ownedFit,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
     signalCount(plan){
@@ -199,36 +229,34 @@ module.exports = function createCompFinder(model) {
           'Add your first augment after choosing it to check for a more specific direction.'
         ]};
     },
-    strongFit(row){
-      const finalItems=row.placements.length,upgradedCore=row.keepers.filter(u=>u.core&&u.stars>=2),upgraded=row.keepers.filter(u=>u.stars>=2);
-      // One generic component, emblem, augment or 1-star unit cannot trigger a
-      // cross-tier promotion. Require substantial, positively matched resources.
-      const substantial=finalItems>=2||(finalItems>=1&&upgradedCore.length>=1)||upgradedCore.some(u=>u.stars===3)||upgraded.length>=3;
-      return substantial&&row.fitScore>=60&&!row.blocked&&!row.missingEmblems.length&&!row.missingAugment;
-    },
     ranked(plan,{allowSparse=false}={}){
       if(!Academy.isCurrent())return [];
       const rows=Academy.snapshot.guides.filter(g=>['S','A','B','X'].includes(g.tier))
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
-      if(!allowSparse&&!rows.some(r=>r.unlocked)&&
+      if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&r.augmentMatches.some(a=>a.academy||a.recommended))&&
         (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
       for(const r of rows){
         r.baseTierRank=this.tierRank(r.unlocked?'A':r.guide.tier);
         r.recommendationTierRank=r.baseTierRank;
-        r.strongFit=this.strongFit(r);
       }
       for(const r of rows){
-        if(!r.strongFit)continue;
-        // Beat the strongest original-tier candidate by 30 fit points per tier.
+        if(r.blocked||r.missingEmblems.length)continue;
+        // Compare against original tiers before sorting so promotions cannot cycle.
         for(let target=r.baseTierRank-1;target>=0;target--){
           const better=rows.filter(other=>!other.blocked&&other.baseTierRank===target);
-          if(better.length&&r.fitScore<Math.max(...better.map(other=>other.fitScore))+30*(r.baseTierRank-target))break;
+          const gap=tierFitGap*(r.baseTierRank-target);
+          if(better.some(other=>Math.round((r.fitScore-other.fitScore)*100)<gap*100||r.ownedFit-other.ownedFit<gap))break;
           r.recommendationTierRank=target;
         }
       }
       const rankable=rows.filter(r=>!r.blocked).length;
-      return rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
+      const ranked=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
         .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||a.recommendationTierRank-b.recommendationTierRank||b.fitScore-a.fitScore||a.baseTierRank-b.baseTierRank||a.guide.title.localeCompare(b.guide.title));
+      for(const [index,row] of ranked.entries()){
+        if(row.recommendationTierRank===row.baseTierRank)continue;
+        row.passedTier=ranked.slice(index+1).find(other=>!other.blocked&&other.baseTierRank<row.baseTierRank&&other.baseTierRank>=row.recommendationTierRank);
+      }
+      return ranked;
     },
     componentFit(plan,entries){
       let beam=[{pool:{...plan.owned},score:0,used:[],ready:[]}];

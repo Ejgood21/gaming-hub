@@ -115,6 +115,22 @@ try {
     assert.equal(await page.locator('.unit-stars button[data-unit-stars="1"][aria-pressed="true"]').count(),6);
   }
 
+  await page.getByRole('button',{name:'New game',exact:true}).click();
+  await page.getByText('Live · Patch 18.7',{exact:false}).waitFor();
+  await page.getByRole('button',{name:'Got one Needlessly Large Rod from carousel',exact:true}).click();
+  await page.getByRole('button',{name:'Got one Chain Vest from carousel',exact:true}).click();
+  const fitSummary=suggestion('AP Fast 9').locator('.finder-method summary');
+  const originalFit=await fitSummary.textContent();
+  await page.locator('#first-augment-trigger').click();
+  await page.locator('#first-augment-choices input').fill('Unrivaled');
+  assert.deepEqual(await page.locator('#first-augment-choices .icon-select-option span').allTextContents(),['Unrivaled']);
+  await page.locator('#first-augment-choices input').fill('Woven Magic');
+  await page.locator('[data-option-value="DA_WovenMagic"]').click();
+  assert.notEqual(await fitSummary.textContent(),originalFit);
+  await fitSummary.click();
+  await suggestion('AP Fast 9').getByText(/\+\d+ · Augment: Woven Magic.*Rules-based fit/).waitFor();
+  await suggestion('AP Fast 9').getByLabel('Woven Magic · Rules-based augment fit').waitFor();
+
   await startGame();
   await checkWidth('#comp-finder, .comp-suggestion, .current-unit, .need');
   await page.locator('.academy-reference summary').click();
@@ -174,6 +190,19 @@ try {
 
   const augmentOpen=page.getByRole('button',{name:'Augment choices',exact:true});
   const offerSearch=page.locator('#augment-offer-search');
+  await augmentOpen.click();
+  await page.locator('[data-augment-round="1"]').click();
+  await offerSearch.fill('Deadlier Caps');
+  await offerSearch.press('Enter');
+  await page.getByText('Deadlier Caps is listed by Academy for 2-1, not 3-2.',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'Enter at 2-1',exact:true}).click();
+  assert.equal(await page.locator('[data-augment-round="0"]').getAttribute('aria-pressed'),'true');
+  assert.equal((await savedPlan()).augmentOffers.ids[0],'DA_DeadlierCaps');
+  await page.getByRole('button',{name:'Close augment chooser',exact:true}).click();
+  await page.locator('#undo').click();
+  await page.locator('#undo').click();
+  await page.locator('#undo').click();
+
   const lotus='DA_JeweledLotus_I';
   for(const keyboard of [false,true]){
     await augmentOpen.click();
