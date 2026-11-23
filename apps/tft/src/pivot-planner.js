@@ -72,6 +72,18 @@ module.exports = function createPivotPlanner(model) {
     return results.filter(r=>role==='all'||(role==='similar'?r.shared.length>0:profile(r.item.id).includes(role)))
       .sort((a,b)=>b.score-a.score||a.item.name.localeCompare(b.item.name));
   }
+  function addedQueueCopies(before,after){
+    const pending=after.queue.filter(q=>!q.done);
+    const previous=new Map(before.queue.filter(q=>!q.done).map(q=>[q.uid,q.item]));
+    const copies=[];
+    for(const id of new Set(pending.map(q=>q.item))){
+      const rows=pending.filter(q=>q.item===id);
+      if(rows.length<2)continue;
+      const added=rows.filter(q=>previous.get(q.uid)!==id);
+      if(added.length)copies.push({item:id,added,existing:rows.filter(q=>previous.get(q.uid)===id)});
+    }
+    return copies;
+  }
   function replace(state,uid,id,items,built=false){
     const q=state.queue.find(q=>q.uid===uid),item=items.find(i=>i.id===id);
     if(!q||q.done||!item||q.item===id)return false;
@@ -88,5 +100,5 @@ module.exports = function createPivotPlanner(model) {
     if(built)Tracker.complete(state,q,item);
     return true;
   }
-  return {roles,labels,profile,register,available,candidate,suggest,replace};
+  return {roles,labels,profile,register,available,candidate,suggest,addedQueueCopies,replace};
 };

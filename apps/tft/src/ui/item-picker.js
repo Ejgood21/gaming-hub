@@ -70,8 +70,7 @@
     const target=state.queue.find(q=>q.uid===targetId&&!q.done);if(!target){dialog.close();return;}
     const id=b.dataset.pivotItem,built=b.dataset.pivotKind==='built',original=byId[target.item].name;
     if(!Academy.canEquip(state,target.champion,id)||built&&!Tracker.canCraft(state.owned,byId[id]))return;
-    mutate(()=>PivotPlanner.replace(state,targetId,id,DATA.items,built),`${byId[id].name} ${built?'built':'planned'} instead of ${original}.`);
-    dialog.close();
+    if(applyItemPivot(next=>PivotPlanner.replace(next,targetId,id,DATA.items,built),`${byId[id].name} ${built?'built':'planned'} instead of ${original}.`))dialog.close();
   });
   const oldRender=render;
   render=function(){

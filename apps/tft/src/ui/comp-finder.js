@@ -10,9 +10,10 @@
   const alternatives=document.createElement('section');
   alternatives.className='panel pivot-section';
   alternatives.setAttribute('aria-labelledby','comp-alternative-title');
-  alternatives.innerHTML='<div><h2 id="comp-alternative-title">If this game changes</h2><p id="comp-alternative-name"></p></div><button type="button" data-choose-comp="">Aim here</button>';
+  alternatives.innerHTML='<div><h2 id="comp-alternative-title">If this game changes</h2><p id="comp-alternative-status"></p></div><button type="button" data-choose-comp="" hidden></button>';
   panel.after(alternatives);
   const alternativeButton=alternatives.querySelector('button');
+  const alternativeStatus=alternatives.querySelector('p');
   const mode=document.createElement('button');mode.id='explore-mode';mode.className='quiet';mode.textContent='Explore builds';document.querySelector('.actions').prepend(mode);
   mode.addEventListener('click',()=>{exploring=!exploring;draw();});
   const select=panel.querySelector('select');select.innerHTML='<option value="">Not chosen yet</option>';
@@ -89,14 +90,14 @@
     const comp=state.activeComp?.id||'';if(comp!==lastComp){exploring=false;lastComp=comp;}
     panel.hidden=!!state.activeComp&&!exploring;mode.hidden=!state.activeComp;mode.textContent=exploring?'Back to plan':'Explore builds';mode.setAttribute('aria-pressed',String(exploring));
     document.querySelector('.centercol').classList.toggle('exploring-plan',!!state.activeComp&&exploring);
-    const alternative=panel.hidden?CompFinder.alternative(state):null;
-    alternatives.hidden=!alternative;
-    if(alternative){
-      const {id,title}=alternative.guide;
-      alternatives.querySelector('p').textContent=title;
-      alternativeButton.dataset.chooseComp=id;
-      alternativeButton.setAttribute('aria-label','Choose '+title);
-    }
+    alternatives.hidden=!state.activeComp;
+    const alternative=CompFinder.alternative(state)?.guide;
+    alternativeStatus.textContent=alternative?'Better fit for your current board and items.':Academy.isCurrent()
+      ?'No better-fitting pivot available for your board and items.'
+      :'Refresh live data to compare your plan with other comps.';
+    alternativeButton.hidden=!alternative;
+    alternativeButton.dataset.chooseComp=alternative?.id||'';
+    alternativeButton.textContent=alternative?'Pivot to '+alternative.title:'';
     if(panel.hidden){picker.close();return;}
     drawInputs();
     const catalog=CompFinder.augments(),signature=catalog.map(a=>a.apiName+a.name).join('|')+'|'+(state.firstAugment||'');

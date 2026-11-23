@@ -4,7 +4,8 @@ const ACADEMY_TTL_MS = 24 * 60 * 60 * 1000;
 const files = [
   ['academy', 'data/academy-18.3b.json'],
   ['meta', 'data/metatft-18.3b.json'],
-  ['core', 'data/core-items.json']
+  ['core', 'data/core-items.json'],
+  ['secondaryTiers', 'data/academy-secondary-tiers-18.7.json']
 ];
 const academySource = 'TFT Academy';
 
@@ -47,7 +48,9 @@ async function loadSnapshots(fallback, pageURL, fetchJSON) {
       if (!response.ok) return fallback[key];
       const snapshot = await response.json();
       const valid = key === 'academy' ? validAcademy(snapshot) :
-        key === 'meta' ? Array.isArray(snapshot.units) : Array.isArray(snapshot.items) && Array.isArray(snapshot.components);
+        key === 'meta' ? Array.isArray(snapshot.units) :
+        key === 'secondaryTiers' ? snapshot.tiers && Object.values(snapshot.tiers).every(tier => /^[ABC]$/.test(tier)) :
+        Array.isArray(snapshot.items) && Array.isArray(snapshot.components);
       if (valid && snapshot.schemaVersion === fallback[key].schemaVersion &&
           snapshot.set === fallback[key].set && snapshot.patch === fallback[key].patch) {
         return key === 'meta' ? decodeMetaSnapshot(snapshot) : snapshot;
