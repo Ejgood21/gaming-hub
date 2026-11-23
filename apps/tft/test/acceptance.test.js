@@ -12,6 +12,7 @@ const core = require('../data/core-items.json');
 const secondaryTiers = require('../data/academy-secondary-tiers-18.7.json');
 const liveFixture = require('../test-support/live-fixture');
 const {apFast9, mamawood, covenElise, solarEclipse, currentUnits, darkRitual} = require('../test-support/p16-comps');
+const liveFit = require('../test-support/p19-live-fit');
 
 const model = () => createModel({academy, meta, core});
 const guide = title => academy.guides.find(g => g.title === title);
@@ -218,7 +219,7 @@ test('pivoting Ivern from Shojin to Blue Buff flags Alune’s existing copy', ()
   ]);
 });
 
-test('Mark made and Build instead require the full recipe before changing inventory', () => {
+test('explicit crafting and Build instead still require the full recipe', () => {
   const {byId, DATA, Tracker, PivotPlanner} = model();
   const q = queue('InfinityEdge');
   const input = plan({queue:[q],owned:{BFSword:1}});
@@ -233,6 +234,27 @@ test('Mark made and Build instead require the full recipe before changing invent
   assert.equal(q.done, true);
   assert.deepEqual(q.used, {BFSword:1,SparringGloves:1});
   assert.deepEqual(input.owned, {BFSword:0,SparringGloves:0});
+});
+
+test('Mark made completes Crownguard with an empty, partial, or full bench', () => {
+  const {Academy, CompFinder, OfflineTracker, Tracker} = model();
+  Academy.useSnapshot({...academy, patch:'18.7', guides:[apFast9]});
+  for (const owned of [{}, {ChainVest:1}, {ChainVest:1, NeedlesslyLargeRod:1}]) {
+    const input = plan({owned:{...owned}});
+    CompFinder.choose(input,apFast9.id);
+    const crownguard = input.queue.find(q=>q.item==='Crownguard');
+    const before = CompFinder.evaluate(input,apFast9).fitScore;
+    assert.equal(OfflineTracker.markMade(input,crownguard),true);
+    assert.deepEqual(input.queue.filter(q=>q.done),[crownguard]);
+    assert.ok(CompFinder.evaluate(input,apFast9).fitScore>before);
+    const crafted = !!owned.NeedlesslyLargeRod;
+    assert.equal(crownguard.received,!crafted);
+    assert.deepEqual(crownguard.used,crafted?owned:{});
+    assert.deepEqual(input.owned,crafted?{ChainVest:0,NeedlesslyLargeRod:0}:owned);
+    assert.equal(OfflineTracker.markMade(input,crownguard),false);
+    Tracker.restore(input,crownguard);
+    assert.deepEqual(input.owned,owned);
+  }
 });
 
 test('a reported Jeweled Lotus I is recordable even when Academy lists later rounds', () => {
@@ -285,7 +307,7 @@ test('Rod and Vest with Woven Magic change the top-three fit scores and show the
   assert.deepEqual(input.owned,{NeedlesslyLargeRod:1,ChainVest:1});
 });
 
-test('owned resources need a 12-point fit and resource lead over a higher tier', () => {
+test('a higher tier still wins close fit, but yields to a 12-point lead', () => {
   const {Academy, CompFinder} = model();
   const upper = {...mamawood,tier:'S'}, lower = {...apFast9,tier:'A'};
   Academy.useSnapshot({...academy,patch:'18.7',guides:[upper,lower]});
@@ -299,8 +321,80 @@ test('owned resources need a 12-point fit and resource lead over a higher tier',
   assert.equal(fitWinner.guide.id,lower.id);
   assert.equal(runnerUp.guide.id,upper.id);
   assert.ok(fitWinner.fitScore-runnerUp.fitScore>=12);
-  assert.ok(fitWinner.ownedFit-runnerUp.ownedFit>=12);
   assert.equal(fitWinner.passedTier.guide.id,upper.id);
+});
+
+test('the flat threshold is inclusive across two tiers', () => {
+  const {Academy, CompFinder} = model();
+  const higher = {...mamawood,tier:'S'};
+  const lower = {...apFast9,tier:'B'};
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[higher,lower]});
+  CompFinder.evaluate = (input,guide) => ({
+    guide,fitScore:guide===higher?7:input.lowerFit,selectable:true,missingEmblems:[]
+  });
+  const top = lowerFit => CompFinder.ranked(plan({lowerFit}),{allowSparse:true})[0].guide;
+  assert.equal(top(18.99),higher);
+  assert.equal(top(19),lower);
+});
+
+function liveFitModel() {
+  const instance = model(), {Academy} = instance;
+  const replace = (older, newer) => [...older.filter(entry=>!newer.some(row=>row.apiName===entry.apiName)), ...newer];
+  Academy.useSnapshot({...academy, patch:'18.7', guides:liveFit.guides,
+    items:replace(academy.items,liveFit.items), augments:replace(academy.augments,liveFit.augments)});
+  return instance;
+}
+
+test('Patch 18.7 Rod + Vest: Woven Magic puts Defender Cassio ahead of both S comps', () => {
+  const {CompFinder} = liveFitModel();
+  const input = plan({owned:{NeedlesslyLargeRod:1,ChainVest:1}});
+  const top = () => CompFinder.ranked(input).slice(0,3);
+  const titleAndFit = rows => rows.map(r=>[r.guide.title,r.fitScore]);
+  assert.deepEqual(titleAndFit(top()),[['Mamawood',7],['AP Fast 9',4.5],['10 Riftbeast',7.5]]);
+  input.firstAugment = 'DA_WovenMagic';
+  const after = top();
+  assert.deepEqual(titleAndFit(after),[['Defender Cassio',30.5],['AP Fast 9',11.5],['Mamawood',11]]);
+  assert.deepEqual(after[0].augmentMatches.map(a=>[a.name,a.points,a.academy]),[['Woven Magic',24,'listed']]);
+  assert.ok(after[0].passedTier);
+});
+
+test('Patch 18.7 Rod + Vest and Yi / Kog’Maw / Vi at 3★: Adaptor Reroll passes S', () => {
+  const {CompFinder} = liveFitModel();
+  const input = plan({owned:{NeedlesslyLargeRod:1,ChainVest:1},
+    currentUnits:['DA_18_MasterYi_AD','DA_KogMaw18_AD','DA_Vi18'].map(apiName=>({apiName,stars:3}))});
+  const rows = CompFinder.ranked(input).filter(r=>r.guide.tier==='S'||r.guide.title==='Adaptor Reroll');
+  assert.deepEqual(rows.map(r=>[r.guide.title,r.fitScore]),[['Adaptor Reroll',51.5],['Mamawood',-2],['AP Fast 9',-9]]);
+});
+
+test('Patch 18.7 Fast 9 econ offers use Academy endorsements before economy rules', () => {
+  const {CompFinder} = liveFitModel();
+  const input = plan({owned:{NeedlesslyLargeRod:1,ChainVest:1}});
+  for (const [id, apBonus, dravenBonus, reason] of [
+    ['DA_LevelUp',7,24,/XP purchases.*level 9/],
+    ['DA_PatientStudy',7,7,/Extra XP/],
+    ['DA_TradeSector',4,4,/Extra gold/]
+  ]) {
+    input.firstAugment = id;
+    const rows = CompFinder.ranked(input);
+    const ap = rows.find(r=>r.guide.title==='AP Fast 9'), draven = rows.find(r=>r.guide.title==='Draven Dragon 9');
+    assert.equal(ap.fitScore,4.5+apBonus);
+    assert.equal(ap.augmentMatches[0].recommended,true);
+    assert.match(ap.reasons.find(r=>r.text.startsWith('Augment:')).text,/Rules-based fit/);
+    assert.match(ap.augmentMatches[0].text,reason);
+    assert.equal(draven.fitScore,4+dravenBonus);
+    assert.equal(draven.augmentMatches[0].academy,id==='DA_LevelUp'?'listed':undefined);
+    if(id==='DA_LevelUp')assert.equal(rows[0],draven);
+  }
+});
+
+test('the first augment catalog shows Unrivaled once and retains both saved IDs', () => {
+  const {Academy, CompFinder} = liveFitModel();
+  const alias = Academy.snapshot.augments.find(a=>a.apiName==='DA_18_RivalsAugmentPlus');
+  alias.description = alias.description.replace(' with ', '  with ')+' ';
+  const entries = CompFinder.augments().filter(a=>a.name==='Unrivaled');
+  assert.equal(entries.length,1);
+  assert.equal(entries[0].apiName,'DA_18_RivalsAugment');
+  assert.deepEqual(entries[0].ids,['DA_18_RivalsAugment','DA_18_RivalsAugmentPlus']);
 });
 
 test('Lucky Gloves and Flowing Tears get the same contextual verdict for needed components', () => {

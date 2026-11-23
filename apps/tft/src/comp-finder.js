@@ -14,9 +14,12 @@ module.exports = function createCompFinder(model) {
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
     augmentOptions(round){
       const order = a => a.stages?.includes(round) ? 0 : a.stages?.length ? 1 : 2;
+      const displayText = text => text.replace(/\s+/g,' ').trim();
       const variants = new Map();
       for (const augment of Academy.snapshot.augments || []) {
-        const key = JSON.stringify([augment.name, augment.tier, augment.description]);
+        const key = JSON.stringify([
+          displayText(augment.name), augment.tier, displayText(augment.description)
+        ]);
         const choices = variants.get(key) || [];
         choices.push(augment);
         variants.set(key, choices);
@@ -179,6 +182,8 @@ module.exports = function createCompFinder(model) {
       const augmentMatches=heldAugments.map(id=>{
         const augment=this.augment(id);
         const match=augmentFit.score(augment||{apiName:id},guide,heldContext);
+        // A held Academy recommendation is a stronger commitment signal than an offer.
+        if(match.academy)match.points+=10;
         return {id,name:augment?.name||id,...match};
       });
       const requirements=this.requirements(plan,guide);
@@ -200,9 +205,8 @@ module.exports = function createCompFinder(model) {
       if(heldAugments.length&&!augmentFit.hasRecommendations(guide))reasons.push({points:0,text:'No Academy augment data for this comp — scored from item, economy and combat rules.'});
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
       const fitScore=Number(reasons.reduce((sum,reason)=>sum+reason.points,0).toFixed(2));
-      const ownedFit=ownedReasons.reduce((sum,reason)=>sum+reason.points,0);
       return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatches,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
-        score:tierScore+fitScore,fitScore,ownedFit,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
+        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
     signalCount(plan){
@@ -235,26 +239,21 @@ module.exports = function createCompFinder(model) {
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
       if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&r.augmentMatches.some(a=>a.academy||a.recommended))&&
         (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
-      for(const r of rows){
-        r.baseTierRank=this.tierRank(r.unlocked?'A':r.guide.tier);
-        r.recommendationTierRank=r.baseTierRank;
-      }
-      for(const r of rows){
-        if(r.blocked||r.missingEmblems.length)continue;
-        // Compare against original tiers before sorting so promotions cannot cycle.
-        for(let target=r.baseTierRank-1;target>=0;target--){
-          const better=rows.filter(other=>!other.blocked&&other.baseTierRank===target);
-          const gap=tierFitGap*(r.baseTierRank-target);
-          if(better.some(other=>Math.round((r.fitScore-other.fitScore)*100)<gap*100||r.ownedFit-other.ownedFit<gap))break;
-          r.recommendationTierRank=target;
-        }
-      }
+      const tierRank = row => this.tierRank(row.unlocked?'A':row.guide.tier);
       const rankable=rows.filter(r=>!r.blocked).length;
-      const ranked=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
-        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||a.recommendationTierRank-b.recommendationTierRank||b.fitScore-a.fitScore||a.baseTierRank-b.baseTierRank||a.guide.title.localeCompare(b.guide.title));
-      for(const [index,row] of ranked.entries()){
-        if(row.recommendationTierRank===row.baseTierRank)continue;
-        row.passedTier=ranked.slice(index+1).find(other=>!other.blocked&&other.baseTierRank<row.baseTierRank&&other.baseTierRank>=row.recommendationTierRank);
+      const initial=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
+        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||tierRank(a)-tierRank(b)||b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title));
+      const ranked=[];
+      for(const row of initial){
+        // Insert before the first higher-tier row this comp clears. A pairwise
+        // sort can cycle when two close gaps add up to one qualifying gap.
+        const index=row.blocked||row.missingEmblems.length?-1:ranked.findIndex(other=>
+          tierRank(other)<tierRank(row)&&Math.round((row.fitScore-other.fitScore)*100)>=tierFitGap*100);
+        if(index<0)ranked.push(row);
+        else{
+          row.passedTier=ranked[index];
+          ranked.splice(index,0,row);
+        }
       }
       return ranked;
     },

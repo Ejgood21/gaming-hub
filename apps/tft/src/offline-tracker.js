@@ -47,6 +47,11 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
       });
     },
     receive(plan,q) {q.done=true;q.received=true;q.used={};q.usedSources={};},
+    markMade(plan,q) {
+      if(q.done)return false;
+      if(!Tracker.complete(plan,q,byId[q.item]))this.receive(plan,q);
+      return true;
+    },
     newGame(plan,keep) {
       return {queue:keep?plan.queue.map(q=>({...q,done:false,received:false,used:{}})):[],owned:{},pins:keep?[...plan.pins]:[]};
     }

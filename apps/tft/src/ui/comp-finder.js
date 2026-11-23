@@ -5,7 +5,7 @@
   <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
-  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads unless a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points and ${CompFinder.tierFitGap} more points from your owned items, champions and chosen augments per tier crossed.</p></details>`;
+  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads until a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points from your items, champions and augments.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
   const boardEditor=exploreInputs.querySelector('.explore-board');
@@ -162,7 +162,7 @@
         return `<span class="finder-augment-match" title="${esc(label)}" aria-label="${esc(label)}">${augmentIcon(a.id)}<b aria-hidden="true">★</b></span>`;
       }).join('');
       const passed=r.passedTier;
-      const promotion=passed?`Fit moves ahead of ${passed.guide.title} by ${Number((r.fitScore-passed.fitScore).toFixed(2))} points, with a ${Number((r.ownedFit-passed.ownedFit).toFixed(2))}-point lead from owned resources.`:'';
+      const promotion=passed?`Fit moves ahead of ${passed.guide.title} by ${Number((r.fitScore-passed.fitScore).toFixed(2))} points.`:'';
       const breakdown=[
         `<li>Academy tier ${esc(tier)} · ranking priority</li>`,
         promotion?`<li>${esc(promotion)}</li>`:'',
