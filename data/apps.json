@@ -9,12 +9,12 @@
     "icon": "compass"
   },
   {
-    "id": "tool-two",
-    "title": "Your next tool",
-    "description": "A little room for the next gaming rabbit hole.",
-    "href": "/placeholder/#tool-two",
-    "status": "coming-soon",
-    "updated": "2026-10-26",
+    "id": "tft",
+    "title": "TFT Carousel Companion",
+    "description": "Track items with live S/A/B/X comp picks from TFTAcademy and MetaTFT, plus pivots, carousel priorities, and augment and anvil tips.",
+    "href": "/tft/",
+    "status": "ready",
+    "updated": "2026-11-22",
     "icon": "plus"
   },
   {

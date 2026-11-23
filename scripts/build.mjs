@@ -13,6 +13,7 @@ import { buildWow } from "../apps/wow/build.mjs";
 
 export const root = fileURLToPath(new URL("../", import.meta.url));
 export const output = path.join(root, "dist");
+const tftCompanionFile = "carousel-companion.html";
 export function normalizeBasePath(value) {
   if (
     typeof value !== "string" ||
@@ -75,6 +76,7 @@ const header = (route) => `<a class="skip-link" href="#main">Skip to content</a>
   <nav class="main-nav" aria-label="Main navigation">
     <a href="/"${route === "/" ? ' aria-current="page"' : ""}>The hub</a>
     <a href="/wow/"${route === "/wow/" ? ' aria-current="page"' : ""}>WoW compass</a>
+    <a href="/tft/"${route === "/tft/" ? ' aria-current="page"' : ""}>TFT companion</a>
     <a href="/placeholder/"${route === "/placeholder/" ? ' aria-current="page"' : ""}>Coming soon</a>
   </nav><span class="header-note">YOUR NEXT SESSION</span>
 </div></header>`;
@@ -212,8 +214,9 @@ export async function build({
       directories.some((d) => d.name === route),
       `${app.id}: missing apps/${route}/ folder`,
     );
+    const sourceFile = route === "tft" ? tftCompanionFile : "index.html";
     const source = await readFile(
-      path.join(root, "apps", route, "index.html"),
+      path.join(root, "apps", route, sourceFile),
       "utf8",
     );
     if (fragment)
@@ -253,9 +256,9 @@ export async function build({
     await mkdir(target, { recursive: true });
     if (d.name === "tft") {
       const source = path.join(root, "apps", d.name);
-      const companion = path.join(source, "carousel-companion.html");
+      const companion = path.join(source, tftCompanionFile);
       await cp(companion, path.join(target, "index.html"));
-      await cp(companion, path.join(target, "carousel-companion.html"));
+      await cp(companion, path.join(target, tftCompanionFile));
       await cp(path.join(source, "data"), path.join(target, "data"), { recursive: true });
       continue;
     }
