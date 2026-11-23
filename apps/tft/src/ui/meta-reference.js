@@ -2,7 +2,7 @@
 (() => {
   const note=document.createElement('details');note.className='loot-note';
   note.innerHTML='<summary id="loot-summary">Loot-history tie-break</summary><p>Among equally urgent needs, prefer components already dropped more often from natural PvE loot. This is a historical bag heuristic, not verified current-set odds. Pins, queue order, Academy priorities and the number needed come first. It does not predict when another component will drop.</p><p>Bench + and 1–8 record PvE loot. Choose component anvils in Anvil choices; those record Other. “Got one” always records carousel. Anvils, augments, special components and recipe clicks do not count as natural drops. − corrects the source of the last loose copy; crafting keeps the drop history. Undo corrects any recent action.</p><label><input type="checkbox" id="loot-enabled"> Use loot history to break ties</label><div id="loot-counts"></div><p id="loot-coverage"></p></details>';
-  document.querySelector('.shoppingfoot').before(note);
+  document.querySelector('.bench').append(note);
   document.querySelector('.shoppingfoot').textContent='Got one = carousel · ★ Pin to put first';
   document.getElementById('loot-enabled').addEventListener('change',e=>mutate(()=>state.lootTieBreak=e.target.checked,'Carousel ordering updated.'));
   const makeDialog=(id,html)=>{const d=document.createElement('dialog');d.id=id;d.innerHTML=html;document.body.append(d);return d;};

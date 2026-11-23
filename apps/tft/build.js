@@ -27,7 +27,7 @@ const definitions = modules.map(name => {
 const screens = [
   'augment-icon', 'icons', 'tracker', 'item-picker', 'settings', 'academy',
   'inventory', 'meta-live', 'meta-reference', 'board', 'dialogs', 'comp-finder',
-  'decision', 'augment', 'anvil', 'utilities'
+  'decision', 'augment', 'anvil', 'opener-guidance', 'utilities'
 ].map(name => read(`src/ui/${name}.js`)).join('\n');
 
 const script = `
