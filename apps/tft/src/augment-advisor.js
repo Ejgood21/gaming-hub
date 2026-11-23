@@ -14,6 +14,14 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     eligible(a,round){return !a.stages?.length||a.stages.includes(this.stages[round]);},
     catalog(plan,round){const held=new Set(this.held(plan));return (Academy.snapshot.augments||[]).filter(a=>!held.has(a.apiName)&&this.eligible(a,round)).sort((a,b)=>a.name.localeCompare(b.name));},
+    searchNotice(query,round){
+      const term=Academy.normalizeName(query);
+      if(!term)return 'Type an augment name to search.';
+      const matches=(Academy.snapshot.augments||[]).filter(a=>Academy.normalizeName(a.name).includes(term));
+      if(!matches.length)return 'Limited evidence · No TFT Academy entry matches this name.';
+      if(matches.some(a=>this.eligible(a,round)))return 'No remaining matches for this offer.';
+      return matches.slice(0,3).map(a=>a.name+' · Academy lists '+a.stages.join(', ')).join(' / ');
+    },
     context(plan){
       const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan,{allowSparse:true}),routes=ranked.filter(r=>!r.blocked).slice(0,8);
       const units=CompFinder.units(plan),pending=plan.queue.filter(q=>!q.done),done=plan.queue.filter(q=>q.done),needs=Tracker.allocate(plan,DATA.items).needs;

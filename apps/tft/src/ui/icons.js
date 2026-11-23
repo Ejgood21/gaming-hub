@@ -10,7 +10,7 @@ const IconUI = {
   },
   itemLabel(id){return `<span class="inline-entity">${icon(id)}<span>${esc(byId[id].name)}</span></span>`;},
   championLabel(name){return `<span class="inline-entity">${this.champion(name)}<span>${esc(name)}</span></span>`;},
-  picker(select,kind,label){
+  picker(select,kind,label,noMatch=()=> 'No matches'){
     select.hidden=true;select.setAttribute('aria-hidden','true');select.tabIndex=-1;
     const wrap=document.createElement('div');wrap.className='icon-select';
     const trigger=document.createElement('button');trigger.type='button';trigger.id=select.id+'-trigger';trigger.className='icon-select-trigger';trigger.setAttribute('aria-label',label);trigger.setAttribute('aria-expanded','false');
@@ -20,7 +20,7 @@ const IconUI = {
     const search=pop.querySelector('input'),list=pop.querySelector('.icon-select-options');
     const picture=value=>!value?'<span class="any-icon" aria-hidden="true">✦</span>':kind==='champion'?IconUI.champion(value):kind==='augment'?augmentIcon(value):byId[value]?icon(value):'';
     const close=()=>{pop.hidden=true;trigger.setAttribute('aria-expanded','false');};
-    const draw=()=>{const q=search.value.toLowerCase();list.innerHTML=[...select.querySelectorAll('option')].filter(o=>o.textContent.toLowerCase().includes(q)).map(o=>`<button type="button" data-option-value="${esc(o.value)}" class="icon-select-option" aria-pressed="${o.value===select.value}">${picture(o.value)}<span>${esc(o.textContent)}</span>${o.value===select.value?'<b>✓</b>':''}</button>`).join('')||'<span class="picker-no-match">No matches</span>';};
+    const draw=()=>{const q=search.value.toLowerCase();list.innerHTML=[...select.querySelectorAll('option')].filter(o=>o.textContent.toLowerCase().includes(q)).map(o=>`<button type="button" data-option-value="${esc(o.value)}" class="icon-select-option" aria-pressed="${o.value===select.value}">${picture(o.value)}<span>${esc(o.textContent)}</span>${o.value===select.value?'<b>✓</b>':''}</button>`).join('')||'<span class="picker-no-match" role="status">'+esc(noMatch(search.value))+'</span>';};
     const open=()=>{search.value='';draw();pop.hidden=false;trigger.setAttribute('aria-expanded','true');search.focus();};
     const refresh=()=>{const o=[...select.querySelectorAll('option')].find(o=>o.value===select.value)||select.querySelector('option');trigger.innerHTML=picture(o?.value||'')+'<span>'+esc(o?.textContent||'Choose')+'</span><span class="picker-chevron">⌄</span>';if(!pop.hidden)draw();};
     trigger.addEventListener('click',()=>pop.hidden?open():close());

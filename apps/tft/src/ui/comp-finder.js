@@ -7,13 +7,19 @@
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
   <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads the ranking. Your items, units and augments rank comps within each tier. A lower-tier comp can move ahead only with substantial matching resources and a clear fit advantage. Matches use its final board, alternate items, early holders, featured item and recommended carriers. All remaining item recipes are checked; each loose component counts once. Emblems count as whole items, radiants cover their normal versions, and special items never turn back into components. Missing emblems, required situational augments, core units and star upgrades reduce readiness. Current MetaTFT S/A item builds supplement Academy. An X-tier guide moves up when you own its required item or hold its required augment. A suggested carrier is a destination, not an equipped-item claim. Aim here keeps the Academy baseline; review alternate carriers in the plan. This is a fit estimate, not a win probability: economy, stage and lobby contesting are not tracked.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
+  const alternatives=document.createElement('section');
+  alternatives.className='panel pivot-section';
+  alternatives.setAttribute('aria-labelledby','comp-alternative-title');
+  alternatives.innerHTML='<div><h2 id="comp-alternative-title">If this game changes</h2><p id="comp-alternative-name"></p></div><button type="button" data-choose-comp="">Aim here</button>';
+  panel.after(alternatives);
+  const alternativeButton=alternatives.querySelector('button');
   const mode=document.createElement('button');mode.id='explore-mode';mode.className='quiet';mode.textContent='Explore builds';document.querySelector('.actions').prepend(mode);
   mode.addEventListener('click',()=>{exploring=!exploring;draw();});
   const select=panel.querySelector('select');select.innerHTML='<option value="">Not chosen yet</option>';
-  const picker=IconUI.picker(select,'augment','First augment');
+  const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query,0));
   select.addEventListener('change',()=>mutate(()=>{state.firstAugment=select.value;state.chosenAugments||=['','',''];state.chosenAugments[0]=select.value;},'First augment updated.'));
   panel.querySelector('#finder-more').addEventListener('click',()=>{expanded=!expanded;draw();});
-  panel.addEventListener('click',e=>{
+  panel.parentElement.addEventListener('click',e=>{
     const b=e.target.closest('[data-choose-comp]');if(!b)return;
     try{exploring=false;mutate(()=>CompFinder.choose(state,b.dataset.chooseComp),'Academy plan loaded. Board and inventory kept.');document.getElementById('item-drawer').removeAttribute('open');}
     catch(err){toast(err.message);}
@@ -83,6 +89,14 @@
     const comp=state.activeComp?.id||'';if(comp!==lastComp){exploring=false;lastComp=comp;}
     panel.hidden=!!state.activeComp&&!exploring;mode.hidden=!state.activeComp;mode.textContent=exploring?'Back to plan':'Explore builds';mode.setAttribute('aria-pressed',String(exploring));
     document.querySelector('.centercol').classList.toggle('exploring-plan',!!state.activeComp&&exploring);
+    const alternative=panel.hidden?CompFinder.alternative(state):null;
+    alternatives.hidden=!alternative;
+    if(alternative){
+      const {id,title}=alternative.guide;
+      alternatives.querySelector('p').textContent=title;
+      alternativeButton.dataset.chooseComp=id;
+      alternativeButton.setAttribute('aria-label','Choose '+title);
+    }
     if(panel.hidden){picker.close();return;}
     drawInputs();
     const catalog=CompFinder.augments(),signature=catalog.map(a=>a.apiName+a.name).join('|')+'|'+(state.firstAugment||'');
@@ -92,19 +106,19 @@
     panel.querySelector('#finder-tier-notice').textContent=tierNotice;
     panel.querySelector('.finder-list-heading').hidden=!rows.length;
     panel.querySelector('#comp-suggestions').innerHTML=(expanded?rows:rows.slice(0,5)).map((r,n)=>{
-      const g=r.guide,tier=r.unlocked?'X · Unlocked':academyTier(g.tier).label,carry=g.mainChampion?.apiName;
+      const g=r.guide,tier=r.unlocked?'X · Unlocked':g.tier==='X'?'X · Situational':academyTier(g.tier).label,carry=g.mainChampion?.apiName;
       const fit=[r.keepers.length?`<span>Keep ${unitChips(r.keepers)}</span>`:'',r.early.length?`<span>Early ${unitChips(r.early)}</span>`:'',r.bridges.length?`<span>Trait bridge ${unitChips(r.bridges)}</span>`:'',r.matched.length?`<span>Owned ${chips(r.matched)}</span>`:'',r.used.length?`<span>Fits ${chips(r.used)}</span>`:'',r.ready.length?`<span>Can build ${chips(r.ready)}</span>`:'',r.earlyMatches.length?`<span>Early items ${chips(r.earlyMatches.map(m=>m.item))}</span>`:'',r.featuredOwned?`<span>Academy key item ${chips([r.featuredOwned])}</span>`:'',r.unmatched.length?`<span class="finder-unmatched">Off-plan ${chips(r.unmatched)}</span>`:'',r.unknownSpecial.some(id=>id!==r.featuredOwned)?`<span class="finder-unmatched">No supported match ${chips(r.unknownSpecial.filter(id=>id!==r.featuredOwned))}</span>`:''].filter(Boolean).join('');
       const special=r.specialMatches.map(s=>`<span class="special-destination" title="${esc(s.source)}">${chips([s.item])}<span>→</span>${IconUI.championLabel(s.champion)}<small>${esc(s.source)}</small></span>`).join('');
       const needs=[r.missingEmblems.length?`<span>Plan needs ${chips(r.missingEmblems)}</span>`:'',r.craftableEmblems.length?`<span>Emblem ready ${chips(r.craftableEmblems)}</span>`:'',r.missingAugment?`<span>Needs ${augmentIcon(r.missingAugment)} ${esc(CompFinder.augment(r.missingAugment)?.name||'required augment')}</span>`:'',r.missingCore.length?`<span>Aim for ${unitChips(r.missingCore.map(u=>({...u,stars:u.targetStars})))}</span>`:''].filter(Boolean).join('');
       const noFit=Object.values(state.owned).some(n=>n>0)||CompFinder.units(state).length?'No strong match yet':'Add items or units to personalize';
-      return `<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3><span class="academy-tier tier-${esc(g.tier)}">${esc(tier)}</span>${r.augmentMatch?`<span class="finder-augment-match" title="Academy recommended augment" aria-label="Academy recommends your augment">${augmentIcon(r.matchedAugments[0])}<b aria-hidden="true">★</b></span>`:''}</div><div class="finder-fit">${fit||'<span class="muted">'+(r.augmentMatch?'Recommended augment match':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}${r.reasons.some(reason=>reason.points)?`<details class="finder-method"><summary>Fit score ${Number(r.fitScore.toFixed(2))}</summary><ul>${r.reasons.filter(reason=>reason.points).map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`).join('')}</ul></details>`:''}</div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
+      return `<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${r.augmentMatch?`<span class="finder-augment-match" title="Academy recommended augment" aria-label="Academy recommends your augment">${augmentIcon(r.matchedAugments[0])}<b aria-hidden="true">★</b></span>`:''}</div><div class="finder-fit">${fit||'<span class="muted">'+(r.augmentMatch?'Recommended augment match':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}${r.reasons.some(reason=>reason.points)?`<details class="finder-method"><summary>Fit score ${Number(r.fitScore.toFixed(2))}</summary><ul>${r.reasons.filter(reason=>reason.points).map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`).join('')}</ul></details>`:''}</div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;
   }
   document.addEventListener('carousel-new-game',()=>{expanded=false;exploring=false;search.value='';ownedSearch.value='';drawOwnedSearch();picker.close();unitsDialog.close();itemsDialog.close();draw();});
   document.addEventListener('carousel-comp-imported',()=>{exploring=false;draw();});
-  document.addEventListener('carousel-meta-updated',()=>{if(!panel.hidden)draw();});
+  document.addEventListener('carousel-meta-updated',draw);
   document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]');if(b)PivotDialog.open(b.dataset.pivotItem);});
   const previous=render;render=function(){const focus=document.activeElement?.dataset.focus;previous();draw();if(focus?.startsWith('unit-'))document.querySelector('[data-focus="'+CSS.escape(focus)+'"]')?.focus();for(const card of document.querySelectorAll('#queue .qcard')){const uid=card.querySelector('[data-action="remove"]')?.dataset.id,img=card.querySelector('.qtop > .icon');if(!uid||!img)continue;const b=document.createElement('button');b.className='queue-item-pivot';b.dataset.pivotItem=uid;b.setAttribute('aria-label','Pivot '+byId[state.queue.find(q=>q.uid===uid).item].name);b.setAttribute('aria-haspopup','dialog');img.before(b);b.append(img);}};
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Explore builds:</b> type a champion name and Enter, then set its stars. Record your first augment and any completed items using the owned-item search or Browse all. Standard items, emblems, radiants, artifacts and other items are supported; click once per owned copy. Academy tier leads; lower tiers move ahead only for a strong match with a clear fit advantage. Unbuilt wishlist items do not count. Suggestions update from your board and inventory. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Other special-item carrier suggestions do not assign equipment automatically. Explore builds can be reopened from your plan. New game clears board, augment and inventory; Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');

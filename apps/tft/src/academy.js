@@ -43,6 +43,11 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
       if(!requireLive)return this.guide(plan);
       return this.snapshot.guides.find(g=>g.id===(plan.activeComp?.id||plan.activeComp?.guide?.id));
     },
+    secondaryTier(guide){
+      if(guide.tier!=='X'||this.snapshot.set!==ACADEMY_BUNDLED.set)return null;
+      const saved=ACADEMY_BUNDLED.guides.find(g=>g.id===guide.id);
+      return /^[SABC]$/.test(saved?.tier)?{tier:saved.tier,patch:ACADEMY_BUNDLED.patch}:null;
+    },
     itemInfo(id){return this.snapshot.items.find(i=>this.itemMap.get(i.apiName)===id);},
     baseItem(id, snapshot=this.snapshot){
       const src=snapshot.items.find(i=>this.itemMap.get(i.apiName)===id);

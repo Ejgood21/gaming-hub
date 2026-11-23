@@ -1,3 +1,12 @@
+function academyTierBadges(guide,label=guide.tier){
+  const primary=`<span class="academy-tier tier-${esc(guide.tier)}">${esc(label)}</span>`;
+  if(guide.tier!=='X')return primary;
+  const secondary=Academy.secondaryTier(guide);
+  return primary+(secondary
+    ?` <span class="academy-tier tier-${secondary.tier}" title="Saved Academy tier">${secondary.tier} · Patch ${esc(secondary.patch)}</span>`
+    :' <span class="academy-tier">Secondary tier unavailable</span>');
+}
+
 (() => {
   let intent=0,controller,checking=true,error='';
   const bar=document.createElement('div');bar.className='academy-bar';
@@ -16,6 +25,7 @@
     const date=Number.isNaN(saved.getTime())?'an unknown date':saved.toISOString().slice(0,10);
     const el=document.getElementById('academy-status');
     el.textContent=checking?'Checking live data…':Academy.live?`Live · Patch ${s.patch} · updated ${label}`:`Saved · Patch ${s.patch} · ${date}`;
+    document.getElementById('recipe-freshness').hidden=Academy.live&&s.patch===DATA.patch;
     bar.querySelector('#refresh-live-data').disabled=checking;
     warning.hidden=checking||Academy.live;
     const message=`Live data unavailable — showing saved Patch ${s.patch} data from ${date}. Recommendations may be wrong for the current patch.`;
@@ -24,7 +34,7 @@
     if(listed!==s){
       listed=s;
       const guides=s.guides.slice().sort((a,b)=>academyTier(a.tier).rank-academyTier(b.tier).rank||a.title.localeCompare(b.title));
-      reference.querySelector('ul').innerHTML=guides.map(g=>`<li><span class="academy-tier tier-${esc(g.tier)}">${esc(g.tier)}</span> <a href="https://tftacademy.com/tierlist/comps/${encodeURIComponent(g.compSlug)}" target="_blank" rel="noopener">${esc(g.title)}</a></li>`).join('');
+      reference.querySelector('ul').innerHTML=guides.map(g=>`<li>${academyTierBadges(g)} <a href="https://tftacademy.com/tierlist/comps/${encodeURIComponent(g.compSlug)}" target="_blank" rel="noopener">${esc(g.title)}</a></li>`).join('');
     }
     reference.querySelector('summary').textContent=`${Academy.live?'Live Academy tier list':'Stale Academy tier list · reference only'} · Set ${s.set} · Patch ${s.patch}`;
   }
