@@ -60,11 +60,13 @@ try {
   const owned = name => page.locator(`#bench output[aria-label="${name} owned"]`);
   const add = name => page.getByRole('button',{name:'Add one '+name,exact:true}).click();
   const toggle = page.locator('#component-toggle');
+  const stock = (name,count) => toggle.locator(`[aria-label="${name}: ${count} in hand"]`);
   const bench = page.locator('#bench');
   const rod = 'Needlessly Large Rod', vest = 'Chain Vest';
   const inViewport = locator => locator.evaluate(el=>{
-    const {top,bottom,height}=el.getBoundingClientRect();
-    return height>0&&top>=0&&bottom<=innerHeight;
+    const {top,right,bottom,left,width,height}=el.getBoundingClientRect();
+    const hit=document.elementFromPoint(left+width/2,top+height/2);
+    return width>0&&height>0&&top>=0&&right<=innerWidth&&bottom<=innerHeight&&left>=0&&el.contains(hit);
   });
   // An offline queue created before the free-form picker was removed.
   await page.addInitScript(() => {
@@ -76,6 +78,7 @@ try {
 
   await page.goto(origin);
   await page.getByText('Live · Patch 18.3b',{exact:false}).waitFor();
+  await page.getByText('Historical opener reference · Patch 18.3b',{exact:true}).waitFor();
 
   assert.equal(await page.getByText('Add an item',{exact:false}).count(),0);
   await page.getByRole('button',{name:'Pivot Deathblade',exact:true}).last().click();
@@ -132,6 +135,11 @@ try {
   const fitSummary=suggestion('AP Fast 9').locator('.finder-method summary');
   const originalFit=await fitSummary.textContent();
   await page.locator('#first-augment-trigger').click();
+  const firstAugments=(await page.locator('#first-augment-choices .icon-select-option span').allTextContents())
+    .map(label=>label.trim().replace(/\s+/g,' ').toLowerCase());
+  assert.equal(new Set(firstAugments).size,firstAugments.length);
+  await page.locator('#first-augment-choices input').fill('Beast Within');
+  assert.deepEqual(await page.locator('#first-augment-choices .icon-select-option span').allTextContents(),['Beast Within','Beast Within+']);
   await page.locator('#first-augment-choices input').fill('Unrivaled');
   assert.deepEqual(await page.locator('#first-augment-choices .icon-select-option span').allTextContents(),['Unrivaled']);
   await page.locator('#first-augment-choices input').fill('Woven Magic');
@@ -163,12 +171,36 @@ try {
   const card = name => page.locator('#queue .qcard').filter({has:page.getByRole('heading',{name,exact:true})});
   const holders = name => card(name).locator('.item-owner').allTextContents();
   const hero = page.locator('#next-build');
+  assert.equal(await page.locator('.opener-banner').isVisible(),false);
+  const lockedFit = async () => Number((await page.locator('#comp-fit').innerText()).split('Fit score ').at(-1));
+  const carouselPriorities = () => page.locator('#shopping .need').allTextContents();
+  const markCrownguard = async (message, received) => {
+    const fit=await lockedFit();
+    const priorities=await carouselPriorities();
+    await card('Crownguard').getByRole('button',{name:'Mark Crownguard made',exact:true}).click();
+    assert.equal(await page.locator('#completed .completeitem[aria-label^="Crownguard"]').count(),1);
+    assert.ok(await lockedFit()>fit);
+    if(received)assert.notDeepEqual(await carouselPriorities(),priorities);
+    assert.equal(await page.locator('#toast').textContent(),message);
+    assert.equal(await owned(rod).textContent(),'0');
+    assert.equal(await owned(vest).textContent(),'0');
+    await page.locator('#undo').click();
+  };
+  assert.deepEqual((await savedPlan()).owned,{});
+  await markCrownguard('Received Crownguard; loose components kept.',true);
+  await page.evaluate(()=>scrollTo(0,0));
+  await toggle.click();
+  await add(rod);
+  await add(vest);
+  await toggle.click();
   for(const width of [390,1440]){
     await page.setViewportSize({width,height:844});
     await page.evaluate(()=>scrollTo(0,0));
     const heroTop=(await hero.boundingBox()).y;
     if(width===390){
       assert.equal(await inViewport(toggle),true);
+      assert.equal(await inViewport(stock(rod,1)),true);
+      assert.equal(await inViewport(stock(vest,1)),true);
       assert.equal(await bench.isVisible(),false);
       await toggle.click();
     }else{
@@ -178,31 +210,25 @@ try {
     }
     assert.equal(await inViewport(bench),true);
     assert.equal((await hero.boundingBox()).y,heroTop);
-    await add(rod);
     assert.equal(await owned(rod).textContent(),'1');
+    assert.equal(await owned(vest).textContent(),'1');
+    await add(rod);
+    assert.equal(await owned(rod).textContent(),'2');
     await page.getByRole('button',{name:'Remove one '+rod,exact:true}).click();
-    assert.equal(await owned(rod).textContent(),'0');
+    assert.equal(await owned(rod).textContent(),'1');
     assert.equal(await page.evaluate(()=>scrollY),0);
     if(width===390)await toggle.click();
   }
   await page.setViewportSize({width:390,height:844});
 
-  const lockedFit = async () => Number((await page.locator('#comp-fit').innerText()).split('Fit score ').at(-1));
-  const markCrownguard = async () => {
-    const fit=await lockedFit();
-    await card('Crownguard').getByRole('button',{name:'Mark Crownguard made',exact:true}).click();
-    assert.equal(await page.locator('#completed .completeitem[aria-label^="Crownguard"]').count(),1);
-    assert.ok(await lockedFit()>fit);
-    assert.equal(await owned(rod).textContent(),'0');
-    assert.equal(await owned(vest).textContent(),'0');
-    await page.locator('#undo').click();
-  };
-  await markCrownguard();
-  await toggle.click();
-  await add(rod);
-  await add(vest);
-  await toggle.click();
-  await markCrownguard();
+  await markCrownguard('Crownguard marked made.',false);
+  await page.getByRole('button',{name:'+ Received item',exact:true}).click();
+  await page.locator('#receive-search').fill('Crownguard');
+  await page.locator('#receive-items [data-receive-item="Crownguard"]').click();
+  assert.equal(await page.locator('#completed .completeitem[aria-label^="Crownguard"]').count(),1);
+  assert.equal(await owned(rod).textContent(),'1');
+  assert.equal(await owned(vest).textContent(),'1');
+  await page.locator('#undo').click();
   await page.locator('#undo').click();
   await page.locator('#undo').click();
 

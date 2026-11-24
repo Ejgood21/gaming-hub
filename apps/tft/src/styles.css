@@ -279,7 +279,15 @@
     display:flex;align-items:center;gap:8px;width:100%;min-height:42px;
     padding:6px 12px;border:0;border-radius:0;background:#1a3025;text-align:left;font-size:13px
   }
-  #component-total{margin-left:auto;color:#b9d0bf;font-size:12px}
+  #component-stock{display:flex;align-items:center;gap:4px;flex-wrap:wrap;min-width:0}
+  .component-stock-item{position:relative;display:inline-flex}
+  .component-stock-item .icon{width:24px;height:24px;border-color:#6a9077}
+  .component-stock-item b{
+    position:absolute;right:-1px;bottom:-1px;min-width:12px;padding:0 2px;border-radius:3px;
+    color:#e5ffe8;background:#244936;font-size:10px;line-height:13px;text-align:center
+  }
+  .component-stock-empty{color:#b9d0bf;font-size:12px}
+  .component-chevron{margin-left:auto}
   #component-toggle[aria-expanded=true] .component-chevron{transform:rotate(180deg)}
   #component-toggle[aria-expanded=false]+#bench{display:none}
   .component-rail .benchgrid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:50dvh;overflow:auto;padding:8px}

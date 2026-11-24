@@ -237,13 +237,16 @@ test('explicit crafting and Build instead still require the full recipe', () => 
 });
 
 test('Mark made completes Crownguard with an empty, partial, or full bench', () => {
-  const {Academy, CompFinder, OfflineTracker, Tracker} = model();
+  const {Academy, CompFinder, DecisionPlanner, OfflineTracker, Tracker} = model();
   Academy.useSnapshot({...academy, patch:'18.7', guides:[apFast9]});
   for (const owned of [{}, {ChainVest:1}, {ChainVest:1, NeedlesslyLargeRod:1}]) {
     const input = plan({owned:{...owned}});
     CompFinder.choose(input,apFast9.id);
     const crownguard = input.queue.find(q=>q.item==='Crownguard');
     const before = CompFinder.evaluate(input,apFast9).fitScore;
+    const carousel = () => DecisionPlanner.carousel(input,DecisionPlanner.groups(input));
+    const shortages = () => carousel().filter(row=>['ChainVest','NeedlesslyLargeRod'].includes(row.id));
+    assert.ok(shortages().some(row=>row.targets.some(target=>target.item==='Crownguard')));
     assert.equal(OfflineTracker.markMade(input,crownguard),true);
     assert.deepEqual(input.queue.filter(q=>q.done),[crownguard]);
     assert.ok(CompFinder.evaluate(input,apFast9).fitScore>before);
@@ -251,6 +254,7 @@ test('Mark made completes Crownguard with an empty, partial, or full bench', () 
     assert.equal(crownguard.received,!crafted);
     assert.deepEqual(crownguard.used,crafted?owned:{});
     assert.deepEqual(input.owned,crafted?{ChainVest:0,NeedlesslyLargeRod:0}:owned);
+    assert.ok(shortages().every(row=>row.targets.every(target=>target.item!=='Crownguard')));
     assert.equal(OfflineTracker.markMade(input,crownguard),false);
     Tracker.restore(input,crownguard);
     assert.deepEqual(input.owned,owned);
@@ -387,14 +391,20 @@ test('Patch 18.7 Fast 9 econ offers use Academy endorsements before economy rule
   }
 });
 
-test('the first augment catalog shows Unrivaled once and retains both saved IDs', () => {
+test('the whole first-augment catalog has unique display names and retains variant IDs', () => {
   const {Academy, CompFinder} = liveFitModel();
   const alias = Academy.snapshot.augments.find(a=>a.apiName==='DA_18_RivalsAugmentPlus');
   alias.description = alias.description.replace(' with ', '  with ')+' ';
-  const entries = CompFinder.augments().filter(a=>a.name==='Unrivaled');
-  assert.equal(entries.length,1);
-  assert.equal(entries[0].apiName,'DA_18_RivalsAugment');
-  assert.deepEqual(entries[0].ids,['DA_18_RivalsAugment','DA_18_RivalsAugmentPlus']);
+  const entries = CompFinder.augments();
+  const labels = entries.map(a=>a.name.trim().replace(/\s+/g,' ').toLowerCase());
+  assert.equal(new Set(labels).size,labels.length);
+  assert.deepEqual(new Set(entries.flatMap(a=>a.ids)),new Set(Academy.snapshot.augments.map(a=>a.apiName)));
+  const unrivaled = entries.find(a=>a.name==='Unrivaled');
+  assert.equal(unrivaled.apiName,'DA_18_RivalsAugment');
+  assert.deepEqual(unrivaled.ids,['DA_18_RivalsAugment','DA_18_RivalsAugmentPlus']);
+  const beastWithin = entries.find(a=>a.name==='Beast Within');
+  assert.deepEqual(beastWithin.ids,['DA_18_PrimalAugment_Nidalee','DA_18_PrimalAugment_Sivir']);
+  assert.equal(CompFinder.augmentOptions('3-2').filter(a=>a.name==='Beast Within').length,2);
 });
 
 test('Lucky Gloves and Flowing Tears get the same contextual verdict for needed components', () => {

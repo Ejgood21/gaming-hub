@@ -12,14 +12,14 @@ module.exports = function createCompFinder(model) {
     augmentFit,
     tierFitGap,
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
-    augmentOptions(round){
+    augmentOptions(round, {uniqueNames = false} = {}){
       const order = a => a.stages?.includes(round) ? 0 : a.stages?.length ? 1 : 2;
       const displayText = text => text.replace(/\s+/g,' ').trim();
       const variants = new Map();
       for (const augment of Academy.snapshot.augments || []) {
-        const key = JSON.stringify([
-          displayText(augment.name), augment.tier, displayText(augment.description)
-        ]);
+        const name = displayText(augment.name);
+        const key = uniqueNames ? name.toLowerCase() :
+          JSON.stringify([name, augment.tier, displayText(augment.description)]);
         const choices = variants.get(key) || [];
         choices.push(augment);
         variants.set(key, choices);
@@ -29,7 +29,8 @@ module.exports = function createCompFinder(model) {
         return {...choices[0], ids: choices.map(a => a.apiName)};
       }).sort((a,b) => a.name.localeCompare(b.name));
     },
-    augments(){return this.augmentOptions('2-1');},
+    // The name-only first-augment picker represents every same-name variant once.
+    augments(){return this.augmentOptions('2-1', {uniqueNames: true});},
     augment(id){return (Academy.snapshot.augments||[]).find(a=>a.apiName===id);},
     units(plan){
       const byUnit=new Map();for(const u of plan.currentUnits||[]){const c=Academy.snapshot.champions.find(c=>c.apiName===u.apiName);if(!c)continue;const stars=Math.max(1,Math.min(3,Number(u.stars)||1));if(stars>(byUnit.get(u.apiName)?.stars||0))byUnit.set(u.apiName,{...c,stars});}return [...byUnit.values()];
