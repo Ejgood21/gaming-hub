@@ -2,6 +2,8 @@
 
 const createAugmentFit = require('./augment-fit');
 const tierFitGap = 12;
+const primaryEmblemCap = 40;
+const flexEmblemCap = 8;
 
 module.exports = function createCompFinder(model) {
   const {Academy, DATA, byId, MetaBuilds, OfflineTracker, componentOrder, academyTier} = model;
@@ -11,6 +13,8 @@ module.exports = function createCompFinder(model) {
   return {
     augmentFit,
     tierFitGap,
+    primaryEmblemCap,
+    flexEmblemCap,
     heldAugments(plan){return [...new Set([plan.firstAugment||plan.chosenAugments?.[0],...(plan.chosenAugments||[]).slice(1,3)].filter(Boolean))];},
     augmentOptions(round, {uniqueNames = false} = {}){
       const order = a => a.stages?.includes(round) ? 0 : a.stages?.length ? 1 : 2;
@@ -131,6 +135,15 @@ module.exports = function createCompFinder(model) {
       const build=Academy.build(guide),remaining=build.entries.map((e,n)=>({...e,priority:n}));
       const matched=[],unmatched=[],specialMatches=[],unknownSpecial=[],placements=[],slots=new Map(),earlyMatches=[];let itemScore=0;
       const completed=plan.queue.filter(q=>q.done),unplaced=[];
+      const emblemIds = new Set(Academy.snapshot.items.filter(item=>item.type==='emblems').map(item=>item.apiName));
+      const ownedEmblems = new Map();
+      for (const q of completed) {
+        const apiName = Academy.itemInfo(q.item)?.apiName;
+        if (emblemIds.has(apiName) && !ownedEmblems.has(q.item)) {
+          ownedEmblems.set(q.item, Academy.emblemHolders(guide, apiName, emblemIds));
+        }
+      }
+      let primaryEmblemScore = 0, flexEmblemScore = 0;
       // An explicitly equipped pair of gloves fills the holder before any
       // suggested destination is chosen, even if the guide wants other items.
       const gloves=completed.filter(q=>q.champion&&this.slotCost(q.item)===3);
@@ -142,7 +155,8 @@ module.exports = function createCompFinder(model) {
         const info=Academy.itemInfo(q.item),at=remaining.findIndex(e=>hasRoom(e)&&Academy.itemMatches(e.item,q.item)&&(slots.get(e.champion)||0)+this.slotCost(q.item)<=3&&(!info?.unique||!placements.some(p=>p.champion===e.champion&&p.item===q.item)));
         if(at<0){if(!fixed)unplaced.push(q);else unknownSpecial.push(q.item);continue;}
         const e=remaining.splice(at,1)[0];matched.push(q.item);
-        const points=info?.type==='emblems'?40:e.priority<3?24:18;itemScore+=points;
+        if(ownedEmblems.has(q.item))primaryEmblemScore+=40;
+        else itemScore+=e.priority<3?24:18;
         placements.push({uid:q.uid,champion:e.champion,item:q.item});slots.set(e.champion,(slots.get(e.champion)||0)+this.slotCost(q.item));
         if(q.item!==e.item){itemScore+=6;specialMatches.push({item:q.item,champion:e.champion,source:'Radiant upgrade',base:e.item});}
       }
@@ -152,19 +166,35 @@ module.exports = function createCompFinder(model) {
       for(const q of unplaced){
         const info=Academy.itemInfo(q.item),carrier=this.specialCarrier(plan,guide,q.item,slots,placements);
         if(carrier){
-          itemScore+=carrier.points;slots.set(carrier.champion,(slots.get(carrier.champion)||0)+this.slotCost(q.item));placements.push({uid:q.uid,champion:carrier.champion,item:q.item});specialMatches.push({item:q.item,...carrier});
+          if(ownedEmblems.has(q.item)) {
+            if(ownedEmblems.get(q.item).some(holder=>holder.apiName===carrier.apiName&&holder.use!=='flex')) primaryEmblemScore+=32;
+            else flexEmblemScore+=carrier.points;
+          } else itemScore+=carrier.points;
+          slots.set(carrier.champion,(slots.get(carrier.champion)||0)+this.slotCost(q.item));placements.push({uid:q.uid,champion:carrier.champion,item:q.item});specialMatches.push({item:q.item,...carrier});
           // Keep the fit estimate within three item slots. An alternate occupies
           // a lower-priority slot; it is not a fourth item on top of the baseline.
           for(let n=0;n<this.slotCost(q.item);n++){const at=remaining.map(e=>e.champion).lastIndexOf(carrier.champion);if(at>=0)remaining.splice(at,1);}
           continue;
         }
         const at=earlyPool.findIndex(e=>Academy.itemMatches(e.item,q.item)&&!guide.finalComp.some(u=>u.apiName===e.apiName));
-        if(at>=0){const e=earlyPool.splice(at,1)[0],champion=Academy.snapshot.champions.find(c=>c.apiName===e.apiName)?.name;earlyMatches.push({item:q.item,champion});itemScore+=10;continue;}
+        if(at>=0){
+          const e=earlyPool.splice(at,1)[0],champion=Academy.snapshot.champions.find(c=>c.apiName===e.apiName)?.name;
+          earlyMatches.push({item:q.item,champion});
+          if(ownedEmblems.has(q.item))flexEmblemScore+=10;
+          else itemScore+=10;
+          continue;
+        }
         if(!info||info.type==='craftables')unmatched.push(q.item);else unknownSpecial.push(q.item);
       }
       const featured=Academy.itemMap.get(guide.mainItem?.apiName),featuredOwned=featured&&completed.some(q=>Academy.itemMatches(featured,q.item));
       // This is a comp-specific Academy endorsement, not a generic trait guess.
-      if(featuredOwned)itemScore+=12;
+      const featuredEmblem = featuredOwned && ownedEmblems.has(featured);
+      if(featuredEmblem)primaryEmblemScore+=12;
+      else if(featuredOwned)itemScore+=12;
+      const primaryEmblem = !!featuredEmblem || [...ownedEmblems.values()].some(holders=>holders.some(holder=>holder.use!=='flex'));
+      const emblemBonus = Math.min(primaryEmblemCap, primaryEmblemScore) + Math.min(flexEmblemCap, flexEmblemScore);
+      const appliedEmblemBonus = Math.min(emblemBonus, Math.max(0, 96-itemScore));
+      itemScore+=emblemBonus;
       // Carry an evidenced full combination into both scoring and selection.
       const {DecisionPlanner}=model;
       if(DecisionPlanner)for(const name of new Set(placements.map(p=>p.champion))){
@@ -193,7 +223,7 @@ module.exports = function createCompFinder(model) {
       const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
       const ownedReasons=[
-        {points:Math.min(96,itemScore),text:'Completed items'+(itemNames?' · '+itemNames:'')},
+        {points:Math.min(96,itemScore),text:'Completed items'+(itemNames?' · '+itemNames:'')+(appliedEmblemBonus?` · +${appliedEmblemBonus} emblem fit`:'')},
         {points:board.unitScore,text:'Champions owned'+(unitNames?' · '+unitNames:'')},
         {points:Math.min(36,componentScore),text:'Loose components'+(used.length?' · '+names(used):'')},
         ...augmentMatches.map(a=>({points:a.points,text:`Augment: ${a.name} — ${a.academy?'':'Rules-based fit · '}${a.text}${a.detail?' · '+a.detail:''}`}))
@@ -207,7 +237,7 @@ module.exports = function createCompFinder(model) {
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
       const fitScore=Number(reasons.reduce((sum,reason)=>sum+reason.points,0).toFixed(2));
       return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatches,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
-        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,reasons,selectable:!!build.entries.length&&!build.missing.length};
+        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,emblemBonus,primaryEmblem,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
     signalCount(plan){
@@ -238,18 +268,18 @@ module.exports = function createCompFinder(model) {
       if(!Academy.isCurrent())return [];
       const rows=Academy.snapshot.guides.filter(g=>['S','A','B','X'].includes(g.tier))
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
-      if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&r.augmentMatches.some(a=>a.academy||a.recommended))&&
+      if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&(r.primaryEmblem||r.augmentMatches.some(a=>a.academy||a.recommended)))&&
         (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
       const tierRank = row => this.tierRank(row.unlocked?'A':row.guide.tier);
       const rankable=rows.filter(r=>!r.blocked).length;
       const initial=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
-        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||tierRank(a)-tierRank(b)||b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title));
+        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||Number(!!b.primaryEmblem)-Number(!!a.primaryEmblem)||tierRank(a)-tierRank(b)||b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title));
       const ranked=[];
       for(const row of initial){
         // Insert before the first higher-tier row this comp clears. A pairwise
         // sort can cycle when two close gaps add up to one qualifying gap.
         const index=row.blocked||row.missingEmblems.length?-1:ranked.findIndex(other=>
-          tierRank(other)<tierRank(row)&&Math.round((row.fitScore-other.fitScore)*100)>=tierFitGap*100);
+          other.primaryEmblem===row.primaryEmblem&&tierRank(other)<tierRank(row)&&Math.round((row.fitScore-other.fitScore)*100)>=tierFitGap*100);
         if(index<0)ranked.push(row);
         else{
           row.passedTier=ranked[index];

@@ -68,7 +68,8 @@ const liveTimeout = 15000;
 const dayMs = 24 * 60 * 60 * 1000;
 const assetKinds = ['champions', 'items', 'augments'];
 const academyHost = 'https://tftacademy.com';
-const metaHost = 'https://api-hc.metatft.com/tft-stat-api/unit_detail_';
+const metaHost = 'https://api-hc.metatft.com';
+const metaRankedFilters = '&queue=1100&days=3&rank=CHALLENGER,DIAMOND,EMERALD,GRANDMASTER,MASTER,PLATINUM';
 
 async function getJSON(fetchJSON, url, signal, mode = 'cors') {
   const response = await fetchJSON(url, {signal, credentials: 'omit', cache: 'no-store', mode});
@@ -99,16 +100,25 @@ function metaPatch(overall, items) {
 }
 
 async function fetchMetaTFT(unit, {fetchJSON, signal = AbortSignal.timeout(liveTimeout)}) {
-  const params = '?unit=' + encodeURIComponent(unit) +
-    '&queue=1100&patch=current&days=3&rank=CHALLENGER,DIAMOND,EMERALD,GRANDMASTER,MASTER,PLATINUM&permit_filter_adjustment=true';
+  const params = '?unit=' + encodeURIComponent(unit) + '&patch=current' + metaRankedFilters + '&permit_filter_adjustment=true';
+  const unitDetail = metaHost + '/tft-stat-api/unit_detail_';
   const [overall, items] = await Promise.all([
-    getJSON(fetchJSON, metaHost + 'overall' + params, signal),
-    getJSON(fetchJSON, metaHost + 'items' + params + '&num_items=3', signal)
+    getJSON(fetchJSON, unitDetail + 'overall' + params, signal),
+    getJSON(fetchJSON, unitDetail + 'items' + params + '&num_items=3', signal)
   ]);
   if (overall?.unit !== unit || items?.unit !== unit || overall.tft_set !== items.tft_set) {
     throw new Error('MetaTFT returned a different champion or set');
   }
   return {overall, items, patch: metaPatch(overall, items)};
+}
+
+async function fetchMetaEmblem(emblem, patch, {fetchJSON, signal = AbortSignal.timeout(liveTimeout)}) {
+  if (!patchId(patch)) throw new Error('MetaTFT patch unavailable');
+  const query = '?item=' + encodeURIComponent(emblem) + '&patch=' + encodeURIComponent(patch) + metaRankedFilters +
+    '&formatnoarray=true&compact=true';
+  const result = await getJSON(fetchJSON, metaHost + '/tft-explorer-api/unit_items' + query, signal);
+  if (!Array.isArray(result?.data)) throw new Error('Unrecognized MetaTFT emblem data');
+  return {patch, fetchedAt: Date.now(), rows: result.data};
 }
 
 // Academy's current guide API omits the patch ID. Require an Academy update
@@ -198,4 +208,4 @@ async function refreshLiveData({Academy, MetaBuilds}, options) {
   return result;
 }
 
-module.exports = {ACADEMY_TTL_MS, files, academySource, validAcademy, readAcademyCache, decodeMetaSnapshot, loadSnapshots, refreshLiveData, fetchMetaTFT};
+module.exports = {ACADEMY_TTL_MS, files, academySource, validAcademy, readAcademyCache, decodeMetaSnapshot, loadSnapshots, refreshLiveData, fetchMetaTFT, fetchMetaEmblem};

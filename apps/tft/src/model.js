@@ -13,6 +13,7 @@ const createPlanAdvisor = require('./plan-advisor');
 const createCompFinder = require('./comp-finder');
 const createDecisionPlanner = require('./decision-planner');
 const createAugmentAdvisor = require('./augment-advisor');
+const createEmblemExplorer = require('./emblem-explorer');
 
 const componentOrder = [
   'BFSword', 'RecurveBow', 'NeedlesslyLargeRod', 'TearOfTheGoddess', 'ChainVest',
@@ -34,6 +35,7 @@ module.exports = function createModel({core, academy, meta, secondaryTiers, requ
   model.MetaBuilds = createMetaBuilds({...model, meta});
   model.PlanAdvisor = createPlanAdvisor(model);
   model.CompFinder = createCompFinder(model);
+  model.EmblemExplorer = createEmblemExplorer(model);
   model.DecisionPlanner = createDecisionPlanner(model);
   model.AugmentAdvisor = createAugmentAdvisor(model);
   return model;

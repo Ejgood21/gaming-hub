@@ -5,7 +5,7 @@
   <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
-  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads until a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points from your items, champions and augments.</p></details>`;
+  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads until a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points from your items, champions and augments.</p><p>Owned emblems put Academy’s final builds and single-emblem alternatives first, with up to +${CompFinder.primaryEmblemCap} fit for those matches and +${CompFinder.flexEmblemCap} total for other emblem fits.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
   const boardEditor=exploreInputs.querySelector('.explore-board');
@@ -133,7 +133,13 @@
     alternativeButton.dataset.chooseComp=alternative?.id||'';
     alternativeButton.textContent=alternative?'Pivot to '+alternative.title:'';
     if(panel.hidden){picker.close();return;}
-    document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>`<span class="explore-owned" title="${esc(byId[q.item].name)}">${icon(q.item)}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${esc(byId[q.item].name)}">×</button></span>`).join('')||'<span class="finder-note">No completed items recorded</span>';
+    document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>{
+      const name=esc(byId[q.item].name), item=Academy.itemInfo(q.item);
+      const art=item?.type==='emblems'
+        ? `<button class="owned-emblem" data-explore-emblem="${esc(item.apiName)}" aria-haspopup="dialog" aria-label="Explore ${name}">${icon(q.item)}</button>`
+        : icon(q.item);
+      return `<span class="explore-owned" title="${name}">${art}<button data-owned-remove="${esc(q.uid)}" aria-label="Remove owned ${name}">×</button></span>`;
+    }).join('')||'<span class="finder-note">No completed items recorded</span>';
     if(itemsDialog.open)drawItemsDialog();
     const selected=state.firstAugment||'';
     const catalog=CompFinder.augments().map(a=>({...a,value:a.ids.includes(selected)?selected:a.apiName}));
