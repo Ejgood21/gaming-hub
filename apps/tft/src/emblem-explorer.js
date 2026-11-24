@@ -4,19 +4,38 @@ const minimumSamples = 100;
 
 module.exports = function createEmblemExplorer({Academy, academyTier}) {
   const guideOrder = (a,b) => academyTier(a.tier).rank-academyTier(b.tier).rank || a.title.localeCompare(b.title);
+  const holderOrder = ['final', 'alternate', 'flex'];
   return {
     minimumSamples,
     catalog() {
-      return Academy.snapshot.items.filter(item=>item.type==='emblems' && Academy.itemMap.has(item.apiName))
-        .sort((a,b)=>a.name.localeCompare(b.name));
+      const groups = new Map();
+      const emblems = Academy.snapshot.items.filter(item=>item.type==='emblems' && Academy.itemMap.has(item.apiName))
+        .sort((a,b)=>a.name.localeCompare(b.name) || a.apiName.localeCompare(b.apiName));
+      for (const item of emblems) {
+        // The augment version of Flora Fatalis grants the same trait.
+        const id = item.trait || item.apiName;
+        if (!groups.has(id)) groups.set(id, {...item, apiNames:new Set()});
+        groups.get(id).apiNames.add(item.apiName);
+      }
+      return [...groups.values()];
     },
     academyRoutes(emblem) {
       if (!Academy.isCurrent()) return [];
-      const emblems = new Set(this.catalog().map(item=>item.apiName));
+      const catalog = this.catalog();
+      const aliases = catalog.find(item=>item.apiNames.has(emblem))?.apiNames || new Set([emblem]);
+      const otherEmblems = new Set(catalog.flatMap(item=>[...item.apiNames]).filter(id=>!aliases.has(id)));
       const names = new Map(Academy.snapshot.champions.map(unit=>[unit.apiName, unit.name]));
       return Academy.snapshot.guides.flatMap(guide=>{
-        const holders = Academy.emblemHolders(guide, emblem, emblems)
-          .map(holder=>({...holder, name:names.get(holder.apiName) || holder.apiName}));
+        const byUnit = new Map();
+        for (const alias of aliases) {
+          for (const holder of Academy.emblemHolders(guide, alias, otherEmblems)) {
+            const prior = byUnit.get(holder.apiName);
+            if (!prior || holderOrder.indexOf(holder.use)<holderOrder.indexOf(prior.use)) {
+              byUnit.set(holder.apiName, holder);
+            }
+          }
+        }
+        const holders = [...byUnit.values()].map(holder=>({...holder, name:names.get(holder.apiName) || holder.apiName}));
         if (!holders.length) return [];
         return [{guide, holders, primary:holders.some(holder=>holder.use!=='flex')}];
       }).sort((a,b)=>academyTier(a.guide.tier).rank-academyTier(b.guide.tier).rank ||

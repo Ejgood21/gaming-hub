@@ -14,6 +14,7 @@ const createCompFinder = require('./comp-finder');
 const createDecisionPlanner = require('./decision-planner');
 const createAugmentAdvisor = require('./augment-advisor');
 const createEmblemExplorer = require('./emblem-explorer');
+const createOpenerGuidance = require('./opener-guidance');
 
 const componentOrder = [
   'BFSword', 'RecurveBow', 'NeedlesslyLargeRod', 'TearOfTheGoddess', 'ChainVest',
@@ -38,5 +39,6 @@ module.exports = function createModel({core, academy, meta, secondaryTiers, requ
   model.EmblemExplorer = createEmblemExplorer(model);
   model.DecisionPlanner = createDecisionPlanner(model);
   model.AugmentAdvisor = createAugmentAdvisor(model);
+  model.OpenerGuidance = createOpenerGuidance(model);
   return model;
 };

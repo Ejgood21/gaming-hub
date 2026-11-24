@@ -248,8 +248,10 @@
 .shopping .decision-need .pin{grid-area:2/4;font-size:16px;padding:0}
 .shopping .decision-need .got{grid-area:2/2/3/4;justify-self:end;min-height:30px;padding:3px 5px;white-space:nowrap;font-size:10px}
 .shoppingfoot{padding:5px 12px;font-size:10px}
-.opener-banner{margin:0 0 16px;padding:8px 12px;border:1px solid #364661;border-radius:8px;background:#17212e}
-.opener-banner small{display:block;color:#adbcd0;font-size:10px}
+.opener-banner,.augment-priority{margin:0 0 16px;padding:8px 12px;border:1px solid #364661;border-radius:8px;background:#17212e}
+.opener-banner h2{font-size:14px}
+.opener-banner ul{margin:5px 0 0;padding-inline-start:18px;font-size:13px}
+.opener-banner small{color:#adbcd0;font-size:11px;white-space:nowrap}
 #opener-guidance{color:#e5eef9;font-size:13px;font-weight:650;white-space:nowrap;overflow-x:auto;scrollbar-width:thin}
 .bench{position:static;margin-top:16px}
 .academy-bar{margin-top:16px}
@@ -302,7 +304,7 @@
   .next-build-status{max-width:80px;font-size:11px;padding:3px 5px}
   .shoppinglist:has(.decision-need){grid-auto-columns:124px}
   .shoppingfoot{display:none}
-  .opener-banner{padding-inline:9px}
+  .opener-banner,.augment-priority{padding-inline:9px}
   #opener-guidance{font-size:12px}
   main:not(:has(#next-build:not([hidden]))) #opener-guidance{font-size:11px;font-weight:600;letter-spacing:-.32px}
 }

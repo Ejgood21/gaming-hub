@@ -1,5 +1,5 @@
 const AugmentUI=(()=>{
-  let activeSlot=0,query='',searchRows=[],searchIndex=0,result=null,contextKey='',lastSearchResults;
+  let activeSlot=0,query='',searchRows=[],variants=null,searchIndex=0,result=null,contextKey='',lastSearchResults;
   const button=document.createElement('button');button.id='augment-open';button.textContent='Augment choices';document.querySelector('.decision-controls').append(button);
   const selected=document.createElement('div');selected.id='chosen-augments';selected.className='chosen-augments';document.querySelector('.decision-controls').after(selected);
   const modal=document.createElement('dialog');modal.id='augment-dialog';modal.setAttribute('aria-labelledby','augment-title');
@@ -14,12 +14,24 @@ const AugmentUI=(()=>{
     const o=offers(),norm=Academy.normalizeName(query);list.hidden=!norm;
     const held=AugmentAdvisor.held(state);
     const relevance=name=>name===norm?0:name.startsWith(norm)?1:2;
-    searchRows=norm?CompFinder.augmentOptions(AugmentAdvisor.stages[o.round]).filter(a=>!a.ids.some(id=>held.includes(id)||o.ids.includes(id))&&Academy.normalizeName(a.name).includes(norm))
-      .sort((a,b)=>relevance(Academy.normalizeName(a.name))-relevance(Academy.normalizeName(b.name))||a.name.localeCompare(b.name)).slice(0,7):[];
+    const groups=new Map();
+    if(norm&&!variants){
+      for(const a of CompFinder.augmentOptions(AugmentAdvisor.stages[o.round])){
+        const key=a.name.trim().replace(/\s+/g,' ').toLowerCase();
+        if(!Academy.normalizeName(a.name).includes(norm)||a.ids.some(id=>held.includes(id)||o.ids.includes(id)))continue;
+        if(!groups.has(key))groups.set(key,[]);
+        groups.get(key).push(a);
+      }
+    }
+    searchRows=variants||[...groups.values()].map(choices=>{
+      choices.sort((a,b)=>Number(AugmentAdvisor.eligible(b,o.round))-Number(AugmentAdvisor.eligible(a,o.round)));
+      return {...choices[0],choices};
+    }).sort((a,b)=>relevance(Academy.normalizeName(a.name))-relevance(Academy.normalizeName(b.name))||a.name.localeCompare(b.name)).slice(0,7);
     searchIndex=Math.max(0,Math.min(searchIndex,searchRows.length-1));
     const results=searchRows.map((a,n)=>{
-      const detail=AugmentAdvisor.eligible(a,o.round)?a.description:AugmentAdvisor.roundNotice(a,o.round);
-      return `<button class="${n===searchIndex?'search-active':''}" data-offer-add="${esc(a.apiName)}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span><strong>${esc(a.name)}</strong><small>${esc(detail)}</small></span><b class="augment-rarity rarity-${a.tier}">${badge(a)}</b></button>`;
+      const multiple=a.choices?.length>1;
+      const detail=multiple?'Choose the matching effect or rarity.':AugmentAdvisor.eligible(a,o.round)?a.description:AugmentAdvisor.roundNotice(a,o.round);
+      return `<button class="${n===searchIndex?'search-active':''}" data-offer-result="${n}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span>${variants?'':`<strong>${esc(a.name)}</strong>`}<small>${esc(detail)}</small></span>${multiple?'':`<b class="augment-rarity rarity-${a.tier}">${badge(a)}</b>`}</button>`;
     }).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query))+'</p>';
     if(results!==lastSearchResults){list.innerHTML=results;lastSearchResults=results;}
   }
@@ -45,10 +57,18 @@ const AugmentUI=(()=>{
     document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
-  function open(round,id){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';input.value='';contextKey='';modal.showModal();if(id)add(id);draw();input.focus();}
+  function open(round,id){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';variants=null;input.value='';contextKey='';modal.showModal();if(id)add(id);draw();input.focus();}
+  function pick(result){
+    if(result.choices?.length>1){
+      variants=result.choices;
+      searchIndex=0;
+      search();
+      input.focus();
+    }else add(result.apiName);
+  }
   function add(id){
     const o=offers(),a=CompFinder.augment(id);if(!a||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
-    const slot=activeSlot;query='';input.value='';searchIndex=0;
+    const slot=activeSlot;query='';variants=null;input.value='';searchIndex=0;
     mutate(()=>{offers().ids[slot]=id;},'Offer '+(slot+1)+' entered.');
     const next=offers().ids.findIndex((id,n)=>n>slot&&!id);activeSlot=next>=0?next:Math.max(0,offers().ids.findIndex(id=>!id));draw();input.focus();
   }
@@ -56,25 +76,25 @@ const AugmentUI=(()=>{
     const a=CompFinder.augment(id);
     if(!a||!AugmentAdvisor.eligible(a,round))return;
     if(modal.open){
-      query='';input.value='';activeSlot=1;
+      query='';variants=null;input.value='';activeSlot=1;
       mutate(()=>{state.augmentOffers={round,ids:[id,'',''],seen:[]};});
       input.focus();
     }else open(round,id);
   }
   button.addEventListener('click',()=>open());
-  input.addEventListener('input',e=>{query=e.target.value;searchIndex=0;search();});
-  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&searchRows[searchIndex]){e.preventDefault();add(searchRows[searchIndex].apiName);}else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();searchIndex+=e.key==='ArrowDown'?1:-1;search();}else if(e.key==='Escape'&&query){e.preventDefault();e.stopPropagation();query='';input.value='';search();}});
+  input.addEventListener('input',e=>{query=e.target.value;variants=null;searchIndex=0;search();});
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'&&searchRows[searchIndex]){e.preventDefault();pick(searchRows[searchIndex]);}else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();searchIndex+=e.key==='ArrowDown'?1:-1;search();}else if(e.key==='Escape'&&query){e.preventDefault();e.stopPropagation();if(variants){variants=null;}else{query='';input.value='';}searchIndex=0;search();}});
   document.addEventListener('click',e=>{
-    let b=e.target.closest('[data-offer-add]');if(b)add(b.dataset.offerAdd);
+    let b=e.target.closest('[data-offer-result]');if(b)pick(searchRows[Number(b.dataset.offerResult)]);
     b=e.target.closest('[data-edit-augment]');if(b)open(Number(b.dataset.editAugment));
-    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;query='';input.value='';activeSlot=0;mutate(()=>state.augmentOffers={round,ids:['','',''],seen:[]},'Augment round changed.');input.focus();}
-    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);query='';input.value='';draw();input.focus();}
+    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;query='';variants=null;input.value='';activeSlot=0;mutate(()=>state.augmentOffers={round,ids:['','',''],seen:[]},'Augment round changed.');input.focus();}
+    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);query='';variants=null;input.value='';draw();input.focus();}
     b=e.target.closest('[data-offer-move]');if(b)enterAt(Number(b.dataset.offerMove),b.dataset.augmentId);
-    b=e.target.closest('[data-offer-replace]');if(b){activeSlot=Number(b.dataset.offerReplace);query='';input.value='';mutate(()=>{const o=offers(),id=o.ids[activeSlot];if(id&&!o.seen.includes(id))o.seen.push(id);o.ids[activeSlot]='';},'Enter the new offer after rerolling in game.');input.focus();}
+    b=e.target.closest('[data-offer-replace]');if(b){activeSlot=Number(b.dataset.offerReplace);query='';variants=null;input.value='';mutate(()=>{const o=offers(),id=o.ids[activeSlot];if(id&&!o.seen.includes(id))o.seen.push(id);o.ids[activeSlot]='';},'Enter the new offer after rerolling in game.');input.focus();}
     b=e.target.closest('[data-augment-take]');if(b){let recorded=false;mutate(()=>{recorded=AugmentAdvisor.record(state,Number(b.dataset.augmentTake));},'Augment recorded. Enter any item rewards when received.');if(recorded)modal.close();}
   });
   const previous=render;render=function(){previous();contextKey='';draw();};
-  document.addEventListener('carousel-new-game',()=>{modal.close();query='';input.value='';contextKey='';drawSelected();});
+  document.addEventListener('carousel-new-game',()=>{modal.close();query='';variants=null;input.value='';contextKey='';drawSelected();});
   document.addEventListener('carousel-meta-updated',()=>{contextKey='';draw();});
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and Enter for each of the three offers. Entry advances automatically. The round defaults to your next unrecorded augment; change it if needed. Took this records the selected augment, keeps your inventory untouched and updates comp fit. Enter reroll replaces only that offer after you reroll in game. Reroll guidance is conditional; the app does not know the replacement pool or rerolls left.</li>');
   drawSelected();return {open,refresh:draw};

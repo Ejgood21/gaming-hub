@@ -109,3 +109,20 @@ test('the explorer includes a Vanguard route when an Academy guide explicitly eq
   assert.equal(row.guide.title, 'Coven Morgana');
   assert.deepEqual(row.holders.map(h=>[h.name,h.use]), [['Morgana','final']]);
 });
+
+test('the emblem catalog combines Flora Fatalis item IDs and keeps the augment route', () => {
+  const {Academy, EmblemExplorer} = setup();
+  const apiName = 'DA_18_EmblemFloraFatalis';
+  const alias = apiName+'Augment';
+  const {items, guides, champions} = Academy.snapshot;
+  const existing = items.filter(item => item.apiName !== apiName && item.apiName !== alias);
+  const emblem = {apiName, name:'Flora Fatalis Emblem', type:'emblems', trait:'DA_FloraFatalis18', composition:[], recommendedChampions:[], filterType:[], description:''};
+  const champion = champions.find(unit => unit.apiName === 'DA_18_Veigar');
+  const guide = {...guides[0], finalComp:[{apiName:champion.apiName, items:[alias]}], altBuilds:[]};
+  Academy.useSnapshot({...Academy.snapshot, items:[...existing, emblem, {...emblem, apiName:alias}], guides:[guide]});
+  const deduped = EmblemExplorer.catalog().filter(item => item.name === emblem.name);
+  assert.equal(deduped.length, 1);
+  assert.deepEqual([...deduped[0].apiNames], [apiName, alias]);
+  assert.deepEqual(EmblemExplorer.academyRoutes(apiName)[0].holders,
+    [{apiName:champion.apiName, name:champion.name, use:'final'}]);
+});

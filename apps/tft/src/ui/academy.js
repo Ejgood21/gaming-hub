@@ -92,11 +92,24 @@ const AcademyUI=(() => {
       (choice.variants>1?` ${choice.variants} guides share this code. Using ${choice.guide.title}.`:'');
     for(const d of document.querySelectorAll('dialog[open]'))d.close();
   }
+  const importGame = document.createElement('dialog');
+  importGame.id = 'team-code-dialog';
+  importGame.setAttribute('aria-labelledby', 'team-code-title');
+  importGame.innerHTML = '<div class="modal-heading"><h2 id="team-code-title">Import a game</h2><button data-close="team-code-dialog" aria-label="Close game import">×</button></div><form><label for="team-code">TFT Academy team code</label><input id="team-code" class="search" required autofocus autocomplete="off"><button class="primary" type="submit">Import</button><p id="team-code-error" role="status"></p></form>';
+  document.body.append(importGame);
+  importGame.querySelector('form').addEventListener('submit',async event=>{
+    event.preventDefault();
+    const button = importGame.querySelector('[type="submit"]');
+    button.disabled = true;
+    await importCode(importGame.querySelector('input').value);
+    button.disabled = false;
+    importGame.querySelector('#team-code-error').textContent = feedback.textContent;
+  });
   document.addEventListener('paste',e=>{
     const text=e.clipboardData?.getData('text/plain')?.trim()||'';
     // Intercept team codes only. Ordinary text/backup JSON pastes keep their
     // normal behavior, including inside search fields and textareas.
-    if(!/^(?:01|02)[0-9a-f]*TFTSet\d+(?:_(?:Act2|Stage2_Revival))?$/i.test(text))return;
+    if(e.target.closest?.('#team-code')||!/^(?:01|02)[0-9a-f]*TFTSet\d+(?:_(?:Act2|Stage2_Revival))?$/i.test(text))return;
     e.preventDefault();void importCode(text);
   },true);
   bar.querySelector('#refresh-live-data').addEventListener('click',()=>void refreshData(plannedSet()));
@@ -105,5 +118,12 @@ const AcademyUI=(() => {
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="undo"],#apply-import')){intent++;feedback.textContent='';feedback.classList.remove('error');}},true);
   document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy; component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Loose components and completed items stay; matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>Only exact champion matches are imported. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
   void refreshData(plannedSet());
-  return {isChecking:()=>checking};
+  return {
+    isChecking:()=>checking,
+    openImport() {
+      importGame.querySelector('form').reset();
+      importGame.querySelector('#team-code-error').textContent = '';
+      importGame.showModal();
+    }
+  };
 })();

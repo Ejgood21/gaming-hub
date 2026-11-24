@@ -4,8 +4,59 @@
   const help=top.querySelector('[data-action="help"]'),settings=document.getElementById('settings-open');
   const menu=document.createElement('details');menu.id='utility-menu';menu.className='utility-menu';
   menu.innerHTML='<summary aria-label="More options" title="More options">⋯</summary><div class="utility-options"></div>';
-  menu.querySelector('.utility-options').append(help,settings);actions.append(menu);top.append(actions);document.querySelector('.pagehead').remove();
-  menu.addEventListener('click',e=>{if(e.target.closest('button'))menu.removeAttribute('open');});
+  const options=menu.querySelector('.utility-options');
+  const newGame=actions.querySelector('[data-action="reset"]');
+  const shortcut=(name, run)=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.textContent=name;
+    button.addEventListener('click',()=>{
+      menu.open=false;
+      run();
+    });
+    return button;
+  };
+  const markMade=shortcut('Mark made',()=>document.querySelector('#queue button[data-action="make"]')?.click());
+  const runChecks=shortcut('Run checks',()=>document.getElementById('refresh-live-data').click());
+  const resetDialog=document.createElement('dialog');
+  resetDialog.id='reset-carousel-data';
+  resetDialog.setAttribute('aria-labelledby','reset-carousel-title');
+  resetDialog.innerHTML='<h2 id="reset-carousel-title">Reset all saved data?</h2><p>This clears your Carousel tracker, settings and cached data in this browser.</p><form method="dialog" class="dialogactions"><button value="cancel" autofocus>Cancel</button><button value="reset">Reset saved data</button></form>';
+  document.body.append(resetDialog);
+  resetDialog.addEventListener('close',()=>{
+    if(resetDialog.returnValue!=='reset')return;
+    try {
+      for(const key of [KEY, Academy.cacheKey, 'carousel-offline-preferences-v1', 'carousel-metatft-v2']) {
+        localStorage.removeItem(key);
+      }
+    } catch {
+      toast('Saved data could not be cleared in this browser.');
+      return;
+    }
+    location.reload();
+  });
+  options.append(
+    markMade,
+    shortcut('Save a backup',()=>document.getElementById('export-backup').click()),
+    shortcut('Restore a backup',()=>document.getElementById('import-open').click()),
+    shortcut('Import a game',()=>AcademyUI.openImport()),
+    newGame,
+    shortcut('Reset all saved data',()=>{
+      resetDialog.returnValue='';
+      resetDialog.showModal();
+    }),
+    runChecks,
+    help,
+    settings
+  );
+  actions.append(menu);
+  top.append(actions);
+  document.querySelector('.pagehead').remove();
+  menu.querySelector('summary').addEventListener('click',()=>{
+    markMade.disabled=!document.querySelector('#queue button[data-action="make"]');
+    runChecks.disabled=AcademyUI.isChecking();
+  });
+  menu.addEventListener('click',e=>{if(e.target.closest('button'))menu.open=false;});
   document.addEventListener('click',e=>{if(!menu.contains(e.target))menu.removeAttribute('open');});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.open){menu.removeAttribute('open');menu.querySelector('summary').focus();}});
   document.getElementById('academy-tierlist').addEventListener('click',e=>{e.preventDefault();MetaReference.openPage('https://tftacademy.com/tierlist/comps','TFT Academy tierlist');});
