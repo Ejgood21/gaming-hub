@@ -55,6 +55,21 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
       return /^[SABC]$/.test(saved?.tier)?{tier:saved.tier,patch:ACADEMY_BUNDLED.patch}:null;
     },
     itemInfo(id){return this.snapshot.items.find(i=>this.itemMap.get(i.apiName)===id);},
+    emblemHolders(guide, emblem, emblems){
+      const holders = new Map();
+      for (const unit of guide.finalComp) {
+        if (unit.items.includes(emblem)) holders.set(unit.apiName, {apiName:unit.apiName, use:'final'});
+      }
+      for (const unit of guide.altBuilds || []) {
+        if (!unit.items.includes(emblem)) continue;
+        const flex = unit.items.some(item => item !== emblem && emblems.has(item));
+        const prior = holders.get(unit.apiName);
+        if (!prior || prior.use === 'flex' && !flex) {
+          holders.set(unit.apiName, {apiName:unit.apiName, use:flex?'flex':'alternate'});
+        }
+      }
+      return [...holders.values()];
+    },
     baseItem(id, snapshot=this.snapshot){
       const src=snapshot.items.find(i=>this.itemMap.get(i.apiName)===id);
       if(src?.type!=='radiants')return id;

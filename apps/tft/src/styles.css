@@ -306,3 +306,26 @@
   #opener-guidance{font-size:12px}
   main:not(:has(#next-build:not([hidden]))) #opener-guidance{font-size:11px;font-weight:600;letter-spacing:-.32px}
 }
+
+.explore-owned>.owned-emblem{
+  position:static;display:grid;place-items:center;min-width:36px;min-height:36px;
+  padding:1px;border-color:#687b68;border-radius:5px;background:#1b2924
+}
+.owned-emblem .icon{display:block;width:32px;height:32px}
+#emblem-explorer{width:600px;max-width:calc(100vw - 24px);padding:16px}
+#emblem-catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+.emblem-pick{display:flex;align-items:center;gap:6px;text-align:left;padding:5px;font-size:12px;min-height:42px}
+.emblem-pick .icon{width:28px;height:28px;flex:none}
+.emblem-pick small{margin-left:auto;color:var(--green);font-size:10px}
+#emblem-back{margin:0 0 8px;padding:3px 9px;font-size:12px}
+#emblem-results section+section{margin-top:18px}
+#emblem-results h3{font-size:15px}
+#emblem-explorer .emblem-source{font-size:12px;margin:4px 0 8px;color:#a7b6c7}
+.emblem-list{list-style-position:inside;margin:0;padding:0}
+.emblem-list>li{padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.emblem-list>li::marker{font-size:11px;color:#a7b6c7}
+.emblem-list>li>div{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+#emblem-explorer .emblem-route>p,.emblem-holder details{font-size:12px;margin:2px 0 0 15px;color:#a7b6c7}
+.emblem-holder div>span{color:#bed4c6;font-size:12px}
+.emblem-holder details ul{margin:4px 0;padding-left:18px}
+.emblem-holder summary{cursor:pointer}

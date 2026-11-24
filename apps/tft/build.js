@@ -27,7 +27,7 @@ const definitions = modules.map(name => {
 const screens = [
   'augment-icon', 'icons', 'tracker', 'item-picker', 'settings', 'academy',
   'inventory', 'meta-live', 'meta-reference', 'board', 'dialogs', 'comp-finder',
-  'decision', 'augment', 'anvil', 'opener-guidance', 'utilities'
+  'decision', 'augment', 'anvil', 'opener-guidance', 'emblem-explorer', 'utilities'
 ].map(name => read(`src/ui/${name}.js`)).join('\n');
 
 const script = `
@@ -44,7 +44,7 @@ ${definitions}
     }
     return loaded.get(id).exports;
   }
-  const {loadSnapshots, readAcademyCache, refreshLiveData, fetchMetaTFT} = require('./snapshots');
+  const {loadSnapshots, readAcademyCache, refreshLiveData, fetchMetaTFT, fetchMetaEmblem} = require('./snapshots');
   const Backup = require('./backup');
   const bytes = Uint8Array.from(atob('${embedded}'), c => c.charCodeAt(0));
   const embedded = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
@@ -55,7 +55,7 @@ ${definitions}
   const {
     DATA, byId, componentOrder, academyTier, Academy, Tracker, OfflineTracker, LootTracker,
     QueueOrder, PivotPlanner, QuickImport, MetaBuilds, CompFinder, DecisionPlanner,
-    PlanAdvisor, AugmentAdvisor
+    PlanAdvisor, AugmentAdvisor, EmblemExplorer
   } = model;
   try {
     const cached = readAcademyCache(localStorage.getItem(Academy.cacheKey), ACADEMY_BUNDLED.set);
