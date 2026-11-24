@@ -1,6 +1,7 @@
 /* Curated from BunnyMuffins' Patch 18.3b opener guidance and the archetypes'
    needs. The groupings apply to augment types, independent of live rankings. */
 (() => {
+  const patch = '18.3b';
   const priorities = {
     fast9: ['Econ › Item › Combat', 'Item › Combat › Econ', 'Combat › Item › Econ'],
     reroll: ['Item › Combat › Econ', 'Combat › Item › Econ', 'Combat › Item › Econ'],
@@ -8,7 +9,7 @@
   };
   const banner = document.createElement('div');
   banner.className = 'opener-banner';
-  banner.innerHTML = '<small>Opener guidance · Patch 18.3b snapshot</small><p id="opener-guidance"></p>';
+  banner.innerHTML = `<small>Historical opener reference · Patch ${patch}</small><p id="opener-guidance"></p>`;
   const guidance = banner.querySelector('p');
   const workspace = document.querySelector('.workspace');
   const shopping = document.querySelector('.shopping');
@@ -44,6 +45,7 @@
   }
 
   function draw() {
+    banner.hidden = AcademyUI.isChecking() || Academy.snapshot.patch !== patch;
     const guide = Academy.currentGuide(state) || Academy.guide(state);
     if (state.activeComp) {
       // Use the next unrecorded round so opening or reviewing the chooser cannot
