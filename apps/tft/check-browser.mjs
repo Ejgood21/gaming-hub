@@ -147,7 +147,11 @@ try {
   await page.getByText('Live · Patch 18.7',{exact:false}).waitFor();
   await page.getByRole('button',{name:'Got one Needlessly Large Rod from carousel',exact:true}).click();
   await page.getByRole('button',{name:'Got one Chain Vest from carousel',exact:true}).click();
-  const fitSummary=suggestion('AP Fast 9').locator('.finder-method summary');
+  const fitSummary=suggestion('AP Fast 9').locator('.finder-fit-score');
+  await suggestion('AP Fast 9').locator('.academy-tier').getByText('S',{exact:true}).waitFor();
+  const rankScore=suggestion('AP Fast 9').locator('.finder-effective-score');
+  const scoreValue=async locator=>Number((await locator.innerText()).split(' ').at(-1));
+  assert.equal(await scoreValue(rankScore),await scoreValue(fitSummary)+24);
   const originalFit=await fitSummary.textContent();
   await page.locator('#first-augment-trigger').click();
   const firstAugments=(await page.locator('#first-augment-choices .icon-select-option span').allTextContents())
@@ -162,7 +166,7 @@ try {
   await page.locator('#first-augment-choices input').fill('Woven Magic');
   await page.locator('[data-option-value="DA_WovenMagic"]').click();
   assert.notEqual(await fitSummary.textContent(),originalFit);
-  await fitSummary.click();
+  await suggestion('AP Fast 9').locator('.finder-method summary').click();
   await suggestion('AP Fast 9').getByText(/\+\d+ · Augment: Woven Magic.*Rules-based fit/).waitFor();
   await suggestion('AP Fast 9').getByLabel('Woven Magic · Rules-based augment fit').waitFor();
 

@@ -68,6 +68,8 @@ test('A4: Inferno emblem and Lux 1★ unlock Inferno Fast 9', () => {
   const row = CompFinder.ranked(input).find(r => r.guide.id === inferno.id);
   assert.ok(row);
   assert.equal(row.blocked, false);
+  assert.equal(row.unlocked, true);
+  assert.equal(row.tierBonus, 12);
   assert.deepEqual(row.missingEmblems, []);
 });
 
@@ -325,20 +327,43 @@ test('a higher tier still wins close fit, but yields to a 12-point lead', () => 
   assert.equal(fitWinner.guide.id,lower.id);
   assert.equal(runnerUp.guide.id,upper.id);
   assert.ok(fitWinner.fitScore-runnerUp.fitScore>=12);
-  assert.equal(fitWinner.passedTier.guide.id,upper.id);
+  assert.equal(fitWinner.tierBonus,12);
+  assert.equal(runnerUp.tierBonus,24);
+  assert.ok(fitWinner.effectiveScore>=runnerUp.effectiveScore);
 });
 
-test('the flat threshold is inclusive across two tiers', () => {
+test('the 12-point threshold is inclusive for each tier step', () => {
   const {Academy, CompFinder} = model();
   const higher = {...mamawood,tier:'S'};
-  const lower = {...apFast9,tier:'B'};
-  Academy.useSnapshot({...academy,patch:'18.7',guides:[higher,lower]});
   CompFinder.evaluate = (input,guide) => ({
-    guide,fitScore:guide===higher?7:input.lowerFit,selectable:true,missingEmblems:[]
+    guide,fitScore:guide===higher?7:input.lowerFit,selectable:true
   });
-  const top = lowerFit => CompFinder.ranked(plan({lowerFit}),{allowSparse:true})[0].guide;
-  assert.equal(top(18.99),higher);
-  assert.equal(top(19),lower);
+  for (const [tier, gap] of [['A',12],['B',24]]) {
+    const lower = {...apFast9,tier};
+    Academy.useSnapshot({...academy,patch:'18.7',guides:[higher,lower]});
+    const rows = lowerFit => CompFinder.ranked(plan({lowerFit}),{allowSparse:true});
+    assert.equal(rows(7+gap-.01)[0].guide,higher);
+    const [winner, runnerUp] = rows(7+gap);
+    assert.equal(winner.guide,lower);
+    assert.equal(runnerUp.guide,higher);
+    assert.equal(winner.effectiveScore,runnerUp.effectiveScore);
+    assert.equal(rows(7+gap+.01)[0].guide,lower);
+  }
+});
+
+test('three tiers with sub-12 adjacent fit gaps have one effective-score order', () => {
+  const {Academy, CompFinder} = model();
+  const higher = {...mamawood,tier:'S'};
+  const middle = {...apFast9,tier:'A'};
+  const lower = {...guide('Ahri Morgana'),tier:'B'};
+  const fit = {S:7,A:18.5,B:30};
+  CompFinder.evaluate = (input,guide) => ({guide,fitScore:fit[guide.tier],selectable:true});
+  for (const guides of [[higher,middle,lower],[lower,higher,middle],[middle,lower,higher]]) {
+    Academy.useSnapshot({...academy,patch:'18.7',guides});
+    const rows = CompFinder.ranked(plan(),{allowSparse:true});
+    assert.deepEqual(rows.map(row=>row.guide),[higher,middle,lower]);
+    assert.deepEqual(rows.map(row=>row.effectiveScore),[31,30.5,30]);
+  }
 });
 
 function liveFitModel() {
@@ -349,17 +374,16 @@ function liveFitModel() {
   return instance;
 }
 
-test('Patch 18.7 Rod + Vest: Woven Magic puts Defender Cassio ahead of both S comps', () => {
+test('Patch 18.7 Rod + Vest: Woven Magic improves Defender Cassio by 24 fit points', () => {
   const {CompFinder} = liveFitModel();
   const input = plan({owned:{NeedlesslyLargeRod:1,ChainVest:1}});
   const top = () => CompFinder.ranked(input).slice(0,3);
-  const titleAndFit = rows => rows.map(r=>[r.guide.title,r.fitScore]);
-  assert.deepEqual(titleAndFit(top()),[['Mamawood',7],['AP Fast 9',4.5],['10 Riftbeast',7.5]]);
+  const scores = rows => rows.map(r=>[r.guide.title,r.fitScore,r.effectiveScore]);
+  assert.deepEqual(scores(top()),[['Mamawood',7,31],['AP Fast 9',4.5,28.5],['10 Riftbeast',7.5,19.5]]);
   input.firstAugment = 'DA_WovenMagic';
   const after = top();
-  assert.deepEqual(titleAndFit(after),[['Defender Cassio',30.5],['AP Fast 9',11.5],['Mamawood',11]]);
-  assert.deepEqual(after[0].augmentMatches.map(a=>[a.name,a.points,a.academy]),[['Woven Magic',24,'listed']]);
-  assert.ok(after[0].passedTier);
+  assert.deepEqual(scores(after),[['AP Fast 9',11.5,35.5],['Mamawood',11,35],['Defender Cassio',30.5,30.5]]);
+  assert.deepEqual(after[2].augmentMatches.map(a=>[a.name,a.points,a.academy]),[['Woven Magic',24,'listed']]);
 });
 
 test('Patch 18.7 Rod + Vest and Yi / Kog’Maw / Vi at 3★: Adaptor Reroll passes S', () => {

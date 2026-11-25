@@ -119,6 +119,7 @@
 .finder-controls{display:flex;align-items:center;gap:12px;margin-top:12px}.finder-controls>label{font-size:12px;color:#c1ccda;flex-shrink:0}.finder-controls>.icon-select{width:min(380px,100%)}.finder-controls .icon-select-popup{z-index:30}.finder-controls .icon-select-trigger{min-height:38px;padding:5px 9px}
 .augment-icon{width:28px;height:28px;object-fit:contain;flex-shrink:0}.augment-fallback{display:inline-grid;place-items:center;background:#343545;border-radius:4px;color:#b9b6df}.finder-note{min-height:18px}
 .finder-list-heading{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin:16px 0 4px}.finder-list-heading span{color:#90a0b4;font-size:11px}
+.finder-group{margin:12px 0 4px;font-size:12px;color:#a9b9cb}
 .comp-suggestion{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #2c3847}.finder-rank{width:17px;color:#8194aa;font-size:13px;flex-shrink:0}.finder-comp{flex:1;min-width:0}.finder-titleline{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.finder-titleline h3{font-size:14px;font-weight:600}.finder-titleline>.champ-icon{width:30px;height:30px;border-radius:5px}.comp-suggestion>button{font-size:12px;padding:6px 10px;background:#22364a;border-color:#3b5673;flex-shrink:0}.academy-tier{font-size:10px;line-height:1.6;padding:1px 6px;border:1px solid #4a5565;border-radius:3px;background:#293748;color:#cbd6e3;white-space:nowrap}.academy-tier.tier-A{background:#5b3827;color:#ffcaac;border-color:#77503b}.academy-tier.tier-S{background:#562e41;color:#ffb6d1;border-color:#80435e}.academy-tier.tier-B{background:#4a4329;color:#e2d398;border-color:#625936}.academy-tier.tier-X{background:#313043;color:#b9b6df}
 .finder-augment-match{display:inline-flex;align-items:center;gap:3px;color:#ebc584}.finder-augment-match .augment-icon{width:24px;height:24px}.finder-fit{display:flex;align-items:center;flex-wrap:wrap;gap:7px 14px;margin-top:6px;font-size:11px;color:#a4b5c9}.finder-fit>span{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}.finder-item{display:inline-flex}.finder-item .icon{width:23px;height:23px;border-radius:3px}.finder-unmatched{color:#bda58b}
 #finder-more{width:100%;font-size:12px;margin-top:6px;padding:5px}.finder-method{margin-top:8px;font-size:11px;color:#8799af}.finder-method summary{cursor:pointer}.finder-method p{margin-top:7px;max-width:850px}.queue-item-pivot{padding:0;border:0;background:transparent;display:flex;flex-shrink:0;border-radius:5px}.queue-item-pivot:hover{outline:1px solid #90acc7}.queue-item-pivot .icon{width:32px;height:32px}
@@ -864,6 +865,7 @@ module.exports = {exportBackup, reviewBackup, maxBackupBytes};
 
 const createAugmentFit = require('./augment-fit');
 const tierFitGap = 12;
+const tierBonus = {S: 2 * tierFitGap, A: tierFitGap, B: 0};
 const primaryEmblemCap = 40;
 const flexEmblemCap = 8;
 
@@ -1080,7 +1082,7 @@ module.exports = function createCompFinder(model) {
         return {id,name:augment?.name||id,...match};
       });
       const requirements=this.requirements(plan,guide);
-      const tierScore=academyTier(requirements.unlocked?'A':guide.tier).score,board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
+      const board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
       const names=ids=>[...new Set(ids.map(id=>byId[id]?.name||id))].join(', ');
       const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
@@ -1099,7 +1101,7 @@ module.exports = function createCompFinder(model) {
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
       const fitScore=Number(reasons.reduce((sum,reason)=>sum+reason.points,0).toFixed(2));
       return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatches,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
-        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,emblemBonus,primaryEmblem,reasons,selectable:!!build.entries.length&&!build.missing.length};
+        fitScore,componentScore,itemScore,emblemBonus,primaryEmblem,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
     signalCount(plan){
@@ -1132,23 +1134,16 @@ module.exports = function createCompFinder(model) {
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
       if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&(r.primaryEmblem||r.augmentMatches.some(a=>a.academy||a.recommended)))&&
         (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
-      const tierRank = row => this.tierRank(row.unlocked?'A':row.guide.tier);
-      const rankable=rows.filter(r=>!r.blocked).length;
-      const initial=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
-        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||Number(!!b.primaryEmblem)-Number(!!a.primaryEmblem)||tierRank(a)-tierRank(b)||b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title));
-      const ranked=[];
-      for(const row of initial){
-        // Insert before the first higher-tier row this comp clears. A pairwise
-        // sort can cycle when two close gaps add up to one qualifying gap.
-        const index=row.blocked||row.missingEmblems.length?-1:ranked.findIndex(other=>
-          other.primaryEmblem===row.primaryEmblem&&tierRank(other)<tierRank(row)&&Math.round((row.fitScore-other.fitScore)*100)>=tierFitGap*100);
-        if(index<0)ranked.push(row);
-        else{
-          row.passedTier=ranked[index];
-          ranked.splice(index,0,row);
-        }
-      }
-      return ranked;
+      const rankable=rows.filter(row=>!row.blocked).length;
+      return rows.filter(row=>row.guide.tier!=='X'||!row.blocked||rankable>=3)
+        .map(row=>{
+          const bonus=tierBonus[row.unlocked?'A':row.guide.tier] ?? 0;
+          const rankGroup=row.blocked?2:row.primaryEmblem?0:1;
+          return {...row, tierBonus:bonus, rankGroup, effectiveScore:Number((row.fitScore+bonus).toFixed(2))};
+        })
+        // Higher fit wins an exact tie, so an adjacent tier yields at 12 points.
+        .sort((a,b)=>a.rankGroup-b.rankGroup||b.effectiveScore-a.effectiveScore||
+          b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title)||a.guide.id.localeCompare(b.guide.id));
     },
     componentFit(plan,entries){
       let beam=[{pool:{...plan.owned},score:0,used:[],ready:[]}];
@@ -3203,8 +3198,8 @@ const DialogDismiss = {
   panel.innerHTML=`<div class="finder-heading"><div><h2 id="finder-title">Explore builds</h2><p>Your board, your drops → an Academy plan to aim for.</p></div></div>
   <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
-  <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>S, A, B and X · badges = Academy tier</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
-  <details class="finder-method"><summary>How this is ranked</summary><p>Academy tier leads until a lower-tier comp has at least ${CompFinder.tierFitGap} more fit points from your items, champions and augments.</p><p>Owned emblems put Academy’s final builds and single-emblem alternatives first, with up to +${CompFinder.primaryEmblemCap} fit for those matches and +${CompFinder.flexEmblemCap} total for other emblem fits.</p></details>`;
+  <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>Ranked by effective score within each group</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
+  <details class="finder-method"><summary>How this is ranked</summary><p>Effective score = fit + ${CompFinder.tierFitGap} points per tier step. S adds ${2*CompFinder.tierFitGap}, A and unlocked X add ${CompFinder.tierFitGap}, and B adds 0. Ties go to the higher fit.</p><p>Academy routes for owned emblems come first. Fit includes up to +${CompFinder.primaryEmblemCap} for Academy emblem matches and +${CompFinder.flexEmblemCap} for other emblem matches. Builds that still require an unlock appear last.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
   const boardEditor=exploreInputs.querySelector('.explore-board');
@@ -3356,7 +3351,11 @@ const DialogDismiss = {
     note.title=CompFinder.augment(selected)?.description||'';
     panel.querySelector('#finder-tier-notice').textContent=tierNotice;
     panel.querySelector('.finder-list-heading').hidden=!rows.length;
-    panel.querySelector('#comp-suggestions').innerHTML=(expanded?rows:rows.slice(0,5)).map((r,n)=>{
+    const groupLabels=['Academy routes for owned emblems','Other available builds','Builds with unmet requirements'];
+    const visibleRows=expanded?rows:rows.slice(0,5);
+    panel.querySelector('#comp-suggestions').innerHTML=visibleRows.map((r,n)=>{
+      const newGroup=r.rankGroup!==visibleRows[n-1]?.rankGroup&&(n>0||r.rankGroup!==1);
+      const heading=newGroup?`<h3 class="finder-group">${groupLabels[r.rankGroup]}</h3>`:'';
       const g=r.guide,tier=r.unlocked?'X · Unlocked':g.tier==='X'?'X · Situational':academyTier(g.tier).label,carry=g.mainChampion?.apiName;
       const fit=[r.keepers.length?`<span>Keep ${unitChips(r.keepers)}</span>`:'',r.early.length?`<span>Early ${unitChips(r.early)}</span>`:'',r.bridges.length?`<span>Trait bridge ${unitChips(r.bridges)}</span>`:'',r.matched.length?`<span>Owned ${chips(r.matched)}</span>`:'',r.used.length?`<span>Fits ${chips(r.used)}</span>`:'',r.ready.length?`<span>Can build ${chips(r.ready)}</span>`:'',r.earlyMatches.length?`<span>Early items ${chips(r.earlyMatches.map(m=>m.item))}</span>`:'',r.featuredOwned?`<span>Academy key item ${chips([r.featuredOwned])}</span>`:'',r.unmatched.length?`<span class="finder-unmatched">Off-plan ${chips(r.unmatched)}</span>`:'',r.unknownSpecial.some(id=>id!==r.featuredOwned)?`<span class="finder-unmatched">No supported match ${chips(r.unknownSpecial.filter(id=>id!==r.featuredOwned))}</span>`:''].filter(Boolean).join('');
       const special=r.specialMatches.map(s=>`<span class="special-destination" title="${esc(s.source)}">${chips([s.item])}<span>→</span>${IconUI.championLabel(s.champion)}<small>${esc(s.source)}</small></span>`).join('');
@@ -3366,14 +3365,11 @@ const DialogDismiss = {
         const label=a.name+' · '+(a.academy?'Academy recommendation':'Rules-based augment fit');
         return `<span class="finder-augment-match" title="${esc(label)}" aria-label="${esc(label)}">${augmentIcon(a.id)}<b aria-hidden="true">★</b></span>`;
       }).join('');
-      const passed=r.passedTier;
-      const promotion=passed?`Fit moves ahead of ${passed.guide.title} by ${Number((r.fitScore-passed.fitScore).toFixed(2))} points.`:'';
       const breakdown=[
-        `<li>Academy tier ${esc(tier)} · ranking priority</li>`,
-        promotion?`<li>${esc(promotion)}</li>`:'',
+        `<li>+${r.tierBonus} · Academy tier ${esc(tier)} ranking bonus</li>`,
         ...r.reasons.map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`)
       ].join('');
-      return `<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div><div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}<details class="finder-method"><summary>Fit score ${Number(r.fitScore.toFixed(2))}</summary><ul>${breakdown}</ul></details></div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
+      return `${heading}<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div><div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}<details class="finder-method"><summary><span class="finder-fit-score">Fit score ${r.fitScore}</span> · <span class="finder-effective-score">Effective score ${r.effectiveScore}</span></summary><ul>${breakdown}</ul></details></div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;
@@ -3383,7 +3379,7 @@ const DialogDismiss = {
   document.addEventListener('carousel-meta-updated',draw);
   document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]:not([data-pivot-kind])');if(b)PivotDialog.open(b.dataset.pivotItem);});
   const previous=render;render=function(){const focus=document.activeElement?.dataset.focus;previous();draw();if(focus?.startsWith('unit-'))document.querySelector('[data-focus="'+CSS.escape(focus)+'"]')?.focus();for(const card of document.querySelectorAll('#queue .qcard')){const uid=card.querySelector('[data-action="remove"]')?.dataset.id,img=card.querySelector('.qtop > .icon');if(!uid||!img)continue;const b=document.createElement('button');b.className='queue-item-pivot';b.dataset.pivotItem=uid;b.setAttribute('aria-label','Pivot '+byId[state.queue.find(q=>q.uid===uid).item].name);b.setAttribute('aria-haspopup','dialog');img.before(b);b.append(img);}};
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Explore builds:</b> type a champion name and Enter, then set its stars. Record your first augment and any completed items using the owned-item search or Browse all. Standard items, emblems, radiants, artifacts and other items are supported; click once per owned copy. Academy tier leads; lower tiers move ahead only for a strong match with a clear fit advantage. Unbuilt wishlist items do not count. Suggestions update from your board and inventory. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Other special-item carrier suggestions do not assign equipment automatically. Explore builds can be reopened from your plan. New game clears board, augment and inventory; Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Explore builds:</b> type a champion name and Enter, then set its stars. Record your first augment and any completed items using the owned-item search or Browse all. Standard items, emblems, radiants, artifacts and other items are supported; click once per owned copy. Effective score combines your fit and a bonus for the Academy tier. Unbuilt wishlist items do not count. Suggestions update from your board and inventory. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Other special-item carrier suggestions do not assign equipment automatically. Explore builds can be reopened from your plan. New game clears board, augment and inventory; Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');
   render();
 })();
 
