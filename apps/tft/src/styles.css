@@ -168,9 +168,10 @@
 .augment-offer.active-slot{border-color:#7b91ad}
 .augment-offer[data-verdict]{background:var(--verdict-fill);border-color:var(--verdict-accent);border-left-width:4px;padding-left:7px}
 .augment-offer-heading,.augment-offer-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.augment-offer-heading>button:first-child{flex:1;background:transparent;border:0;padding:0;text-align:left;min-width:120px}
+.augment-offer-heading>button:first-child{flex:1 0 100%;background:transparent;border:0;padding:0;text-align:left;min-width:0}
 .augment-offer-heading>button>span{display:flex;align-items:center;gap:7px}
 .augment-offer-heading strong{font-size:14px}
+.augment-verdict-line{color:var(--verdict-ink)}
 .augment-rarity{font-size:10px;font-weight:500;color:#ced9e4;white-space:nowrap}
 .rarity-2{color:#f3d47d}.rarity-3{color:#ddbef9}
 .augment-offer-heading .augment-fit-label{font-size:11px;color:var(--verdict-ink);border:1px solid var(--verdict-accent);border-radius:4px;padding:2px 5px}

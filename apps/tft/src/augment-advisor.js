@@ -3,6 +3,7 @@
 module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DATA}) {
   const stages = ['2-1', '3-2', '4-2'];
   const {augmentFit} = CompFinder;
+  const verdictPrefixes = {take:'Take ', decent:'Decent: ', reroll:'Reroll: ', avoid:'Do not take '};
 
   return {
     stages,
@@ -95,18 +96,19 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       });
       const valid=rows.filter(r=>!r.invalid&&!r.offRound).sort((a,b)=>
         Number(!!b.academy)-Number(!!a.academy)||b.score-a.score||a.slot-b.slot);
-      const complete=offers.ids.every(Boolean)&&valid.length===3;
+      const allEntered=offers.ids.every(Boolean)&&rows.length===offers.ids.length;
       const best=valid[0],rerolls=[];
       let action='enter',message='Enter your three offers';
       if(best?.academy){
         action='take';
-        message=`Take ${best.augment.name}`;
-      }else if(complete){
-        const alternatives=this.available(plan,offers).filter(a=>this.eligible(a,round))
-          .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
-        for(const row of valid.filter(r=>!r.contextual)){
-          const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
-          if(example)rerolls.push({slot:row.slot,reason:`No Academy match or item, economy or combat fit. Same-rarity Academy match in the catalog: ${example.augment.name}.`});
+      }else if(allEntered&&best){
+        if(valid.length===rows.length){
+          const alternatives=this.available(plan,offers).filter(a=>this.eligible(a,round))
+            .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
+          for(const row of valid.filter(r=>!r.contextual)){
+            const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
+            if(example)rerolls.push({slot:row.slot,reason:`No Academy match or item, economy or combat fit. Same-rarity Academy match in the catalog: ${example.augment.name}.`});
+          }
         }
         if(rerolls.length){
           action='reroll';
@@ -114,10 +116,9 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
           message=names.length===1?`Reroll ${names[0]} if available`:'Reroll a blue offer if available';
         }else if(best.contextual&&best.score>0){
           action='lean';
-          message=`Take ${best.augment.name}`;
         }else{
           action='unknown';
-          message='No clear pick';
+          message=rows.some(r=>r.offRound)?'Check the round on the marked offer':'No clear pick';
         }
       }else if(rows.length||offers.awaiting?.some(Boolean)){
         action='partial';
@@ -127,11 +128,13 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       for(const row of rows){
         const top=row===best&&(action==='take'||action==='lean');
         [row.verdict,row.label]=row.invalid||row.offRound?['avoid','Check offer']:
-          top?['take','Take this']:
+          top?['take',row.academy?'Academy match':'Contextual fit']:
           rerolls.some(r=>r.slot===row.slot)?['reroll','Reroll if available']:
           row.academy?['decent','Academy match']:
           row.contextual?['decent','Contextual fit']:['avoid','Limited evidence'];
+        row.verdictLine=verdictPrefixes[row.verdict]+row.augment.name;
       }
+      if(action==='take'||action==='lean')message=best.verdictLine;
       const academyNotice=ctx.fitGuide&&!augmentFit.hasRecommendations(ctx.fitGuide) ?
         `Academy lists no recommended augment for this comp (${ctx.fitGuide.title}). Fit uses item, economy and combat rules.` : '';
       return {rows,best,action,message,rerolls,round,academyNotice};

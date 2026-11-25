@@ -1,12 +1,16 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const {readFileSync} = require('node:fs');
+const {join} = require('node:path');
 const {test} = require('node:test');
+const {runInNewContext} = require('node:vm');
 const createModel = require('../src/model');
 const academy = require('../data/academy-18.3b.json');
 const meta = require('../data/metatft-18.3b.json');
 const core = require('../data/core-items.json');
 const {apFast9} = require('../test-support/p16-comps');
+const rankReplay = require('../test-support/p113-live-rank.json');
 
 const caps = 'DA_DeadlierCaps';
 const tears = 'DA_FlowingTears';
@@ -22,6 +26,53 @@ function setup(ids) {
 }
 
 const verdicts = result => result.rows.map(row=>row.verdict);
+
+function renderedOffers({plan, Academy, AugmentAdvisor, CompFinder}) {
+  const node = () => ({dataset:{},addEventListener(){}});
+  const children = new Map();
+  const get = id => {
+    if(!children.has(id))children.set(id,node());
+    return children.get(id);
+  };
+  const dialog = {open:true,setAttribute(){},querySelector:get};
+  const document = {
+    createElement: tag=>tag==='dialog'?dialog:node(),
+    querySelector: ()=>({append(){},after(){},insertAdjacentHTML(){}}),
+    body:{append(){}},getElementById:get,addEventListener(){}
+  };
+  const source = readFileSync(join(__dirname,'../src/ui/augment.js'),'utf8');
+  runInNewContext(`${source}\nAugmentUI.refresh();`, {
+    document,state:plan,Academy,AugmentAdvisor,CompFinder,render(){},augmentIcon:()=>'',
+    esc:value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;')
+  });
+  const banner = get('augment-verdict').textContent;
+  const cards = [...get('augment-offers').innerHTML.matchAll(/data-verdict="(\w+)"[^>]*>\s*<div class="augment-offer-heading">.*?<strong class="augment-verdict-line">([^<]+)<\/strong>/g)]
+    .map(([,verdict,line])=>[verdict,line]);
+  return {banner,cards};
+}
+
+test('the reported 2-1 offers show named verdicts on the cards and a named pick in the banner', () => {
+  const model = createModel({academy:{...academy,...rankReplay},meta,core});
+  const {AugmentAdvisor,CompFinder} = model;
+  const plan = {queue:[{uid:'crownguard',item:'Crownguard',done:true}],owned:{TearOfTheGoddess:1},pins:[],
+    augmentOffers:AugmentAdvisor.newOffers(0)};
+  CompFinder.choose(plan, rankReplay.guides.find(guide=>guide.title==='Yi Rengar').id);
+  for(const [slot,id] of ['DA_BuriedTreasuresIII','DA_JeweledLotus_I','DA_PandorasItemsI'].entries()) {
+    assert.equal(AugmentAdvisor.enter(plan,slot,id),true);
+  }
+  assert.equal(AugmentAdvisor.compare(plan).rows[1].offRound,true);
+  assert.deepEqual(renderedOffers({plan,...model}), {
+    banner:'Take Buried Treasures III',
+    cards:[['take','Take Buried Treasures III'],['avoid','Do not take Jeweled Lotus I'],['decent',"Decent: Pandora's Items"]]
+  });
+});
+
+test('a same-rarity Academy alternative produces a named blue reroll card', () => {
+  assert.deepEqual(renderedOffers(setup([caps,tears,kingslayer])), {
+    banner:'Reroll Deadlier Caps if available',
+    cards:[['reroll','Reroll: Deadlier Caps'],['decent','Decent: Flowing Tears'],['avoid','Do not take Kingslayer']]
+  });
+});
 
 test('augment verdicts distinguish the pick, decent fit, eligible rerolls and unsupported offers', () => {
   const {plan, AugmentAdvisor} = setup([caps,tears,kingslayer]);

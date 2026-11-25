@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
-import {checkAugmentRerolls, checkEmblemAiming, checkMarkMade} from './test-support/p112-browser.mjs';
+import {checkAugmentRerolls, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
 
 const require = createRequire(import.meta.url);
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -380,7 +380,7 @@ async function replayFixtures() {
   fixture=liveFixture({metaPatch:'18.7',omitAcademyPatch:true,allowOtherUnits:true,
     guides:emblems.guides.map(guide=>guide.title==='AP Fast 9'
       ? {...guide,augments:[{apiName:'DA_UpwardMobility'}]} : guide)});
-  await checkEmblemAiming(page,{checkFallback:true});
+  await checkEmblemAiming(page,{checkFallback:true,expectedUnownedRank:9});
   await checkAugmentRerolls(page);
   assert.deepEqual(errors,[]);
   console.log('Fixture replay passed at 390px, including emblem Aim, champion portraits, all four augment colors and both rerolls. Components also passed at 1440px. Zero console errors.');
@@ -389,12 +389,24 @@ async function replayFixtures() {
 async function replayLive() {
   for (const width of [390,1440]) {
     const page = await newPage(width,process.env.TFT_BROWSER_IGNORE_HTTPS_ERRORS==='1');
+    const sourcePaths = new Set();
+    page.on('response',response=>{
+      if (!response.ok()) return;
+      const {hostname,pathname} = new URL(response.url());
+      if (hostname==='tftacademy.com'||hostname==='api-hc.metatft.com') sourcePaths.add(pathname);
+    });
     await page.goto(origin);
-    await checkEmblemAiming(page);
+    const alune = await checkEmblemAiming(page);
     await checkMarkMade(page);
     await checkAugmentRerolls(page);
+    const karma = await checkKarmaBoardAndOffers(page);
+    console.log(`${width} × 844 · Yi Rengar without Brawler · ${JSON.stringify({alune,karma})}`);
+    for (const path of ['/api/tierlist/comps','/api/assets/augments',
+      '/tft-stat-api/unit_detail_overall','/tft-stat-api/unit_detail_items','/tft-explorer-api/unit_items']) {
+      assert.ok(sourcePaths.has(path),`Missing successful live response for ${path}`);
+    }
     assert.deepEqual(errors,[]);
-    console.log(`${width}px · Live Set 18 Patch 18.7 · Brawler ranks and both emblem Aim paths, MetaTFT portraits, Mark made and both augment rerolls passed · zero console errors`);
+    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · both emblem Aim paths, portraits, Mark made, exact 2-1 offers and both rerolls passed · zero console errors`);
     await page.close();
   }
 }
