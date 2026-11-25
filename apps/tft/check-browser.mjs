@@ -54,6 +54,10 @@ try {
   const suggestion = title => page.locator('.comp-suggestion').filter({
     has:page.getByRole('heading',{name:title,exact:true})
   });
+  const newGame = async () => {
+    await page.getByLabel('More options', {exact:true}).click();
+    await page.getByRole('button',{name:'New game',exact:true}).click();
+  };
   const choose = title => suggestion(title).locator('[data-choose-comp]').click();
   const alternate = page.locator('.pivot-section');
   const savedPlan = () => page.evaluate(()=>JSON.parse(localStorage.getItem('carousel-tracker-v1')));
@@ -78,7 +82,18 @@ try {
 
   await page.goto(origin);
   await page.getByText('Live · Patch 18.3b',{exact:false}).waitFor();
-  await page.getByText('Historical opener reference · Patch 18.3b',{exact:true}).waitFor();
+  const opener = page.getByRole('region',{name:'Opener guide Patch 18.3b',exact:true});
+  await opener.waitFor();
+  const patchLabels = await opener.locator('li small').allTextContents();
+  assert.ok(patchLabels.length>=2 && patchLabels.length<=3 && patchLabels.every(label=>label==='Patch 18.3b'));
+  const utility = page.getByLabel('More options',{exact:true});
+  const expectedUtilities = ['Mark made','Save a backup','Restore a backup','Import a game','New game',
+    'Reset all saved data','Run checks','How it works','Data & keys'];
+  for(let n=0;n<3;n++){
+    await utility.click();
+    assert.deepEqual(await page.locator('#utility-menu[open] .utility-options button').allTextContents(),expectedUtilities);
+    await page.keyboard.press('Escape');
+  }
 
   assert.equal(await page.getByText('Add an item',{exact:false}).count(),0);
   await page.getByRole('button',{name:'Pivot Deathblade',exact:true}).last().click();
@@ -119,7 +134,7 @@ try {
   fixture = liveFixture({metaPatch:'18.7',omitAcademyPatch:true,allowOtherUnits:true,
     guides:[apFast9,mamawood,covenElise,solarEclipse,azirRammus,{...covenElise,id:'unknown-x-guide',title:'X guide without a badge'}]});
   async function startGame(){
-    await page.getByRole('button',{name:'New game',exact:true}).click();
+    await newGame();
     await page.getByText('Live · Patch 18.7',{exact:false}).waitFor();
     for(const {apiName} of currentUnits){
       await page.locator('#explore-unit-search').fill(academy.champions.find(c=>c.apiName===apiName).name);
@@ -128,11 +143,15 @@ try {
     assert.equal(await page.locator('.unit-stars button[data-unit-stars="1"][aria-pressed="true"]').count(),6);
   }
 
-  await page.getByRole('button',{name:'New game',exact:true}).click();
+  await newGame();
   await page.getByText('Live · Patch 18.7',{exact:false}).waitFor();
   await page.getByRole('button',{name:'Got one Needlessly Large Rod from carousel',exact:true}).click();
   await page.getByRole('button',{name:'Got one Chain Vest from carousel',exact:true}).click();
-  const fitSummary=suggestion('AP Fast 9').locator('.finder-method summary');
+  const fitSummary=suggestion('AP Fast 9').locator('.finder-fit-score');
+  await suggestion('AP Fast 9').locator('.academy-tier').getByText('S',{exact:true}).waitFor();
+  const rankScore=suggestion('AP Fast 9').locator('.finder-effective-score');
+  const scoreValue=async locator=>Number((await locator.innerText()).split(' ').at(-1));
+  assert.equal(await scoreValue(rankScore),await scoreValue(fitSummary)+24);
   const originalFit=await fitSummary.textContent();
   await page.locator('#first-augment-trigger').click();
   const firstAugments=(await page.locator('#first-augment-choices .icon-select-option span').allTextContents())
@@ -140,12 +159,14 @@ try {
   assert.equal(new Set(firstAugments).size,firstAugments.length);
   await page.locator('#first-augment-choices input').fill('Beast Within');
   assert.deepEqual(await page.locator('#first-augment-choices .icon-select-option span').allTextContents(),['Beast Within','Beast Within+']);
+  await page.locator('#first-augment-choices input').fill('Tons of Stats!');
+  assert.deepEqual(await page.locator('#first-augment-choices .icon-select-option span').allTextContents(),['Tons of Stats!']);
   await page.locator('#first-augment-choices input').fill('Unrivaled');
   assert.deepEqual(await page.locator('#first-augment-choices .icon-select-option span').allTextContents(),['Unrivaled']);
   await page.locator('#first-augment-choices input').fill('Woven Magic');
   await page.locator('[data-option-value="DA_WovenMagic"]').click();
   assert.notEqual(await fitSummary.textContent(),originalFit);
-  await fitSummary.click();
+  await suggestion('AP Fast 9').locator('.finder-method summary').click();
   await suggestion('AP Fast 9').getByText(/\+\d+ · Augment: Woven Magic.*Rules-based fit/).waitFor();
   await suggestion('AP Fast 9').getByLabel('Woven Magic · Rules-based augment fit').waitFor();
 
@@ -172,6 +193,7 @@ try {
   const holders = name => card(name).locator('.item-owner').allTextContents();
   const hero = page.locator('#next-build');
   assert.equal(await page.locator('.opener-banner').isVisible(),false);
+  assert.equal(await page.locator('#augment-priority').innerText(),'2-1: Econ › Item › Combat');
   const lockedFit = async () => Number((await page.locator('#comp-fit').innerText()).split('Fit score ').at(-1));
   const carouselPriorities = () => page.locator('#shopping .need').allTextContents();
   const markCrownguard = async (message, received) => {
@@ -272,6 +294,12 @@ try {
   const offerSearch=page.locator('#augment-offer-search');
   await augmentOpen.click();
   await page.locator('[data-augment-round="1"]').click();
+  await offerSearch.fill('Beast Within');
+  assert.deepEqual(await page.locator('#augment-search-results strong').allTextContents(),['Beast Within','Beast Within+']);
+  await offerSearch.fill('Tons of Stats!');
+  assert.deepEqual(await page.locator('#augment-search-results strong').allTextContents(),['Tons of Stats!']);
+  await offerSearch.press('Enter');
+  assert.deepEqual(await page.locator('#augment-search-results .augment-rarity').allTextContents(),['Gold','Prismatic']);
   await offerSearch.fill('Deadlier Caps');
   await offerSearch.press('Enter');
   await page.getByText('Deadlier Caps is listed by Academy for 2-1, not 3-2.',{exact:true}).waitFor();

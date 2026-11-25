@@ -36,16 +36,18 @@ test('18.7 Brawler owned puts Adaptor Reroll and Yi Rengar ahead of flex and ite
   const input = plan(Academy, true);
   const rows = CompFinder.ranked(input);
   assert.deepEqual(rows.slice(0,2).map(row=>row.guide.title), brawlerLeaders);
-  assert.ok(rows.slice(0,2).every(row=>row.primaryEmblem && row.emblemBonus===32));
+  assert.ok(rows.slice(0,2).every(row=>row.rankGroup===0 && row.primaryEmblem && row.emblemBonus===32));
+  assert.deepEqual(rows.slice(0,2).map(row=>[row.fitScore,row.tierBonus,row.effectiveScore]),[[20,12,32],[20,12,32]]);
   assert.ok(rows.slice(2).every(row=>!row.primaryEmblem && row.emblemBonus<=8));
   const tempo = rows.find(row=>row.guide.title==='Tempo Riftbeast');
   assert.equal(tempo.emblemBonus, 8);
+  assert.equal(tempo.rankGroup, 1);
   assert.ok(tempo.specialMatches.some(match=>match.champion==='Sentinel'));
 
   const kayle = rows.find(row=>row.guide.title==='Solar Kayle').guide;
   input.currentUnits = kayle.finalComp.map(unit=>({apiName:unit.apiName, stars:3}));
   const strongBoard = CompFinder.ranked(input);
-  assert.ok(strongBoard.find(row=>row.guide===kayle).fitScore>strongBoard[1].fitScore+CompFinder.tierFitGap);
+  assert.ok(strongBoard.find(row=>row.guide===kayle).effectiveScore>strongBoard[1].effectiveScore);
   assert.ok(strongBoard.slice(0,2).every(row=>brawlerLeaders.includes(row.guide.title)));
 });
 
@@ -57,6 +59,8 @@ test('18.7 Brawler unowned leaves Yi Rengar at #9 and keeps Ravager Rengar gated
   assert.equal(yi.guide.title, 'Yi Rengar');
   assert.equal(yi.blocked, false);
   assert.equal(yi.emblemBonus, 0);
+  assert.equal(yi.rankGroup, 1);
+  assert.equal(yi.effectiveScore, 0);
   const ravager = rows.find(row=>row.guide.title==='Ravager Rengar');
   assert.equal(ravager.blocked, true);
   assert.equal(ravager.gateReason, 'Only play with Ravager emblem');
@@ -76,7 +80,7 @@ test('the Brawler explorer ranks the two Master Yi builds first and names the fl
   assert.deepEqual(EmblemExplorer.academyRoutes(brawler), []);
 });
 
-test('the Vanguard explorer reads Krug from Academy and ranks exact MetaTFT holder pairs', async () => {
+test('the Vanguard explorer ranks qualifying holders in the ' + live.vanguardCapturedAt + ' capture', async () => {
   const {EmblemExplorer} = setup();
   const academyRoutes = EmblemExplorer.academyRoutes(vanguard);
   assert.deepEqual(academyRoutes.map(row=>[row.guide.title,row.holders[0].name]), [['Tempo Riftbeast','Krug']]);
@@ -85,13 +89,17 @@ test('the Vanguard explorer reads Krug from Academy and ranks exact MetaTFT hold
     assert.equal(url.origin+url.pathname, 'https://api-hc.metatft.com/tft-explorer-api/unit_items');
     assert.equal(url.searchParams.get('item'), vanguard);
     assert.equal(url.searchParams.get('patch'), '18.7');
-    return Response.json({data:live.vanguardRows});
+    const underMinimum = {unit_items:'DA_Sentinel18&'+vanguard, placement_count:[99,0,0,0,0,0,0,0]};
+    return Response.json({data:[...live.vanguardRows,underMinimum]});
   }});
   const holders = EmblemExplorer.metaHolders(vanguard, data);
-  assert.deepEqual(holders.map(holder=>holder.name), ['Lux','Kennen','Krug','Morgana']);
-  const morgana = holders.at(-1);
-  assert.equal(morgana.samples, 5925);
-  assert.equal(morgana.avg.toFixed(2), '4.28');
+  assert.equal(holders.length,35);
+  assert.ok(holders.every((holder,n)=>holder.samples>=100 && (!n || holders[n-1].avg<=holder.avg)));
+  assert.equal(holders.some(holder=>holder.id==='DA_Sentinel18'),false);
+  const morgana = holders[22];
+  assert.equal(morgana.name,'Morgana');
+  assert.equal(morgana.samples,5674);
+  assert.equal(morgana.avg.toFixed(2),'4.30');
   assert.ok(morgana.comps.some(guide=>guide.title==='Coven Elise'));
   assert.ok(morgana.comps.some(guide=>guide.title==='Ahri Morgana'));
   assert.deepEqual(EmblemExplorer.metaHolders(vanguard, {...data, patch:'18.6'}), []);
@@ -108,4 +116,21 @@ test('the explorer includes a Vanguard route when an Academy guide explicitly eq
   const [row] = EmblemExplorer.academyRoutes(vanguard);
   assert.equal(row.guide.title, 'Coven Morgana');
   assert.deepEqual(row.holders.map(h=>[h.name,h.use]), [['Morgana','final']]);
+});
+
+test('the emblem catalog combines Flora Fatalis item IDs and keeps the augment route', () => {
+  const {Academy, EmblemExplorer} = setup();
+  const apiName = 'DA_18_EmblemFloraFatalis';
+  const alias = apiName+'Augment';
+  const {items, guides, champions} = Academy.snapshot;
+  const existing = items.filter(item => item.apiName !== apiName && item.apiName !== alias);
+  const emblem = {apiName, name:'Flora Fatalis Emblem', type:'emblems', trait:'DA_FloraFatalis18', composition:[], recommendedChampions:[], filterType:[], description:''};
+  const champion = champions.find(unit => unit.apiName === 'DA_18_Veigar');
+  const guide = {...guides[0], finalComp:[{apiName:champion.apiName, items:[alias]}], altBuilds:[]};
+  Academy.useSnapshot({...Academy.snapshot, items:[...existing, emblem, {...emblem, apiName:alias}], guides:[guide]});
+  const deduped = EmblemExplorer.catalog().filter(item => item.name === emblem.name);
+  assert.equal(deduped.length, 1);
+  assert.deepEqual([...deduped[0].apiNames], [apiName, alias]);
+  assert.deepEqual(EmblemExplorer.academyRoutes(apiName)[0].holders,
+    [{apiName:champion.apiName, name:champion.name, use:'final'}]);
 });

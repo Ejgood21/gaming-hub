@@ -2,6 +2,7 @@
 
 const createAugmentFit = require('./augment-fit');
 const tierFitGap = 12;
+const tierBonus = {S: 2 * tierFitGap, A: tierFitGap, B: 0};
 const primaryEmblemCap = 40;
 const flexEmblemCap = 8;
 
@@ -218,7 +219,7 @@ module.exports = function createCompFinder(model) {
         return {id,name:augment?.name||id,...match};
       });
       const requirements=this.requirements(plan,guide);
-      const tierScore=academyTier(requirements.unlocked?'A':guide.tier).score,board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
+      const board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
       const names=ids=>[...new Set(ids.map(id=>byId[id]?.name||id))].join(', ');
       const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
@@ -237,7 +238,7 @@ module.exports = function createCompFinder(model) {
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
       const fitScore=Number(reasons.reduce((sum,reason)=>sum+reason.points,0).toFixed(2));
       return {guide,build,remaining,placements,matched,unmatched,used,ready,augmentMatches,specialMatches,unknownSpecial,earlyMatches,featuredOwned:featuredOwned?featured:null,...board,...requirements,...execution,
-        score:tierScore+fitScore,fitScore,tierScore,componentScore,itemScore,emblemBonus,primaryEmblem,reasons,selectable:!!build.entries.length&&!build.missing.length};
+        fitScore,componentScore,itemScore,emblemBonus,primaryEmblem,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
     signalCount(plan){
@@ -270,23 +271,16 @@ module.exports = function createCompFinder(model) {
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
       if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&(r.primaryEmblem||r.augmentMatches.some(a=>a.academy||a.recommended)))&&
         (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
-      const tierRank = row => this.tierRank(row.unlocked?'A':row.guide.tier);
-      const rankable=rows.filter(r=>!r.blocked).length;
-      const initial=rows.filter(r=>r.guide.tier!=='X'||!r.blocked||rankable>=3)
-        .sort((a,b)=>Number(a.blocked)-Number(b.blocked)||Number(!!b.primaryEmblem)-Number(!!a.primaryEmblem)||tierRank(a)-tierRank(b)||b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title));
-      const ranked=[];
-      for(const row of initial){
-        // Insert before the first higher-tier row this comp clears. A pairwise
-        // sort can cycle when two close gaps add up to one qualifying gap.
-        const index=row.blocked||row.missingEmblems.length?-1:ranked.findIndex(other=>
-          other.primaryEmblem===row.primaryEmblem&&tierRank(other)<tierRank(row)&&Math.round((row.fitScore-other.fitScore)*100)>=tierFitGap*100);
-        if(index<0)ranked.push(row);
-        else{
-          row.passedTier=ranked[index];
-          ranked.splice(index,0,row);
-        }
-      }
-      return ranked;
+      const rankable=rows.filter(row=>!row.blocked).length;
+      return rows.filter(row=>row.guide.tier!=='X'||!row.blocked||rankable>=3)
+        .map(row=>{
+          const bonus=tierBonus[row.unlocked?'A':row.guide.tier] ?? 0;
+          const rankGroup=row.blocked?2:row.primaryEmblem?0:1;
+          return {...row, tierBonus:bonus, rankGroup, effectiveScore:Number((row.fitScore+bonus).toFixed(2))};
+        })
+        // Higher fit wins an exact tie, so an adjacent tier yields at 12 points.
+        .sort((a,b)=>a.rankGroup-b.rankGroup||b.effectiveScore-a.effectiveScore||
+          b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title)||a.guide.id.localeCompare(b.guide.id));
     },
     componentFit(plan,entries){
       let beam=[{pool:{...plan.owned},score:0,used:[],ready:[]}];

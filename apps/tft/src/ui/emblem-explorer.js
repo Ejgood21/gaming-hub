@@ -20,13 +20,18 @@
   const cache = new Map();
   let selection, request, revision = Academy.revision;
 
-  function drawCatalog() {
+  function drawCatalog(focus) {
     const owned = new Set(state.queue.filter(item=>item.done).map(item=>item.item));
-    const items = EmblemExplorer.catalog().map(item=>({...item, id:Academy.itemMap.get(item.apiName)}));
-    items.sort((a,b)=>Number(owned.has(b.id))-Number(owned.has(a.id)));
+    const items = EmblemExplorer.catalog().map(item=>({
+      ...item, id:Academy.itemMap.get(item.apiName),
+      owned:[...item.apiNames].some(apiName=>owned.has(Academy.itemMap.get(apiName)))
+    }));
+    items.sort((a,b)=>Number(b.owned)-Number(a.owned));
     catalog.innerHTML = items.map(item=>`<button class="emblem-pick" data-explore-emblem="${esc(item.apiName)}">
-      ${icon(item.id)}<span>${esc(item.name)}</span>${owned.has(item.id)?'<small>Owned</small>':''}
+      ${icon(item.id)}<span>${esc(item.name)}</span>${item.owned?'<small>Owned</small>':''}
     </button>`).join('');
+    const target = items.find(item=>item.apiNames.has(focus));
+    if (target) catalog.querySelector(`[data-explore-emblem="${CSS.escape(target.apiName)}"]`)?.focus();
   }
 
   function browse(focus) {
@@ -35,8 +40,7 @@
     title.textContent = 'Explore emblems';
     back.hidden = results.hidden = true;
     catalog.hidden = false;
-    drawCatalog();
-    catalog.querySelector(`[data-explore-emblem="${CSS.escape(focus || '')}"]`)?.focus();
+    drawCatalog(focus);
     dialog.scrollTop = 0;
   }
 
@@ -57,7 +61,7 @@
       const holders = EmblemExplorer.metaHolders(emblem, data);
       const checked = new Date(data.fetchedAt).toLocaleString();
       target.innerHTML = `<p class="emblem-source">Patch ${esc(data.patch)} · ranked, last 3 days · checked ${esc(checked)}</p>` + (holders.length
-        ? `<p class="emblem-source">Available holders with ${EmblemExplorer.minimumSamples}+ samples, ranked by average place.</p>
+        ? `<p class="emblem-source">${holders.length} ${holders.length===1?'holder':'holders'} with ${EmblemExplorer.minimumSamples}+ samples, ranked by average place.</p>
         <ol class="emblem-list">${holders.map(holder=>`<li class="emblem-holder">
           <div><strong>${esc(holder.name)}</strong><span>${holder.avg.toFixed(2)} avg · ${holder.samples.toLocaleString()} samples</span></div>
           ${holder.comps.length?`<details><summary>Academy comps featuring ${esc(holder.name)} (${holder.comps.length})</summary>

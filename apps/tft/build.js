@@ -55,7 +55,7 @@ ${definitions}
   const {
     DATA, byId, componentOrder, academyTier, Academy, Tracker, OfflineTracker, LootTracker,
     QueueOrder, PivotPlanner, QuickImport, MetaBuilds, CompFinder, DecisionPlanner,
-    PlanAdvisor, AugmentAdvisor, EmblemExplorer
+    PlanAdvisor, AugmentAdvisor, EmblemExplorer, OpenerGuidance
   } = model;
   try {
     const cached = readAcademyCache(localStorage.getItem(Academy.cacheKey), ACADEMY_BUNDLED.set);
