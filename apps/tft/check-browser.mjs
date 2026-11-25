@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
+import {checkAugmentRerolls, checkEmblemAiming, checkMarkMade} from './test-support/p112-browser.mjs';
 
 const require = createRequire(import.meta.url);
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const liveFixture = require('./test-support/live-fixture');
 const academy = require('./data/academy-18.3b.json');
+const emblems = require('./test-support/p111-live-emblems.json');
 const {apFast9, mamawood, covenElise, solarEclipse, currentUnits, darkRitual} = require('./test-support/p16-comps');
 const origin = 'https://carousel.test';
 let fixture = liveFixture({omitAcademyPatch:true,allowOtherUnits:true,guides:academy.guides.map(guide =>
@@ -13,22 +15,31 @@ let fixture = liveFixture({omitAcademyPatch:true,allowOtherUnits:true,guides:aca
 )});
 const browser = await chromium.launch({executablePath:process.env.CHROMIUM_PATH});
 const errors = [];
-try {
-  const page = await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+const html = await readFile(new URL('carousel-companion.html',import.meta.url),'utf8');
+
+async function newPage(width, ignoreHTTPSErrors = false) {
+  const page = await browser.newPage({
+    viewport:{width,height:844},isMobile:width===390,hasTouch:width===390,ignoreHTTPSErrors
+  });
   page.setDefaultTimeout(10000);
   page.on('pageerror', error=>errors.push(error.message));
-  page.on('console', message=>{if(message.type()==='error')errors.push(message.text);});
-  const html = await readFile(new URL('carousel-companion.html',import.meta.url),'utf8');
-  await page.route(origin+'/**',async route=>{
+  page.on('console', message=>{if(message.type()==='error')errors.push(message.text()+' '+message.location().url);});
+  await page.route(origin+'/**',route=>{
     const path = new URL(route.request().url()).pathname;
-    if(path==='/'){
-      await route.fulfill({contentType:'text/html',body:html});
-    }else{
-      await route.fulfill({status:204});
-    }
+    return path==='/'?route.fulfill({contentType:'text/html',body:html}):route.fulfill({status:204});
   });
+  return page;
+}
+
+async function replayFixtures() {
+  const page = await newPage(390);
   await page.route(/^https:\/\/(?:tftacademy\.com|api-hc\.metatft\.com)\//,async route=>{
-    const response = await fixture(route.request().url());
+    const url = new URL(route.request().url());
+    if(url.pathname.endsWith('/unit_items')){
+      await route.fulfill({headers:{'Access-Control-Allow-Origin':'*'},json:{data:emblems.vanguardRows}});
+      return;
+    }
+    const response = await fixture(url);
     await route.fulfill({
       headers:{'Access-Control-Allow-Origin':'*'},
       ...(response.type==='opaque'?{status:204}:{json:await response.json()})
@@ -367,21 +378,30 @@ try {
   assert.equal(await azirStars.getAttribute('aria-pressed'),'true');
 
   fixture=liveFixture({metaPatch:'18.7',omitAcademyPatch:true,allowOtherUnits:true,
-    guides:[{...mamawood,augments:[{apiName:'DA_UpwardMobility'}]},apFast9]});
-  await startGame();
-  await choose('Mamawood');
-  await augmentOpen.click();
-  for(const name of ['Lucky Gloves','Flowing Tears','Deadlier Caps']){
-    await offerSearch.fill(name);
-    await page.locator('#augment-search-results').getByText(name,{exact:true}).click();
-  }
-  const offerCard = name => page.locator('.augment-offer').filter({has:page.getByRole('button',{name:new RegExp('Change offer \\d+: '+name+'$')})});
-  await offerCard('Lucky Gloves').getByText('Consider reroll · if available',{exact:true}).waitFor();
-  await offerCard('Lucky Gloves').getByText(/known prismatic augments at 2-1/).waitFor();
-  await offerCard('Flowing Tears').getByText('Contextual fit',{exact:true}).waitFor();
-  await offerCard('Flowing Tears').getByText(/known silver augments at 2-1/).waitFor();
+    guides:emblems.guides.map(guide=>guide.title==='AP Fast 9'
+      ? {...guide,augments:[{apiName:'DA_UpwardMobility'}]} : guide)});
+  await checkEmblemAiming(page,{checkFallback:true});
+  await checkAugmentRerolls(page);
   assert.deepEqual(errors,[]);
-  console.log('390px passed for Explore, comp and item pivots, queue, board, carousel, augments, and refresh. Components passed at 390px and 1440px. No console errors.');
+  console.log('Fixture replay passed at 390px, including emblem Aim, champion portraits, all four augment colors and both rerolls. Components also passed at 1440px. Zero console errors.');
+}
+
+async function replayLive() {
+  for (const width of [390,1440]) {
+    const page = await newPage(width,process.env.TFT_BROWSER_IGNORE_HTTPS_ERRORS==='1');
+    await page.goto(origin);
+    await checkEmblemAiming(page);
+    await checkMarkMade(page);
+    await checkAugmentRerolls(page);
+    assert.deepEqual(errors,[]);
+    console.log(`${width}px · Live Set 18 Patch 18.7 · Brawler ranks and both emblem Aim paths, MetaTFT portraits, Mark made and both augment rerolls passed · zero console errors`);
+    await page.close();
+  }
+}
+
+try {
+  if (process.argv.includes('--live')) await replayLive();
+  else await replayFixtures();
 } catch (error) {
   if(errors.length)console.error(errors);
   throw error;

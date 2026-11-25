@@ -28,12 +28,12 @@ function render(){
  if(next){
    const item=byId[next.item],covered=next.slots.filter(slot=>slot.have).length;
    const status=item.special?'Record when received':covered===next.slots.length?'Ready to make':covered+' / '+next.slots.length+' components';
-   nextBuild.innerHTML=`<span class="next-build-label">Next item</span>${icon(item.id)}<div class="next-build-target"><strong>${esc(item.name)}</strong>${next.champion?`<span>For ${next.earlyChampion&&next.earlyChampion!==next.champion?esc(next.earlyChampion)+' → ':''}${esc(next.champion)}</span>`:''}</div><span class="next-build-status">${status}</span>`;
+   nextBuild.innerHTML=`<span class="next-build-label">Next item</span>${icon(item.id)}<div class="next-build-target"><strong>${esc(item.name)}</strong>${next.champion?`<span class="next-build-holders">For ${next.earlyChampion&&next.earlyChampion!==next.champion?IconUI.championLabel(next.earlyChampion)+' → ':''}${IconUI.championLabel(next.champion)}</span>`:''}</div><span class="next-build-status">${status}</span>`;
  }else{
    nextBuild.innerHTML='<span class="next-build-label">Next item</span><strong>Queue complete</strong>';
  }
  document.getElementById('queue').innerHTML=a.rows.map((q,n)=>{const i=byId[q.item],ready=i.recipe.length===2&&q.slots.every(c=>c.have);return `<article class="qcard" data-queue-uid="${q.uid}" aria-label="${esc(i.name)} · ${esc(q.champion||'Unassigned')}"><div class="qtop"><button class="queue-grip" aria-label="Reorder ${esc(i.name)}" aria-describedby="queue-drag-help" aria-pressed="false" data-focus="drag-${q.uid}">⠿</button>${icon(i.id)}<div class="itemtitle"><h3>${esc(i.name)}</h3>${q.champion?`<small class="item-owner">For ${q.earlyChampion&&q.earlyChampion!==q.champion?`${IconUI.championLabel(q.earlyChampion)} → `:''}${IconUI.championLabel(q.champion)}</small>`:'<small class="item-owner">Unassigned</small>'}</div><div class="recipe">${q.slots.map((c,idx)=>`${idx?'<span class="plus">+</span>':''}${c.have?`<span class="componentpill have" title="${esc(byId[c.id].name)} reserved for this item">${icon(c.id)}<span aria-hidden="true">✓</span></span>`:`<button class="componentpill" data-action="gain" data-id="${c.id}" data-focus="slot-${q.uid}-${idx}" aria-label="Record one ${esc(byId[c.id].name)} received">${icon(c.id)}<span aria-hidden="true">+</span></button>`}`).join('')}</div>${btn('remove',q.uid,`Remove ${i.name}`,'×','remove')}</div><div class="qbottom">${btn('make',q.uid,i.special?`Record ${i.name} received; no components used`:`Mark ${i.name} made`,i.special?'✓ Received':ready?'✓ Ready · Mark made':'✓ Mark made',`make ${ready?'ready':''}`)}</div></article>`;}).join('')||`<div class="empty"><div class="emptyicon" aria-hidden="true">${done.length?'✓':'+'}</div><h3>${done.length?'Every build, checked off.':'No items queued yet'}</h3><p>${done.length?'Your completed items are tracked above.':'Choose a comp in Explore builds or paste an Academy team code.'}</p></div>`;
- document.getElementById('completed').innerHTML=done.map(q=>`<div class="completeitem" role="listitem" title="${esc(byId[q.item].name)}${q.champion?' · '+esc(q.champion):''}" aria-label="${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(q.item)}${btn('restore',q.uid,`Restore ${byId[q.item].name}${q.champion?' for '+q.champion:''} to queue and return its tracked ingredients`,'Restore','quiet')}</div>`).join('');
+ document.getElementById('completed').innerHTML=done.map(q=>`<div class="completeitem" role="listitem" title="${esc(byId[q.item].name)}${q.champion?' · '+esc(q.champion):''}" aria-label="${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(q.item)}${q.champion?IconUI.champion(q.champion,'completed-portrait'):''}${btn('restore',q.uid,`Restore ${byId[q.item].name}${q.champion?' for '+q.champion:''} to queue and return its tracked ingredients`,'Restore','quiet')}</div>`).join('');
  const needs=Object.entries(a.needs).sort(([x,v],[y,w])=>(Number(state.pins.includes(y))-Number(state.pins.includes(x)))||v.rank-w.rank||Academy.componentPreference(state,x)-Academy.componentPreference(state,y)||w.count-v.count||LootTracker.compare(state,x,y)||componentOrder.indexOf(x)-componentOrder.indexOf(y));
  document.getElementById('shopping').innerHTML=needs.map(([id,n])=>`<div class="need ${state.pins.includes(id)?'pinned':''}"><div class="needtop">${icon(id)}<div class="needname">${esc(byId[id].name)}<small title="${esc(n.items.join(', '))}">For ${esc(n.items[0])}${n.items.length>1?` +${n.items.length-1}`:''}</small></div><span class="needed" aria-label="${n.count} needed">×${n.count}</span></div><div class="needactions"><button class="pin ${state.pins.includes(id)?'active':''}" data-action="pin" data-id="${id}" data-focus="pin-${id}" aria-label="Prioritize ${esc(byId[id].name)}" aria-pressed="${state.pins.includes(id)}">${state.pins.includes(id)?'★':'☆'}</button>${btn('gain',id,`Record one ${byId[id].name} received`,'+ Got one','got')}</div></div>`).join('')||`<div class="shopempty" style="grid-column:1/-1"><b>${a.rows.some(q=>byId[q.item].special)?'No components left to chase.':a.rows.length?'You have the ingredients.':done.length?'All planned items made.':'Your shopping list starts here.'}</b>${a.rows.length?'Check off your items as you make them.':'Add a build to see which components to collect.'}</div>`;
  document.getElementById('bench').innerHTML=components.map(c=>`<div class="benchitem ${(state.owned[c.id]||0)?'has':''}">${icon(c.id)}<strong>${esc(c.name)}</strong><div class="counter">${btn('lose',c.id,`Remove one ${c.name}`,'−','',!(state.owned[c.id]>0))}<output aria-label="${esc(c.name)} owned">${state.owned[c.id]||0}</output>${btn('gain',c.id,`Add one ${c.name}`,'+','',(state.owned[c.id]||0)>=99)}</div></div>`).join('');
@@ -70,11 +70,11 @@ function applyItemPivot(apply,message,onApplied){
  if(itemPivotConfirm.open)return;
  const next=structuredClone(state);
  if(!apply(next))return;
- const holders=rows=>rows.map(q=>q.champion||'an unassigned holder').join(', ');
+ const holders=rows=>rows.map(q=>q.champion?IconUI.championLabel(q.champion):'an unassigned holder').join(', ');
  const warnings=PivotPlanner.addedQueueCopies(state,next).map(({item,added,existing})=>{
    const name=byId[item].name;
-   return existing.length?`${name} is already queued for ${holders(existing)}. Also queue it for ${holders(added)}?`
-     :`Queue ${name} for ${holders(added)}? Each assignment needs its own copy.`;
+   return existing.length?`${esc(name)} is already queued for ${holders(existing)}. Also queue it for ${holders(added)}?`
+     :`Queue ${esc(name)} for ${holders(added)}? Each assignment needs its own copy.`;
  });
  if(!warnings.length){
    mutate(()=>{state=next;},message);
@@ -90,7 +90,7 @@ function applyItemPivot(apply,message,onApplied){
    mutate(()=>{state=next;},message);
    onApplied?.();
  };
- itemPivotConfirm.querySelector('p').textContent=warnings.join('\n\n');
+ itemPivotConfirm.querySelector('p').innerHTML=warnings.join('\n\n');
  itemPivotConfirm.showModal();
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const {action,id}=b.dataset,q=state.queue.find(q=>q.uid===id);
