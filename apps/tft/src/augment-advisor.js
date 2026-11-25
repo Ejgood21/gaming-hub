@@ -8,9 +8,30 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     stages,
     held(plan){return CompFinder.heldAugments(plan);},
     slots(plan){return [plan.firstAugment||plan.chosenAugments?.[0]||'',plan.chosenAugments?.[1]||'',plan.chosenAugments?.[2]||''];},
+    newOffers(round){return {round,ids:['','',''],seen:[],awaiting:[false,false,false]};},
     ensure(plan){
-      if(!plan.augmentOffers||!Array.isArray(plan.augmentOffers.ids))plan.augmentOffers={round:Math.max(0,this.slots(plan).findIndex(id=>!id)),ids:['','',''],seen:[]};
+      if(!plan.augmentOffers||!Array.isArray(plan.augmentOffers.ids))plan.augmentOffers=this.newOffers(Math.max(0,this.slots(plan).findIndex(id=>!id)));
       return plan.augmentOffers;
+    },
+    available(plan,offers=this.ensure(plan)){
+      const excluded=new Set([...offers.ids,...(offers.seen||[]),...this.held(plan)]);
+      return CompFinder.augmentOptions(stages[offers.round]).filter(a=>!a.ids.some(id=>excluded.has(id)));
+    },
+    replace(plan,slot){
+      const offers=this.ensure(plan),id=offers.ids[slot];
+      if(!id)return false;
+      offers.seen=[...new Set([...(offers.seen||[]),id])].slice(-60);
+      offers.ids[slot]='';
+      offers.awaiting||=[false,false,false];
+      offers.awaiting[slot]=true;
+      return true;
+    },
+    enter(plan,slot,id){
+      const offers=this.ensure(plan);
+      if(!Number.isInteger(slot)||slot<0||slot>=offers.ids.length||!this.available(plan,offers).some(a=>a.ids.includes(id)))return false;
+      offers.ids[slot]=id;
+      if(offers.awaiting)offers.awaiting[slot]=false;
+      return true;
     },
     eligible(augment,round){return !augment.stages?.length||augment.stages.includes(stages[round]);},
     catalog(plan,round){
@@ -76,13 +97,12 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
         Number(!!b.academy)-Number(!!a.academy)||b.score-a.score||a.slot-b.slot);
       const complete=offers.ids.every(Boolean)&&valid.length===3;
       const best=valid[0],rerolls=[];
-      let action='enter',message='Enter your three offered augments.';
+      let action='enter',message='Enter your three offers';
       if(best?.academy){
         action='take';
-        message=`Take ${best.augment.name} — best Academy-backed fit${complete?'':' among the offers entered'}.`;
+        message=`Take ${best.augment.name}`;
       }else if(complete){
-        const seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
-        const alternatives=this.catalog(plan,round).filter(a=>!a.ids.some(id=>seen.has(id)))
+        const alternatives=this.available(plan,offers).filter(a=>this.eligible(a,round))
           .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
         for(const row of valid.filter(r=>!r.contextual)){
           const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
@@ -91,17 +111,26 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
         if(rerolls.length){
           action='reroll';
           const names=rerolls.map(r=>rows.find(row=>row.slot===r.slot).augment.name);
-          message=`Consider rerolling ${names.join(' or ')} if available. See each offer for its reason.`;
+          message=names.length===1?`Reroll ${names[0]} if available`:'Reroll a blue offer if available';
         }else if(best.contextual&&best.score>0){
           action='lean';
-          message=`Lean ${best.augment.name} — rules-based fit.`;
+          message=`Take ${best.augment.name}`;
         }else{
           action='unknown';
-          message='No clear pick or reroll edge from the available data.';
+          message='No clear pick';
         }
-      }else if(rows.length){
+      }else if(rows.length||offers.awaiting?.some(Boolean)){
         action='partial';
-        message=rows.some(r=>r.offRound)?'Check the round on the marked offer.':'Add all three offers to compare their fit.';
+        message=offers.awaiting?.some(Boolean)?'Enter the replacement offer':
+          rows.some(r=>r.offRound)?'Check the round on the marked offer':'Enter all three offers to compare';
+      }
+      for(const row of rows){
+        const top=row===best&&(action==='take'||action==='lean');
+        [row.verdict,row.label]=row.invalid||row.offRound?['avoid','Check offer']:
+          top?['take','Take this']:
+          rerolls.some(r=>r.slot===row.slot)?['reroll','Reroll if available']:
+          row.academy?['decent','Academy match']:
+          row.contextual?['decent','Contextual fit']:['avoid','Limited evidence'];
       }
       const academyNotice=ctx.fitGuide&&!augmentFit.hasRecommendations(ctx.fitGuide) ?
         `Academy lists no recommended augment for this comp (${ctx.fitGuide.title}). Fit uses item, economy and combat rules.` : '';
@@ -111,7 +140,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       const offers=this.ensure(plan),id=offers.ids[slot],a=CompFinder.augment(id);
       if(!a||this.held(plan).includes(id))return false;
       const selected=this.slots(plan);selected[offers.round]=id;plan.chosenAugments=selected;plan.firstAugment=selected[0];
-      plan.augmentOffers={round:Math.min(2,offers.round+1),ids:['','',''],seen:[]};return true;
+      plan.augmentOffers=this.newOffers(Math.min(2,offers.round+1));return true;
     }
   };
 };

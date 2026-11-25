@@ -12,7 +12,12 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
       return {
         currentUnits:[...new Map((Array.isArray(value.currentUnits)?value.currentUnits:[]).filter(u=>u&&typeof u.apiName==='string'&&Academy.snapshot.champions.some(c=>c.apiName===u.apiName)).slice(0,28).map(u=>[u.apiName,{apiName:u.apiName,stars:Math.max(1,Math.min(3,Math.floor(Number(u.stars)||1)))}])).values()],
         chosenAugments:Array.from({length:3},(_,n)=>typeof value.chosenAugments?.[n]==='string'?value.chosenAugments[n].slice(0,120):''),
-        augmentOffers:value.augmentOffers&&typeof value.augmentOffers==='object'?{round:Math.max(0,Math.min(2,Math.floor(Number(value.augmentOffers.round)||0))),ids:Array.from({length:3},(_,n)=>typeof value.augmentOffers.ids?.[n]==='string'?value.augmentOffers.ids[n].slice(0,120):''),seen:(Array.isArray(value.augmentOffers.seen)?value.augmentOffers.seen:[]).filter(id=>typeof id==='string').map(id=>id.slice(0,120)).slice(0,60)}:null,
+        augmentOffers:value.augmentOffers&&typeof value.augmentOffers==='object'?{
+          round:Math.max(0,Math.min(2,Math.floor(Number(value.augmentOffers.round)||0))),
+          ids:Array.from({length:3},(_,n)=>typeof value.augmentOffers.ids?.[n]==='string'?value.augmentOffers.ids[n].slice(0,120):''),
+          seen:(Array.isArray(value.augmentOffers.seen)?value.augmentOffers.seen:[]).filter(id=>typeof id==='string').map(id=>id.slice(0,120)).slice(-60),
+          awaiting:Array.from({length:3},(_,n)=>!value.augmentOffers.ids?.[n]&&value.augmentOffers.awaiting?.[n]===true)
+        }:null,
         tempo:value.tempo==='urgent'?'urgent':'balanced',
         pivotIntents:Object.fromEntries(Object.entries(value.pivotIntents||{}).filter(([name,ids])=>name.length<120&&Array.isArray(ids)).map(([name,ids])=>[name,ids.filter(id=>valid.has(id)).slice(0,3)])),
         firstAugment:typeof value.firstAugment==='string'?value.firstAugment.slice(0,120):'',

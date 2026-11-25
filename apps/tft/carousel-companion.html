@@ -140,7 +140,63 @@
 .carousel-target{display:inline-flex;align-items:center;flex:0 0 auto}
 .carousel-target>.icon{width:29px;height:29px}
 
-#augment-dialog{max-width:650px;max-height:88vh;overflow:auto}.augment-stage{display:flex;gap:7px;margin:0 0 12px}.augment-stage button{font-size:12px;padding:7px 11px}.augment-stage [aria-pressed=true]{background:#36455a;border-color:#96abc6}.augment-search-wrap{position:relative;margin:10px 0}.augment-search-wrap label{display:block;font-size:11px;color:#a6b8ce;margin-bottom:5px}#augment-search-results{position:relative;max-height:280px;overflow:auto;background:#101922;border:1px solid #53657c;border-radius:7px;margin-top:3px}#augment-search-results[hidden]{display:none}#augment-search-results button{display:flex;align-items:center;gap:8px;width:100%;border:0;border-bottom:1px solid #304050;border-radius:0;background:transparent;text-align:left;padding:8px}#augment-search-results button.search-active{background:#283b50}#augment-search-results button>span{flex:1;min-width:0}#augment-search-results strong{font-size:13px;display:block}#augment-search-results small{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#augment-search-results p{font-size:12px;margin:12px}#augment-verdict{border:1px solid #41516a;border-radius:8px;background:#1a2839;color:#dbe7f9;padding:11px;font-size:13px;line-height:1.45}#augment-verdict[data-action=take]{border-color:#7897be}#augment-verdict[data-action=reroll]{border-color:#9c855b}#augment-verdict small{display:block;font-size:11px;color:#aebfd4;margin-top:6px}#augment-offers{display:flex;flex-direction:column;gap:8px;margin-top:12px}.augment-offer{background:#141e28;border:1px solid #334153;border-radius:9px;padding:11px}.augment-offer.active-slot{border-color:#7b91ad}.augment-offer.best-offer{border-left:3px solid #9dbbdd}.augment-offer-heading{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.augment-offer-heading>button:first-child{flex:1;background:transparent;border:0;padding:0;text-align:left;min-width:160px}.augment-offer-heading>button>span{display:flex;align-items:center;gap:9px}.augment-offer strong{font-size:14px}.augment-offer-heading .quiet{font-size:11px;padding:6px}.augment-rarity{font-size:10px;font-weight:500;color:#b6c4d2;white-space:nowrap}.rarity-2{color:#d8bf78}.rarity-3{color:#c6a1e9}.augment-fit-label{font-size:11px;color:#b7cce6;margin:7px 0 3px}.augment-reasons{display:flex;flex-direction:column;gap:3px;font-size:12px;color:#9fb0c5}.augment-description{font-size:11px;color:#a6b7ca;margin-top:8px}.augment-description summary{cursor:pointer}.augment-description p{font-size:12px!important;margin:5px 0!important;white-space:pre-line}.augment-take{margin-top:9px;font-size:12px;padding:7px 14px}.best-offer .augment-take{background:#324d70;border-color:#6c89af}.empty-offer button{width:100%;text-align:left;background:transparent;border:0;font-size:13px;color:#b3c2d4}.empty-offer button span{display:inline-flex;border:1px solid #425773;border-radius:50%;width:23px;height:23px;align-items:center;justify-content:center;margin-right:10px}.augment-method{font-size:11px;color:#91a6be;margin-top:15px}.augment-method p{font-size:11px!important}.chosen-augments{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 12px}.chosen-augments[hidden]{display:none}.chosen-augments button{display:flex;gap:6px;align-items:center;padding:4px 7px;font-size:11px;background:#1a2531;border-color:#37475a}.chosen-augments img{width:23px;height:23px}.chosen-augments small{font-size:9px}.augment-related{display:flex;gap:4px;margin-top:6px}.augment-related img{width:24px;height:24px}@media(max-width:450px){.augment-stage button{padding:7px;font-size:11px}.augment-offer-heading>button:first-child{min-width:125px}.augment-offer strong{font-size:12px}.augment-rarity{font-size:9px}.augment-offer-heading .quiet{font-size:10px}.chosen-augments button span{max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+#augment-dialog{width:650px;max-width:calc(100vw - 24px);max-height:88vh;overflow:auto}
+.augment-stage{display:flex;gap:7px;margin:0 0 10px}
+.augment-stage button{font-size:12px;padding:7px 11px}
+.augment-stage [aria-pressed=true]{background:#36455a;border-color:#96abc6}
+#augment-verdict{border:1px solid #41516a;border-radius:8px;background:#1a2839;color:#ecf3ff;padding:9px 11px;font-size:16px;font-weight:750;line-height:1.25}
+#augment-verdict:is([data-action=take],[data-action=lean]){border-color:#49c780;background:#17462d}
+#augment-verdict[data-action=reroll]{border-color:#6daaff;background:#192f4d}
+[data-verdict=take]{--verdict-accent:#49c780;--verdict-fill:#17462d;--verdict-ink:#d5ffdf}
+[data-verdict=decent]{--verdict-accent:#aadf91;--verdict-fill:#253b2b;--verdict-ink:#e0ffcf}
+[data-verdict=reroll]{--verdict-accent:#6daaff;--verdict-fill:#192f4d;--verdict-ink:#dceaff}
+[data-verdict=avoid]{--verdict-accent:#f68d88;--verdict-fill:#41252a;--verdict-ink:#ffdfdf}
+.augment-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:7px;font-size:11px;color:#d1def0}
+.augment-legend span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.augment-legend span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--verdict-accent)}
+#augment-dialog .augment-pool{font-size:11px;margin:5px 0;color:#aebfd4}
+.augment-search-wrap{position:relative;margin:10px 0}
+.augment-search-wrap label{display:block;font-size:12px;color:#b4c5db;margin-bottom:5px}
+#augment-search-results{position:relative;max-height:280px;overflow:auto;background:#101922;border:1px solid #53657c;border-radius:7px;margin-top:3px}
+#augment-search-results[hidden]{display:none}
+#augment-search-results button{display:flex;align-items:center;gap:8px;width:100%;border:0;border-bottom:1px solid #304050;border-radius:0;background:transparent;text-align:left;padding:8px}
+#augment-search-results button.search-active{background:#283b50}
+#augment-search-results button>span{flex:1;min-width:0}
+#augment-search-results strong{font-size:13px;display:block}
+#augment-search-results small{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#augment-search-results p{font-size:12px;margin:12px}
+#augment-offers{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.augment-offer{background:#141e28;border:1px solid #334153;border-radius:9px;padding:8px 10px}
+.augment-offer.active-slot{border-color:#7b91ad}
+.augment-offer[data-verdict]{background:var(--verdict-fill);border-color:var(--verdict-accent);border-left-width:4px;padding-left:7px}
+.augment-offer-heading,.augment-offer-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.augment-offer-heading>button:first-child{flex:1;background:transparent;border:0;padding:0;text-align:left;min-width:120px}
+.augment-offer-heading>button>span{display:flex;align-items:center;gap:7px}
+.augment-offer-heading strong{font-size:14px}
+.augment-rarity{font-size:10px;font-weight:500;color:#ced9e4;white-space:nowrap}
+.rarity-2{color:#f3d47d}.rarity-3{color:#ddbef9}
+.augment-offer-heading .augment-fit-label{font-size:11px;color:var(--verdict-ink);border:1px solid var(--verdict-accent);border-radius:4px;padding:2px 5px}
+.augment-offer-actions{margin-top:5px}
+.augment-offer-actions button{font-size:11px;padding:4px 8px;min-height:28px}
+.augment-offer[data-verdict=take] .augment-take{background:#25663e;border-color:#70dc98}
+.augment-offer[data-verdict=reroll] [data-offer-replace]{background:#244d83;border-color:#82b7ff}
+.augment-description{font-size:11px;color:#d1def0;margin-top:4px}
+.augment-description summary{cursor:pointer}
+.augment-description ul{margin:5px 0;padding-left:19px}
+.augment-description p{font-size:12px!important;margin:5px 0!important;white-space:pre-line}
+.empty-offer button{width:100%;text-align:left;background:transparent;border:0;font-size:13px;color:#c4d4e7;padding:2px}
+.empty-offer button span{display:inline-flex;border:1px solid #647c9d;border-radius:50%;width:23px;height:23px;align-items:center;justify-content:center;margin-right:10px}
+.augment-method{font-size:11px;color:#a7bad0;margin-top:12px}
+.augment-method p{font-size:11px!important}
+.chosen-augments{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 12px}
+.chosen-augments[hidden]{display:none}
+.chosen-augments button{display:flex;gap:6px;align-items:center;padding:4px 7px;font-size:11px;background:#1a2531;border-color:#37475a}
+.chosen-augments img{width:23px;height:23px}.chosen-augments small{font-size:9px}
+@media(max-width:450px){
+  .augment-stage button{padding:7px;font-size:11px}
+  .augment-offer-heading strong{font-size:12px}
+  .chosen-augments button span{max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
 
 .component-shortage{font-size:13px;color:#f0dca1;white-space:nowrap;margin-left:3px}.component-option{display:block;color:#96a8bc;font-size:10px;font-weight:400}.anvil-mode{display:flex;gap:5px;margin:4px 0 8px}.anvil-mode button{font-size:12px;padding:7px 12px}.anvil-mode [aria-pressed=true]{background:#344356;border-color:#97a7bf}.anvil-component-keys>small{font-size:11px;display:block;margin-bottom:7px}.anvil-component-keys>div{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin-bottom:10px}.anvil-component-keys button{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;font-size:10px;background:#192633;min-width:0}.anvil-component-keys kbd{position:absolute;top:3px;left:4px;font-size:10px;color:#d7e5f4;background:#18212c;border:1px solid #576a83;border-radius:3px;padding:0 3px}.anvil-component-keys .icon{width:32px;height:32px}.anvil-component-keys [aria-pressed=true]{background:#314561;border-color:#93a9ca}.anvil-component-keys[hidden]{display:none}.anvil-search-wrap{position:relative}.anvil-offer-chips{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.anvil-offer-chips:empty{display:none}.anvil-offer-chips button{display:flex;align-items:center;gap:5px;padding:4px 7px;font-size:11px}.anvil-offer-chips img{width:25px;height:25px}.anvil-offer-chips b{font-size:16px;color:#b1c3d9}#anvil-search-matches{max-height:235px;overflow:auto;border:1px solid #53657c;background:#101922;border-radius:6px;margin-top:3px}#anvil-search-matches[hidden]{display:none}#anvil-search-matches button{display:flex;gap:8px;align-items:center;width:100%;border:0;border-bottom:1px solid #304050;border-radius:0;background:transparent;text-align:left;padding:7px}#anvil-search-matches button.search-active{background:#283b50}#anvil-search-matches .icon{width:27px;height:27px}#anvil-search-matches span{flex:1;font-size:12px}#anvil-search-matches small{font-size:10px}#anvil-search-matches p{font-size:12px;margin:10px}#anvil-verdict{background:#1a2839;border:1px solid #41516a;color:#dbe7f9;border-radius:7px;font-size:12px;padding:9px;margin-top:9px}#anvil-verdict[hidden]{display:none}.anvil-recommended{display:block;font-size:10px;color:#c2d5ee;margin-top:3px}.anvil-rank{font-size:10px;color:#99adc5}.anvil-row .anvil-fit:empty{display:none}.anvil-row .anvil-compare-add{font-size:11px;padding:6px 8px;background:transparent}.anvil-row .component-shortage{font-size:11px;margin:0}.anvil-row .decision-primary{min-width:130px}.anvil-row .decision-primary small{font-size:10px}@media(max-width:550px){.anvil-component-keys>div{grid-template-columns:repeat(4,minmax(0,1fr))}.anvil-offer-chips span{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.anvil-row{gap:6px}.anvil-row .anvil-fit{max-width:100px}.anvil-row .anvil-compare-add{font-size:10px;padding:6px}.anvil-row>button{padding:7px;font-size:11px}.decision-need .needname{min-width:0}}
 
@@ -227,8 +283,12 @@
 .next-build-label{grid-column:1/-1;color:var(--gold);font-size:11px;font-weight:750;letter-spacing:.1em;text-transform:uppercase}
 #next-build>.icon{width:48px;height:48px;border-color:#a88d59}
 #next-build strong{display:block;color:#fff3d9;font-size:clamp(20px,3.2vw,31px);line-height:1.18;overflow-wrap:anywhere}
-.next-build-target span,.next-build-status{display:block;color:#c9bdab;font-size:12px}
-.next-build-target span{margin-top:3px}
+.next-build-holders,.next-build-status{color:#c9bdab;font-size:12px}
+.next-build-holders{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-top:3px}
+.next-build-holders :is(.champ-icon,.champ-fallback),#academy-source-guides :is(.champ-icon,.champ-fallback){width:19px;height:19px}
+.completed-portrait{width:21px;height:21px}
+#app-title .champ-icon,#app-title .champ-fallback{width:23px;height:23px;margin-right:6px;vertical-align:-3px}
+.champion-hex>.champ-fallback{width:100%;height:100%;border-radius:0;background:#262f3a}
 .next-build-status{padding:4px 8px;border:1px solid #665638;border-radius:5px;text-align:center}
 
 .shopping{position:static;width:100%;margin-bottom:10px}
@@ -266,7 +326,6 @@
 .component-heading small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
 .component-rail .benchgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 #component-toggle{display:none}
-.augment-comparison{display:block;margin:5px 0;color:#b9c7d9;font-size:12px}
 
 @media(min-width:1120px){
   .climb-layout{display:grid;grid-template-columns:minmax(0,1fr) 244px;gap:16px;align-items:start}
@@ -329,9 +388,13 @@
 .emblem-list{list-style-position:inside;margin:0;padding:0}
 .emblem-list>li{padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
 .emblem-list>li::marker{font-size:11px;color:#a7b6c7}
-.emblem-list>li>div{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.emblem-list>li>div,.emblem-comp{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.emblem-comp button{font-size:11px;padding:4px 8px;min-height:29px}
+.emblem-comp .champ-icon,.emblem-comp .champ-fallback,
+.emblem-route>p .champ-icon,.emblem-route>p .champ-fallback,
+.emblem-holder summary .champ-icon,.emblem-holder summary .champ-fallback{width:20px;height:20px}
 #emblem-explorer .emblem-route>p,.emblem-holder details{font-size:12px;margin:2px 0 0 15px;color:#a7b6c7}
-.emblem-holder div>span{color:#bed4c6;font-size:12px}
+.emblem-holder>div>span{color:#bed4c6;font-size:12px}
 .emblem-holder details ul{margin:4px 0;padding-left:18px}
 .emblem-holder summary{cursor:pointer}
 </style>
@@ -625,9 +688,30 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     stages,
     held(plan){return CompFinder.heldAugments(plan);},
     slots(plan){return [plan.firstAugment||plan.chosenAugments?.[0]||'',plan.chosenAugments?.[1]||'',plan.chosenAugments?.[2]||''];},
+    newOffers(round){return {round,ids:['','',''],seen:[],awaiting:[false,false,false]};},
     ensure(plan){
-      if(!plan.augmentOffers||!Array.isArray(plan.augmentOffers.ids))plan.augmentOffers={round:Math.max(0,this.slots(plan).findIndex(id=>!id)),ids:['','',''],seen:[]};
+      if(!plan.augmentOffers||!Array.isArray(plan.augmentOffers.ids))plan.augmentOffers=this.newOffers(Math.max(0,this.slots(plan).findIndex(id=>!id)));
       return plan.augmentOffers;
+    },
+    available(plan,offers=this.ensure(plan)){
+      const excluded=new Set([...offers.ids,...(offers.seen||[]),...this.held(plan)]);
+      return CompFinder.augmentOptions(stages[offers.round]).filter(a=>!a.ids.some(id=>excluded.has(id)));
+    },
+    replace(plan,slot){
+      const offers=this.ensure(plan),id=offers.ids[slot];
+      if(!id)return false;
+      offers.seen=[...new Set([...(offers.seen||[]),id])].slice(-60);
+      offers.ids[slot]='';
+      offers.awaiting||=[false,false,false];
+      offers.awaiting[slot]=true;
+      return true;
+    },
+    enter(plan,slot,id){
+      const offers=this.ensure(plan);
+      if(!Number.isInteger(slot)||slot<0||slot>=offers.ids.length||!this.available(plan,offers).some(a=>a.ids.includes(id)))return false;
+      offers.ids[slot]=id;
+      if(offers.awaiting)offers.awaiting[slot]=false;
+      return true;
     },
     eligible(augment,round){return !augment.stages?.length||augment.stages.includes(stages[round]);},
     catalog(plan,round){
@@ -693,13 +777,12 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
         Number(!!b.academy)-Number(!!a.academy)||b.score-a.score||a.slot-b.slot);
       const complete=offers.ids.every(Boolean)&&valid.length===3;
       const best=valid[0],rerolls=[];
-      let action='enter',message='Enter your three offered augments.';
+      let action='enter',message='Enter your three offers';
       if(best?.academy){
         action='take';
-        message=`Take ${best.augment.name} — best Academy-backed fit${complete?'':' among the offers entered'}.`;
+        message=`Take ${best.augment.name}`;
       }else if(complete){
-        const seen=new Set([...offers.ids,...offers.seen,...ctx.held]);
-        const alternatives=this.catalog(plan,round).filter(a=>!a.ids.some(id=>seen.has(id)))
+        const alternatives=this.available(plan,offers).filter(a=>this.eligible(a,round))
           .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
         for(const row of valid.filter(r=>!r.contextual)){
           const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
@@ -708,17 +791,26 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
         if(rerolls.length){
           action='reroll';
           const names=rerolls.map(r=>rows.find(row=>row.slot===r.slot).augment.name);
-          message=`Consider rerolling ${names.join(' or ')} if available. See each offer for its reason.`;
+          message=names.length===1?`Reroll ${names[0]} if available`:'Reroll a blue offer if available';
         }else if(best.contextual&&best.score>0){
           action='lean';
-          message=`Lean ${best.augment.name} — rules-based fit.`;
+          message=`Take ${best.augment.name}`;
         }else{
           action='unknown';
-          message='No clear pick or reroll edge from the available data.';
+          message='No clear pick';
         }
-      }else if(rows.length){
+      }else if(rows.length||offers.awaiting?.some(Boolean)){
         action='partial';
-        message=rows.some(r=>r.offRound)?'Check the round on the marked offer.':'Add all three offers to compare their fit.';
+        message=offers.awaiting?.some(Boolean)?'Enter the replacement offer':
+          rows.some(r=>r.offRound)?'Check the round on the marked offer':'Enter all three offers to compare';
+      }
+      for(const row of rows){
+        const top=row===best&&(action==='take'||action==='lean');
+        [row.verdict,row.label]=row.invalid||row.offRound?['avoid','Check offer']:
+          top?['take','Take this']:
+          rerolls.some(r=>r.slot===row.slot)?['reroll','Reroll if available']:
+          row.academy?['decent','Academy match']:
+          row.contextual?['decent','Contextual fit']:['avoid','Limited evidence'];
       }
       const academyNotice=ctx.fitGuide&&!augmentFit.hasRecommendations(ctx.fitGuide) ?
         `Academy lists no recommended augment for this comp (${ctx.fitGuide.title}). Fit uses item, economy and combat rules.` : '';
@@ -728,7 +820,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       const offers=this.ensure(plan),id=offers.ids[slot],a=CompFinder.augment(id);
       if(!a||this.held(plan).includes(id))return false;
       const selected=this.slots(plan);selected[offers.round]=id;plan.chosenAugments=selected;plan.firstAugment=selected[0];
-      plan.augmentOffers={round:Math.min(2,offers.round+1),ids:['','',''],seen:[]};return true;
+      plan.augmentOffers=this.newOffers(Math.min(2,offers.round+1));return true;
     }
   };
 };
@@ -1084,18 +1176,20 @@ module.exports = function createCompFinder(model) {
       const requirements=this.requirements(plan,guide);
       const board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
       const names=ids=>[...new Set(ids.map(id=>byId[id]?.name||id))].join(', ');
-      const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
+      const ownedUnits=[...board.keepers,...board.early,...board.bridges];
+      const unitNames=ownedUnits.map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
       const ownedReasons=[
         {points:Math.min(96,itemScore),text:'Completed items'+(itemNames?' · '+itemNames:'')+(appliedEmblemBonus?` · +${appliedEmblemBonus} emblem fit`:'')},
-        {points:board.unitScore,text:'Champions owned'+(unitNames?' · '+unitNames:'')},
+        {points:board.unitScore,text:'Champions owned'+(unitNames?' · '+unitNames:''),label:'Champions owned',units:ownedUnits},
         {points:Math.min(36,componentScore),text:'Loose components'+(used.length?' · '+names(used):'')},
         ...augmentMatches.map(a=>({points:a.points,text:`Augment: ${a.name} — ${a.academy?'':'Rules-based fit · '}${a.text}${a.detail?' · '+a.detail:''}`}))
       ];
       const reasons=[...ownedReasons,...[
         {points:-Math.min(18,unmatched.length*6),text:'Off-plan items: '+names(unmatched)},
         {points:-requirements.requirementPenalty,text:[requirements.gateReason,requirements.missingEmblems.length?'Missing emblems: '+names(requirements.missingEmblems):''].filter(Boolean).join(' · ')},
-        {points:-execution.executionPenalty,text:'Missing core units or upgrades: '+execution.missingCore.map(u=>u.name).join(', ')}
+        {points:-execution.executionPenalty,text:'Missing core units or upgrades: '+execution.missingCore.map(u=>u.name).join(', '),
+          label:'Missing core units or upgrades',units:execution.missingCore.map(({name,apiName})=>({name,apiName}))}
       ].filter(reason=>reason.points)];
       if(heldAugments.length&&!augmentFit.hasRecommendations(guide))reasons.push({points:0,text:'No Academy augment data for this comp — scored from item, economy and combat rules.'});
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});
@@ -1733,7 +1827,12 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
       return {
         currentUnits:[...new Map((Array.isArray(value.currentUnits)?value.currentUnits:[]).filter(u=>u&&typeof u.apiName==='string'&&Academy.snapshot.champions.some(c=>c.apiName===u.apiName)).slice(0,28).map(u=>[u.apiName,{apiName:u.apiName,stars:Math.max(1,Math.min(3,Math.floor(Number(u.stars)||1)))}])).values()],
         chosenAugments:Array.from({length:3},(_,n)=>typeof value.chosenAugments?.[n]==='string'?value.chosenAugments[n].slice(0,120):''),
-        augmentOffers:value.augmentOffers&&typeof value.augmentOffers==='object'?{round:Math.max(0,Math.min(2,Math.floor(Number(value.augmentOffers.round)||0))),ids:Array.from({length:3},(_,n)=>typeof value.augmentOffers.ids?.[n]==='string'?value.augmentOffers.ids[n].slice(0,120):''),seen:(Array.isArray(value.augmentOffers.seen)?value.augmentOffers.seen:[]).filter(id=>typeof id==='string').map(id=>id.slice(0,120)).slice(0,60)}:null,
+        augmentOffers:value.augmentOffers&&typeof value.augmentOffers==='object'?{
+          round:Math.max(0,Math.min(2,Math.floor(Number(value.augmentOffers.round)||0))),
+          ids:Array.from({length:3},(_,n)=>typeof value.augmentOffers.ids?.[n]==='string'?value.augmentOffers.ids[n].slice(0,120):''),
+          seen:(Array.isArray(value.augmentOffers.seen)?value.augmentOffers.seen:[]).filter(id=>typeof id==='string').map(id=>id.slice(0,120)).slice(-60),
+          awaiting:Array.from({length:3},(_,n)=>!value.augmentOffers.ids?.[n]&&value.augmentOffers.awaiting?.[n]===true)
+        }:null,
         tempo:value.tempo==='urgent'?'urgent':'balanced',
         pivotIntents:Object.fromEntries(Object.entries(value.pivotIntents||{}).filter(([name,ids])=>name.length<120&&Array.isArray(ids)).map(([name,ids])=>[name,ids.filter(id=>valid.has(id)).slice(0,3)])),
         firstAugment:typeof value.firstAugment==='string'?value.firstAugment.slice(0,120):'',
@@ -2492,14 +2591,16 @@ function augmentIcon(id){
    state/event source; visible controls support mouse and keyboard navigation. */
 const IconUI = {
   champion(name,cls=''){
-    const c=Academy.snapshot.champions.find(c=>c.apiName===name||Academy.normalizeName(c.name)===Academy.normalizeName(name));
+    const normalized=Academy.normalizeName(name);
+    const matches=c=>c.apiName===name||Academy.normalizeName(c.name)===normalized;
+    const c=Academy.snapshot.champions.find(matches)||ACADEMY_BUNDLED.champions.find(matches);
     if(!c)return `<span class="champ-fallback ${cls}" aria-hidden="true">?</span>`;
     const embedded=ACADEMY_BUNDLED.champions.find(u=>u.apiName===c.apiName)?.icon;
     const src=embedded?.startsWith('data:')?embedded:c.icon||'https://assets.tftacademy.com/champions/champion_icons/'+encodeURIComponent(c.apiName)+'.webp';
     return `<img class="champ-icon ${cls}" src="${esc(src)}" alt="" width="28" height="28">`;
   },
   itemLabel(id){return `<span class="inline-entity">${icon(id)}<span>${esc(byId[id].name)}</span></span>`;},
-  championLabel(name){return `<span class="inline-entity">${this.champion(name)}<span>${esc(name)}</span></span>`;},
+  championLabel(name,apiName=name){return `<span class="inline-entity">${this.champion(apiName)}<span>${esc(name)}</span></span>`;},
   picker(select,kind,label,noMatch=()=> 'No matches'){
     select.hidden=true;select.setAttribute('aria-hidden','true');select.tabIndex=-1;
     const wrap=document.createElement('div');wrap.className='icon-select';
@@ -2523,6 +2624,16 @@ const IconUI = {
     return {refresh,close};
   }
 };
+document.addEventListener('error',event=>{
+  const img=event.target;
+  if(!img.classList?.contains('champ-icon'))return;
+  const fallback=document.createElement('span');
+  fallback.className=img.className;
+  fallback.classList.replace('champ-icon','champ-fallback');
+  fallback.textContent='?';
+  fallback.setAttribute('aria-hidden','true');
+  img.replaceWith(fallback);
+},true);
 
 const KEY='carousel-tracker-v1';
 const components=componentOrder.map(id=>byId[id]);
@@ -2554,12 +2665,12 @@ function render(){
  if(next){
    const item=byId[next.item],covered=next.slots.filter(slot=>slot.have).length;
    const status=item.special?'Record when received':covered===next.slots.length?'Ready to make':covered+' / '+next.slots.length+' components';
-   nextBuild.innerHTML=`<span class="next-build-label">Next item</span>${icon(item.id)}<div class="next-build-target"><strong>${esc(item.name)}</strong>${next.champion?`<span>For ${next.earlyChampion&&next.earlyChampion!==next.champion?esc(next.earlyChampion)+' → ':''}${esc(next.champion)}</span>`:''}</div><span class="next-build-status">${status}</span>`;
+   nextBuild.innerHTML=`<span class="next-build-label">Next item</span>${icon(item.id)}<div class="next-build-target"><strong>${esc(item.name)}</strong>${next.champion?`<span class="next-build-holders">For ${next.earlyChampion&&next.earlyChampion!==next.champion?IconUI.championLabel(next.earlyChampion)+' → ':''}${IconUI.championLabel(next.champion)}</span>`:''}</div><span class="next-build-status">${status}</span>`;
  }else{
    nextBuild.innerHTML='<span class="next-build-label">Next item</span><strong>Queue complete</strong>';
  }
  document.getElementById('queue').innerHTML=a.rows.map((q,n)=>{const i=byId[q.item],ready=i.recipe.length===2&&q.slots.every(c=>c.have);return `<article class="qcard" data-queue-uid="${q.uid}" aria-label="${esc(i.name)} · ${esc(q.champion||'Unassigned')}"><div class="qtop"><button class="queue-grip" aria-label="Reorder ${esc(i.name)}" aria-describedby="queue-drag-help" aria-pressed="false" data-focus="drag-${q.uid}">⠿</button>${icon(i.id)}<div class="itemtitle"><h3>${esc(i.name)}</h3>${q.champion?`<small class="item-owner">For ${q.earlyChampion&&q.earlyChampion!==q.champion?`${IconUI.championLabel(q.earlyChampion)} → `:''}${IconUI.championLabel(q.champion)}</small>`:'<small class="item-owner">Unassigned</small>'}</div><div class="recipe">${q.slots.map((c,idx)=>`${idx?'<span class="plus">+</span>':''}${c.have?`<span class="componentpill have" title="${esc(byId[c.id].name)} reserved for this item">${icon(c.id)}<span aria-hidden="true">✓</span></span>`:`<button class="componentpill" data-action="gain" data-id="${c.id}" data-focus="slot-${q.uid}-${idx}" aria-label="Record one ${esc(byId[c.id].name)} received">${icon(c.id)}<span aria-hidden="true">+</span></button>`}`).join('')}</div>${btn('remove',q.uid,`Remove ${i.name}`,'×','remove')}</div><div class="qbottom">${btn('make',q.uid,i.special?`Record ${i.name} received; no components used`:`Mark ${i.name} made`,i.special?'✓ Received':ready?'✓ Ready · Mark made':'✓ Mark made',`make ${ready?'ready':''}`)}</div></article>`;}).join('')||`<div class="empty"><div class="emptyicon" aria-hidden="true">${done.length?'✓':'+'}</div><h3>${done.length?'Every build, checked off.':'No items queued yet'}</h3><p>${done.length?'Your completed items are tracked above.':'Choose a comp in Explore builds or paste an Academy team code.'}</p></div>`;
- document.getElementById('completed').innerHTML=done.map(q=>`<div class="completeitem" role="listitem" title="${esc(byId[q.item].name)}${q.champion?' · '+esc(q.champion):''}" aria-label="${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(q.item)}${btn('restore',q.uid,`Restore ${byId[q.item].name}${q.champion?' for '+q.champion:''} to queue and return its tracked ingredients`,'Restore','quiet')}</div>`).join('');
+ document.getElementById('completed').innerHTML=done.map(q=>`<div class="completeitem" role="listitem" title="${esc(byId[q.item].name)}${q.champion?' · '+esc(q.champion):''}" aria-label="${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(q.item)}${q.champion?IconUI.champion(q.champion,'completed-portrait'):''}${btn('restore',q.uid,`Restore ${byId[q.item].name}${q.champion?' for '+q.champion:''} to queue and return its tracked ingredients`,'Restore','quiet')}</div>`).join('');
  const needs=Object.entries(a.needs).sort(([x,v],[y,w])=>(Number(state.pins.includes(y))-Number(state.pins.includes(x)))||v.rank-w.rank||Academy.componentPreference(state,x)-Academy.componentPreference(state,y)||w.count-v.count||LootTracker.compare(state,x,y)||componentOrder.indexOf(x)-componentOrder.indexOf(y));
  document.getElementById('shopping').innerHTML=needs.map(([id,n])=>`<div class="need ${state.pins.includes(id)?'pinned':''}"><div class="needtop">${icon(id)}<div class="needname">${esc(byId[id].name)}<small title="${esc(n.items.join(', '))}">For ${esc(n.items[0])}${n.items.length>1?` +${n.items.length-1}`:''}</small></div><span class="needed" aria-label="${n.count} needed">×${n.count}</span></div><div class="needactions"><button class="pin ${state.pins.includes(id)?'active':''}" data-action="pin" data-id="${id}" data-focus="pin-${id}" aria-label="Prioritize ${esc(byId[id].name)}" aria-pressed="${state.pins.includes(id)}">${state.pins.includes(id)?'★':'☆'}</button>${btn('gain',id,`Record one ${byId[id].name} received`,'+ Got one','got')}</div></div>`).join('')||`<div class="shopempty" style="grid-column:1/-1"><b>${a.rows.some(q=>byId[q.item].special)?'No components left to chase.':a.rows.length?'You have the ingredients.':done.length?'All planned items made.':'Your shopping list starts here.'}</b>${a.rows.length?'Check off your items as you make them.':'Add a build to see which components to collect.'}</div>`;
  document.getElementById('bench').innerHTML=components.map(c=>`<div class="benchitem ${(state.owned[c.id]||0)?'has':''}">${icon(c.id)}<strong>${esc(c.name)}</strong><div class="counter">${btn('lose',c.id,`Remove one ${c.name}`,'−','',!(state.owned[c.id]>0))}<output aria-label="${esc(c.name)} owned">${state.owned[c.id]||0}</output>${btn('gain',c.id,`Add one ${c.name}`,'+','',(state.owned[c.id]||0)>=99)}</div></div>`).join('');
@@ -2596,11 +2707,11 @@ function applyItemPivot(apply,message,onApplied){
  if(itemPivotConfirm.open)return;
  const next=structuredClone(state);
  if(!apply(next))return;
- const holders=rows=>rows.map(q=>q.champion||'an unassigned holder').join(', ');
+ const holders=rows=>rows.map(q=>q.champion?IconUI.championLabel(q.champion):'an unassigned holder').join(', ');
  const warnings=PivotPlanner.addedQueueCopies(state,next).map(({item,added,existing})=>{
    const name=byId[item].name;
-   return existing.length?`${name} is already queued for ${holders(existing)}. Also queue it for ${holders(added)}?`
-     :`Queue ${name} for ${holders(added)}? Each assignment needs its own copy.`;
+   return existing.length?`${esc(name)} is already queued for ${holders(existing)}. Also queue it for ${holders(added)}?`
+     :`Queue ${esc(name)} for ${holders(added)}? Each assignment needs its own copy.`;
  });
  if(!warnings.length){
    mutate(()=>{state=next;},message);
@@ -2616,7 +2727,7 @@ function applyItemPivot(apply,message,onApplied){
    mutate(()=>{state=next;},message);
    onApplied?.();
  };
- itemPivotConfirm.querySelector('p').textContent=warnings.join('\n\n');
+ itemPivotConfirm.querySelector('p').innerHTML=warnings.join('\n\n');
  itemPivotConfirm.showModal();
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const {action,id}=b.dataset,q=state.queue.find(q=>q.uid===id);
@@ -2809,7 +2920,7 @@ const AcademyUI=(() => {
     if(listed!==s){
       listed=s;
       const guides=s.guides.slice().sort((a,b)=>academyTier(a.tier).rank-academyTier(b.tier).rank||a.title.localeCompare(b.title));
-      reference.querySelector('ul').innerHTML=guides.map(g=>`<li>${academyTierBadges(g)} <a href="https://tftacademy.com/tierlist/comps/${encodeURIComponent(g.compSlug)}" target="_blank" rel="noopener">${esc(g.title)}</a></li>`).join('');
+      reference.querySelector('ul').innerHTML=guides.map(g=>`<li>${academyTierBadges(g)} <a href="https://tftacademy.com/tierlist/comps/${encodeURIComponent(g.compSlug)}" target="_blank" rel="noopener">${IconUI.championLabel(g.title,g.mainChampion?.apiName||g.title)}</a></li>`).join('');
     }
     reference.querySelector('summary').textContent=`${Academy.live?'Live Academy tier list':'Stale Academy tier list · reference only'} · Set ${s.set} · Patch ${s.patch}`;
   }
@@ -2819,7 +2930,7 @@ const AcademyUI=(() => {
     const current=Academy.currentGuide(state),list=current?Academy.priorities(current):[];priority.hidden=!list.length;
     priority.innerHTML=list.length?'<span>Academy priority</span>'+list.map((p,n)=>`${n?'<span aria-hidden="true">›</span>':''}<span class="academy-priority-item" title="${esc(byId[p.id]?.name||p.id)}${p.component?' · component preference':''}" aria-label="${n+1}. ${esc(byId[p.id]?.name||p.id)}${p.component?', component preference':''}">${icon(p.id)}${p.component?'<small>component</small>':''}</span>`).join(''):'';
   }
-  const oldRender=render;render=function(){oldRender();document.getElementById('app-title').textContent=state.activeComp?.title||'Carousel';status();drawPriority();};
+  const oldRender=render;render=function(){oldRender();const title=document.getElementById('app-title'),carry=Academy.guide(state)?.mainChampion?.apiName;title.innerHTML=(carry?IconUI.champion(carry):'')+esc(state.activeComp?.title||'Carousel');status();drawPriority();};
   function plannedSet(){
     try{return Academy.decodeCode(state.activeComp?.code).set;}catch{return undefined;}
   }
@@ -3134,7 +3245,7 @@ const AcademyUI=(() => {
     if(q&&!Academy.canEquip(state,name,q.item,q.uid)){toast(name+' has no room for this item.');return;}
     if(q)mutate(()=>{q.champion=name;},'Item holder updated.');assign.close();});
   document.addEventListener('click',e=>{const b=e.target.closest('[data-assign-holder]');if(b)openHolder(b.dataset.assignHolder);});
-  const champIcon=(unit)=>{const c=Academy.snapshot.champions.find(c=>c.apiName===unit.apiName),embedded=ACADEMY_BUNDLED.champions.find(c=>c.apiName===unit.apiName)?.icon;return {cost:c?.cost||1,name:c?.name||unit.apiName.replace(/^DA_/,''),src:embedded?.startsWith('data:')?embedded:c?.icon||'https://assets.tftacademy.com/champions/champion_icons/'+encodeURIComponent(unit.apiName)+'.webp'};};
+  const champion=(unit)=>Academy.snapshot.champions.find(c=>c.apiName===unit.apiName)||{cost:1,name:unit.apiName.replace(/^DA_/,'')};
   function renderBoard(){
     const guide=Academy.guide(state);overview.hidden=!guide;origin.hidden=!guide;if(!guide)return;
     const activePatch=state.activeComp?.patch;
@@ -3145,15 +3256,15 @@ const AcademyUI=(() => {
     source.href='https://tftacademy.com/tierlist/comps'+(sourceGuide.compSlug?'/'+encodeURIComponent(sourceGuide.compSlug):'');
     source.setAttribute('aria-label','View original '+guide.title+' guide on TFT Academy (opens in a new tab)');
     const holders=Academy.equipment(state),allocated=Tracker.allocate(state,DATA.items),rows=new Map(allocated.rows.map(q=>[q.uid,q]));
-    const names=new Set(guide.finalComp.map(c=>champIcon(c).name));
+    const names=new Set(guide.finalComp.map(c=>champion(c).name));
     const plan=state.queue.filter(q=>names.has(q.done?holders.get(q.uid):q.champion));
     const cell=(u)=>{
       if(!u)return '<div class="board-cell empty-cell" aria-hidden="true"><span></span></div>';
-      const c=champIcon(u),items=plan.filter(q=>(q.done?holders.get(q.uid):q.champion)===c.name);
+      const c=champion(u),items=plan.filter(q=>(q.done?holders.get(q.uid):q.champion)===c.name);
       const baseline=u.items.map(id=>Academy.itemMap.get(id));const actual=items.map(q=>q.item);
       const adjusted=baseline.length!==actual.length||!MetaBuilds.fits(baseline,actual);
       const color=['','#a5a5a5','#19bc69','#158ee8','#a046d0','#eacb4e'][Math.min(5,c.cost)]||'#a5a5a5';
-      return `<div class="board-cell unit-cell" style="--unit-color:${color}" aria-label="${esc(c.name)}, Academy target ${u.stars||1} star${u.stars===1?'':'s'}"><button class="board-champion" data-champion-builds="${esc(c.name)}" aria-label="Open ${esc(c.name)} S/A item builds" aria-haspopup="dialog" aria-expanded="false" title="${esc(c.name)} · S/A item builds"><span class="champion-hex"><img class="champion-portrait" src="${esc(c.src)}" alt="" width="64" height="64"></span><span class="board-stars">${u.stars>1?'★'.repeat(u.stars):''}</span><span class="board-name">${esc(c.name)}</span></button><div class="board-items">${items.map(q=>{
+      return `<div class="board-cell unit-cell" style="--unit-color:${color}" aria-label="${esc(c.name)}, Academy target ${u.stars||1} star${u.stars===1?'':'s'}"><button class="board-champion" data-champion-builds="${esc(c.name)}" aria-label="Open ${esc(c.name)} S/A item builds" aria-haspopup="dialog" aria-expanded="false" title="${esc(c.name)} · S/A item builds"><span class="champion-hex">${IconUI.champion(u.apiName,'champion-portrait')}</span><span class="board-stars">${u.stars>1?'★'.repeat(u.stars):''}</span><span class="board-name">${esc(c.name)}</span></button><div class="board-items">${items.map(q=>{
         const r=rows.get(q.uid),ready=!q.done&&r?.slots.length===2&&r.slots.every(s=>s.have),label=q.done?'Completed':ready?'Components ready':'Planned';
         return `<button class="board-item ${q.done?'is-done':ready?'is-ready':'is-planned'}" ${q.done?`data-assign-holder="${q.uid}"`:`data-board-target="${q.uid}"`} title="${esc(byId[q.item].name)} · ${label}${q.done?' · click to change holder':' · click to pivot'}" aria-label="${esc(c.name)}: ${esc(byId[q.item].name)}, ${label}">${icon(q.item)}<b>${q.done?'✓':ready?'◐':''}</b></button>`;
       }).join('')}</div>${adjusted?'<span class="board-adjusted" title="Your item plan differs from Academy">↔</span>':''}</div>`;
@@ -3233,12 +3344,17 @@ const DialogDismiss = {
     mutate(()=>{state.firstAugment=id;state.chosenAugments||=['','',''];state.chosenAugments[0]=id;},'First augment updated.');
   });
   panel.querySelector('#finder-more').addEventListener('click',()=>{expanded=!expanded;draw();});
-  panel.parentElement.addEventListener('click',e=>{
-    const b=e.target.closest('[data-choose-comp]');if(!b)return;
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-choose-comp]');if(!b||b.disabled)return;
+    const dialog=b.closest('dialog');
+    const scrollToPlan=panel.contains(b)||dialog;
     try{
-      exploring=false;
-      mutate(()=>CompFinder.choose(state,b.dataset.chooseComp),'Academy plan loaded. Board and inventory kept.');
-      if(panel.contains(b))window.scrollTo(0,0);
+      mutate(()=>{
+        CompFinder.choose(state,b.dataset.chooseComp);
+        exploring=false;
+      },'Academy plan loaded. Board and inventory kept.');
+      dialog?.close();
+      if(scrollToPlan)window.scrollTo(0,0);
     }catch(err){toast(err.message);}
   });
   const unitsDialog=document.createElement('dialog');unitsDialog.id='explore-unit-dialog';unitsDialog.setAttribute('aria-labelledby','unit-dialog-title');
@@ -3325,7 +3441,7 @@ const DialogDismiss = {
       :'Refresh live data to compare your plan with other comps.';
     alternativeButton.hidden=!alternative;
     alternativeButton.dataset.chooseComp=alternative?.id||'';
-    alternativeButton.textContent=alternative?'Pivot to '+alternative.title:'';
+    alternativeButton.innerHTML=alternative?`<span class="inline-entity">${IconUI.champion(alternative.mainChampion?.apiName)}<span>Pivot to ${esc(alternative.title)}</span></span>`:'';
     if(panel.hidden){picker.close();return;}
     document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>{
       const name=esc(byId[q.item].name), item=Academy.itemInfo(q.item);
@@ -3367,7 +3483,9 @@ const DialogDismiss = {
       }).join('');
       const breakdown=[
         `<li>+${r.tierBonus} · Academy tier ${esc(tier)} ranking bonus</li>`,
-        ...r.reasons.map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`)
+        ...r.reasons.map(({points,text,label,units})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${units?.length
+          ?esc(label)+' · '+units.map(({name,apiName,stars})=>IconUI.championLabel(name+(stars?' '+stars+'★':''),apiName)).join(', ')
+          :esc(text)}</li>`)
       ].join('');
       return `${heading}<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div><div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}<details class="finder-method"><summary><span class="finder-fit-score">Fit score ${r.fitScore}</span> · <span class="finder-effective-score">Effective score ${r.effectiveScore}</span></summary><ul>${breakdown}</ul></details></div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;
@@ -3413,7 +3531,7 @@ const DecisionUI = (()=>{
       const first=DecisionPlanner.pending(state,action.choice.champion)[0];if(!first)continue;
       const card=[...document.querySelectorAll('#queue .qcard')].find(el=>el.querySelector('[data-action="remove"]')?.dataset.id===first.uid);if(!card)continue;
       const box=document.createElement('div');box.className='inline-pivot decision-pivot';
-      box.innerHTML=`<span>Compatible ${esc(action.choice.tier)} pivot</span><div>${action.crafts.map(compactItem).join('')}</div><button data-batch-champion="${esc(action.choice.champion)}">Build & adjust</button>`;card.append(box);
+      box.innerHTML=`<span>Compatible ${esc(action.choice.tier)} pivot · ${IconUI.championLabel(action.choice.champion)}</span><div>${action.crafts.map(compactItem).join('')}</div><button data-batch-champion="${esc(action.choice.champion)}">Build & adjust</button>`;card.append(box);
     }
   }
   function carouselIcon(target){
@@ -3477,7 +3595,20 @@ const AugmentUI=(()=>{
   const button=document.createElement('button');button.id='augment-open';button.textContent='Augment choices';document.querySelector('.decision-controls').append(button);
   const selected=document.createElement('div');selected.id='chosen-augments';selected.className='chosen-augments';document.querySelector('.decision-controls').after(selected);
   const modal=document.createElement('dialog');modal.id='augment-dialog';modal.setAttribute('aria-labelledby','augment-title');
-  modal.innerHTML='<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div><div class="augment-stage" role="group" aria-label="Augment round"></div><div id="augment-verdict" role="status" aria-live="polite"></div><div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div><div id="augment-offers"></div><details class="augment-method"><summary>How this is compared</summary><p>Academy’s comp recommendations lead. When Academy does not list an offer for your comp, its description is checked against your item recipes, leveling or reroll plan, and combat roles.</p><p>Reroll advice requires an offer with no fit and an unseen Academy match of the same rarity and round in the catalog. Actual rerolls depend on your in-game pool. Record any rewards on the bench when received.</p><p id="augment-source"></p></details>';
+  modal.innerHTML=`<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div>
+    <div class="augment-stage" role="group" aria-label="Augment round"></div>
+    <div id="augment-verdict" role="status" aria-live="polite"></div>
+    <div class="augment-legend" role="group" aria-label="Green means take. Light green means decent. Blue means reroll. Red means do not take.">
+      <span data-verdict="take">Take</span><span data-verdict="decent">Decent</span><span data-verdict="reroll">Reroll</span><span data-verdict="avoid">Do not take</span>
+    </div>
+    <p class="augment-pool">The in-game pool and rerolls left are unknown.</p>
+    <div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div>
+    <div id="augment-offers"></div>
+    <details class="augment-method"><summary>How this is compared</summary>
+      <p>Academy leads. Other offers are checked against your item recipes, economy plan and combat roles.</p>
+      <p>Reroll advice requires an offer with no fit and an unseen Academy match of the same rarity and round.</p>
+      <p id="augment-academy-note"></p><p id="augment-source"></p>
+    </details>`;
   document.body.append(modal);
   const input=document.getElementById('augment-offer-search'),list=document.getElementById('augment-search-results');
   const badge=a=>['','Silver','Gold','Prismatic'][a.tier]||'Augment';
@@ -3486,13 +3617,14 @@ const AugmentUI=(()=>{
   function drawSelected(){const ids=AugmentAdvisor.slots(state);selected.hidden=!ids.some(Boolean);selected.innerHTML=ids.map((id,n)=>{const a=CompFinder.augment(id);if(!id)return '';return `<button data-edit-augment="${n}" title="${esc(a?.name||'Saved augment')} · ${AugmentAdvisor.stages[n]}" aria-label="Review ${esc(a?.name||'saved augment')} at ${AugmentAdvisor.stages[n]}">${augmentIcon(id)}<span>${esc(a?.name||'Saved augment')}</span><small>${AugmentAdvisor.stages[n]}</small></button>`;}).join('');}
   function search(){
     const o=offers(),norm=Academy.normalizeName(query);list.hidden=!norm;
-    const held=AugmentAdvisor.held(state);
     const relevance=name=>name===norm?0:name.startsWith(norm)?1:2;
     const groups=new Map();
+    const available=norm?AugmentAdvisor.available(state,o):[];
+    if(variants)variants=variants.filter(a=>available.some(choice=>choice.apiName===a.apiName));
     if(norm&&!variants){
-      for(const a of CompFinder.augmentOptions(AugmentAdvisor.stages[o.round])){
+      for(const a of available){
         const key=a.name.trim().replace(/\s+/g,' ').toLowerCase();
-        if(!Academy.normalizeName(a.name).includes(norm)||a.ids.some(id=>held.includes(id)||o.ids.includes(id)))continue;
+        if(!Academy.normalizeName(a.name).includes(norm))continue;
         if(!groups.has(key))groups.set(key,[]);
         groups.get(key).push(a);
       }
@@ -3514,24 +3646,35 @@ const AugmentUI=(()=>{
     const o=offers(),comparison=getResult(),logged=AugmentAdvisor.slots(state)[o.round];
     modal.querySelector('.augment-stage').innerHTML=AugmentAdvisor.stages.map((s,n)=>`<button data-augment-round="${n}" aria-pressed="${o.round===n}">${n+1}${['st','nd','rd'][n]} · ${s}${AugmentAdvisor.slots(state)[n]?' ✓':''}</button>`).join('');
     const verdict=document.getElementById('augment-verdict');verdict.dataset.action=comparison.action;verdict.textContent=comparison.message;
-    if(comparison.academyNotice){const hint=document.createElement('small');hint.textContent=comparison.academyNotice;verdict.append(hint);}
-    if(logged){const hint=document.createElement('small');hint.textContent='This round is already recorded. Taking a different augment replaces that record.';verdict.append(hint);}
-    document.getElementById('augment-search-label').textContent='Offer '+(activeSlot+1)+' · type a few letters, Enter';
+    document.getElementById('augment-academy-note').textContent=comparison.academyNotice;
+    document.getElementById('augment-search-label').textContent=o.awaiting?.[activeSlot]
+      ?`Offer ${activeSlot+1} · enter replacement after rerolling in game`
+      :`Offer ${activeSlot+1} · type a few letters, Enter${logged?' · replaces recorded pick':''}`;
     document.getElementById('augment-offers').innerHTML=o.ids.map((id,slot)=>{
-      const a=CompFinder.augment(id),r=comparison.rows.find(r=>r.slot===slot),best=comparison.best?.slot===slot&&comparison.action==='take',reroll=comparison.rerolls.find(row=>row.slot===slot);
-      if(!a)return `<article class="augment-offer empty-offer ${slot===activeSlot?'active-slot':''}"><button data-offer-edit="${slot}"><span>${slot+1}</span>${id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
+      const r=comparison.rows.find(r=>r.slot===slot),awaiting=o.awaiting?.[slot],active=slot===activeSlot?'active-slot':'';
+      if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
+      const a=r.augment,reroll=comparison.rerolls.find(row=>row.slot===slot);
       const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
-      const fit=best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid||r?.offRound?'Check offer':r?.academy?'Academy match':r?.contextual?'Contextual fit':'Limited evidence';
-      const reasons=reroll?[reroll.reason,...r.reasons.slice(1).map(x=>x.text)]:(r?.reasons||[]).map(x=>x.text);
-      const comparisonNote=reroll||r?.contextual
-        ?`<small class="augment-comparison">Reroll advice compares known ${badge(a).toLowerCase()} augments at ${AugmentAdvisor.stages[o.round]}. Your in-game pool may differ.</small>`:'';
-      const rounds=(r?.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
-      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${reasons.map(text=>`<span>${esc(text)}</span>`).join('')}${rounds}</div>${comparisonNote}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>${r?.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button></article>`;
+      const reasons=r.reasons.map(x=>x.text);
+      if(reroll)reasons[0]=reroll.reason;
+      const rounds=(r.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
+      return `<article class="augment-offer ${active}" data-verdict="${r.verdict}">
+        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
+        <div class="augment-offer-actions"><button class="augment-take" data-augment-take="${slot}" ${r.invalid?'disabled':''}>${r.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button>
+        <button class="quiet" data-offer-replace="${slot}">Reroll this offer</button>${rounds}</div>
+        <details class="augment-description" ${r.offRound?'open':''}><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p></details>
+      </article>`;
     }).join('');
     document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
-  function open(round,id){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';variants=null;input.value='';contextKey='';modal.showModal();if(id)add(id);draw();input.focus();}
+  function clearSearch(){query='';variants=null;input.value='';searchIndex=0;}
+  function open(round,id){
+    if(Number.isInteger(round)&&offers().round!==round){state.augmentOffers=AugmentAdvisor.newOffers(round);save();}
+    const o=offers(),pending=o.awaiting?.findIndex(Boolean)??-1;
+    activeSlot=pending>=0?pending:Math.max(0,o.ids.findIndex(id=>!id));
+    clearSearch();contextKey='';modal.showModal();if(id)add(id);draw();input.focus();
+  }
   function pick(result){
     if(result.choices?.length>1){
       variants=result.choices;
@@ -3541,17 +3684,18 @@ const AugmentUI=(()=>{
     }else add(result.apiName);
   }
   function add(id){
-    const o=offers(),a=CompFinder.augment(id);if(!a||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
-    const slot=activeSlot;query='';variants=null;input.value='';searchIndex=0;
-    mutate(()=>{offers().ids[slot]=id;},'Offer '+(slot+1)+' entered.');
+    const slot=activeSlot,nextOffers=structuredClone(offers());
+    if(!AugmentAdvisor.enter({...state,augmentOffers:nextOffers},slot,id))return;
+    clearSearch();
+    mutate(()=>{state.augmentOffers=nextOffers;},'Offer '+(slot+1)+' entered.');
     const next=offers().ids.findIndex((id,n)=>n>slot&&!id);activeSlot=next>=0?next:Math.max(0,offers().ids.findIndex(id=>!id));draw();input.focus();
   }
   function enterAt(round,id){
     const a=CompFinder.augment(id);
     if(!a||!AugmentAdvisor.eligible(a,round))return;
     if(modal.open){
-      query='';variants=null;input.value='';activeSlot=1;
-      mutate(()=>{state.augmentOffers={round,ids:[id,'',''],seen:[]};});
+      clearSearch();activeSlot=1;
+      mutate(()=>{state.augmentOffers=AugmentAdvisor.newOffers(round);AugmentAdvisor.enter(state,0,id);});
       input.focus();
     }else open(round,id);
   }
@@ -3561,16 +3705,20 @@ const AugmentUI=(()=>{
   document.addEventListener('click',e=>{
     let b=e.target.closest('[data-offer-result]');if(b)pick(searchRows[Number(b.dataset.offerResult)]);
     b=e.target.closest('[data-edit-augment]');if(b)open(Number(b.dataset.editAugment));
-    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;query='';variants=null;input.value='';activeSlot=0;mutate(()=>state.augmentOffers={round,ids:['','',''],seen:[]},'Augment round changed.');input.focus();}
-    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);query='';variants=null;input.value='';draw();input.focus();}
+    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;clearSearch();activeSlot=0;mutate(()=>state.augmentOffers=AugmentAdvisor.newOffers(round),'Augment round changed.');input.focus();}
+    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);clearSearch();draw();input.focus();}
     b=e.target.closest('[data-offer-move]');if(b)enterAt(Number(b.dataset.offerMove),b.dataset.augmentId);
-    b=e.target.closest('[data-offer-replace]');if(b){activeSlot=Number(b.dataset.offerReplace);query='';variants=null;input.value='';mutate(()=>{const o=offers(),id=o.ids[activeSlot];if(id&&!o.seen.includes(id))o.seen.push(id);o.ids[activeSlot]='';},'Enter the new offer after rerolling in game.');input.focus();}
+    b=e.target.closest('[data-offer-replace]');if(b){
+      activeSlot=Number(b.dataset.offerReplace);clearSearch();
+      mutate(()=>AugmentAdvisor.replace(state,activeSlot),'Enter the new offer after rerolling in game.');
+      input.focus();
+    }
     b=e.target.closest('[data-augment-take]');if(b){let recorded=false;mutate(()=>{recorded=AugmentAdvisor.record(state,Number(b.dataset.augmentTake));},'Augment recorded. Enter any item rewards when received.');if(recorded)modal.close();}
   });
   const previous=render;render=function(){previous();contextKey='';draw();};
-  document.addEventListener('carousel-new-game',()=>{modal.close();query='';variants=null;input.value='';contextKey='';drawSelected();});
+  document.addEventListener('carousel-new-game',()=>{modal.close();clearSearch();contextKey='';drawSelected();});
   document.addEventListener('carousel-meta-updated',()=>{contextKey='';draw();});
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and Enter for each of the three offers. Entry advances automatically. The round defaults to your next unrecorded augment; change it if needed. Took this records the selected augment, keeps your inventory untouched and updates comp fit. Enter reroll replaces only that offer after you reroll in game. Reroll guidance is conditional; the app does not know the replacement pool or rerolls left.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and press Enter for each offer. Entry advances automatically. The round defaults to your next unrecorded augment. Click Reroll this offer to clear the slot, then enter the replacement after rerolling in game. Took this records the choice and updates comp fit. Record any item rewards when received.</li>');
   drawSelected();return {open,refresh:draw};
 })();
 
@@ -3622,7 +3770,7 @@ const AnvilUI=(()=>{
       const recommended=mode==='compare'&&ranked.length>1&&n===0&&supported&&!tied;
       const count=r.component?(r.count?`<b class="component-shortage">×${r.count} needed</b>`:'<small>No queued need</small>'):'';
       const tag=r.component&&state.pins.includes(r.item.id)?'<span class="anvil-recommended">Pinned priority</span>':'';
-      return `<article class="decision-row anvil-row ${r.score>0?'supported':''} ${recommended?'recommended-offer':''}">${recommended?'<span class="anvil-pick-check" role="img" aria-label="Recommended choice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span>':`<span class="anvil-rank">${n+1}</span>`}<div class="decision-primary">${icon(r.item.id)}<div><strong>${esc(r.item.name)}</strong>${count}<small>${esc(r.reason)}</small>${tag}</div></div><div class="anvil-fit">${r.champion?IconUI.championLabel(r.champion):''}${!state.activeComp&&r.guide?'<small>'+esc(r.guide.title)+'</small>':''}</div>${mode==='browse'?`<button class="anvil-compare-add" data-anvil-offer-add="${esc(r.item.id)}" aria-label="Add ${esc(r.item.name)} to offers">+ Offer</button>`:''}<button data-take-anvil="${esc(r.item.id)}" ${r.component&&(state.owned[r.item.id]||0)>=99?'disabled':''} aria-label="${recommended?'Recommended: take':'Record'} ${esc(r.item.name)} from anvil">${recommended?'Take this':'Took this'}</button></article>`;
+      return `<article class="decision-row anvil-row ${r.score>0?'supported':''} ${recommended?'recommended-offer':''}">${recommended?'<span class="anvil-pick-check" role="img" aria-label="Recommended choice"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span>':`<span class="anvil-rank">${n+1}</span>`}<div class="decision-primary">${icon(r.item.id)}<div><strong>${esc(r.item.name)}</strong>${count}<small>${esc(r.reason)}</small>${tag}</div></div><div class="anvil-fit">${r.champion?IconUI.championLabel(r.champion):''}${!state.activeComp&&r.guide?'<small>'+IconUI.championLabel(r.guide.title,r.guide.mainChampion?.apiName||r.guide.title)+'</small>':''}</div>${mode==='browse'?`<button class="anvil-compare-add" data-anvil-offer-add="${esc(r.item.id)}" aria-label="Add ${esc(r.item.name)} to offers">+ Offer</button>`:''}<button data-take-anvil="${esc(r.item.id)}" ${r.component&&(state.owned[r.item.id]||0)>=99?'disabled':''} aria-label="${recommended?'Recommended: take':'Record'} ${esc(r.item.name)} from anvil">${recommended?'Take this':'Took this'}</button></article>`;
     }).join('')||(mode==='compare'?'':'<p class="decision-note">No matching items.</p>');
     drawSearch();
   }
@@ -3724,6 +3872,18 @@ const AnvilUI=(()=>{
   const cache = new Map();
   let selection, request, revision = Academy.revision;
 
+  function compRow(guide, choices) {
+    if (!choices.has(guide.id)) {
+      const fit=CompFinder.evaluate(state,guide);
+      choices.set(guide.id,fit.blocked?fit.gateReason:fit.selectable?'':'This guide’s items are not available yet.');
+    }
+    const unavailable=choices.get(guide.id);
+    return `<div class="emblem-comp"><strong>${IconUI.championLabel(guide.title,guide.mainChampion?.apiName||guide.title)}</strong>
+      ${academyTierBadges(guide)}
+      <button type="button" class="quiet" data-choose-comp="${esc(guide.id)}" aria-label="Choose ${esc(guide.title)}"
+        ${unavailable?`disabled title="${esc(unavailable)}"`:''}>Aim here</button></div>`;
+  }
+
   function drawCatalog(focus) {
     const owned = new Set(state.queue.filter(item=>item.done).map(item=>item.item));
     const items = EmblemExplorer.catalog().map(item=>({
@@ -3748,7 +3908,7 @@ const AnvilUI=(()=>{
     dialog.scrollTop = 0;
   }
 
-  async function showMeta(emblem, target) {
+  async function showMeta(emblem, target, choices) {
     if (!Academy.live) return;
     const {patch} = Academy.snapshot;
     const current = new AbortController();
@@ -3767,9 +3927,9 @@ const AnvilUI=(()=>{
       target.innerHTML = `<p class="emblem-source">Patch ${esc(data.patch)} · ranked, last 3 days · checked ${esc(checked)}</p>` + (holders.length
         ? `<p class="emblem-source">${holders.length} ${holders.length===1?'holder':'holders'} with ${EmblemExplorer.minimumSamples}+ samples, ranked by average place.</p>
         <ol class="emblem-list">${holders.map(holder=>`<li class="emblem-holder">
-          <div><strong>${esc(holder.name)}</strong><span>${holder.avg.toFixed(2)} avg · ${holder.samples.toLocaleString()} samples</span></div>
-          ${holder.comps.length?`<details><summary>Academy comps featuring ${esc(holder.name)} (${holder.comps.length})</summary>
-          <ul>${holder.comps.map(guide=>`<li>${esc(guide.title)} ${academyTierBadges(guide)}</li>`).join('')}</ul></details>`:'<p class="emblem-source">No current Academy comp features this holder.</p>'}
+          <div><strong>${IconUI.championLabel(holder.name,holder.id)}</strong><span>${holder.avg.toFixed(2)} avg · ${holder.samples.toLocaleString()} samples</span></div>
+          ${holder.comps.length?`<details><summary>Academy comps featuring ${IconUI.championLabel(holder.name,holder.id)} (${holder.comps.length})</summary>
+          <ul>${holder.comps.map(guide=>`<li>${compRow(guide,choices)}</li>`).join('')}</ul></details>`:'<p class="emblem-source">No current Academy comp features this holder.</p>'}
         </li>`).join('')}</ol>`
         : '<p class="emblem-source">Too few MetaTFT samples to rank holders for this emblem.</p>');
     } catch {
@@ -3790,13 +3950,14 @@ const AnvilUI=(()=>{
     title.innerHTML = `${icon(id)} ${esc(item.name)}`;
     const routes = EmblemExplorer.academyRoutes(emblem);
     const labels = {final:'Final board', alternate:'Alternate build', flex:'Flex option'};
+    const choices = new Map();
     results.innerHTML = `<section aria-labelledby="emblem-academy-title">
       <h3 id="emblem-academy-title">TFT Academy comps</h3>
       ${!Academy.isCurrent() ? '<p class="emblem-source">Current Academy routes need a successful live refresh.</p>' :
         `<p class="emblem-source">Live · Patch ${esc(Academy.snapshot.patch)} · ranked by tier</p>
         ${routes.length?`<ol class="emblem-list">${routes.map(({guide,holders})=>`<li class="emblem-route">
-          <div><strong>${esc(guide.title)}</strong>${academyTierBadges(guide)}</div>
-          <p>${holders.map(holder=>`${esc(holder.name)} · ${labels[holder.use]}`).join(' / ')}</p>
+          ${compRow(guide,choices)}
+          <p>${holders.map(holder=>`${IconUI.championLabel(holder.name,holder.apiName)} · ${labels[holder.use]}`).join(' / ')}</p>
         </li>`).join('')}</ol>`:'<p class="emblem-source">No current Academy guide lists a holder for this emblem.</p>'}`}
     </section>${Academy.live?'<section aria-labelledby="emblem-meta-title"><h3 id="emblem-meta-title">MetaTFT best holders</h3><div id="emblem-meta-results" aria-live="polite"></div></section>':''}`;
     if (moveFocus) {
@@ -3804,7 +3965,7 @@ const AnvilUI=(()=>{
       dialog.scrollTop = 0;
     }
     const meta = results.querySelector('#emblem-meta-results');
-    if (meta) showMeta(emblem, meta);
+    if (meta) showMeta(emblem, meta, choices);
   }
 
   openButton.addEventListener('click',()=>{browse(); dialog.showModal();});

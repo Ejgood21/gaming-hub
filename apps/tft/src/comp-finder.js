@@ -221,18 +221,20 @@ module.exports = function createCompFinder(model) {
       const requirements=this.requirements(plan,guide);
       const board=this.boardFit(plan,guide),execution=this.execution(plan,guide);
       const names=ids=>[...new Set(ids.map(id=>byId[id]?.name||id))].join(', ');
-      const unitNames=[...board.keepers,...board.early,...board.bridges].map(u=>`${u.name} ${u.stars}★`).join(', ');
+      const ownedUnits=[...board.keepers,...board.early,...board.bridges];
+      const unitNames=ownedUnits.map(u=>`${u.name} ${u.stars}★`).join(', ');
       const itemNames=names([...matched,...specialMatches.map(m=>m.item),...earlyMatches.map(m=>m.item),...(featuredOwned?[featured]:[])]);
       const ownedReasons=[
         {points:Math.min(96,itemScore),text:'Completed items'+(itemNames?' · '+itemNames:'')+(appliedEmblemBonus?` · +${appliedEmblemBonus} emblem fit`:'')},
-        {points:board.unitScore,text:'Champions owned'+(unitNames?' · '+unitNames:'')},
+        {points:board.unitScore,text:'Champions owned'+(unitNames?' · '+unitNames:''),label:'Champions owned',units:ownedUnits},
         {points:Math.min(36,componentScore),text:'Loose components'+(used.length?' · '+names(used):'')},
         ...augmentMatches.map(a=>({points:a.points,text:`Augment: ${a.name} — ${a.academy?'':'Rules-based fit · '}${a.text}${a.detail?' · '+a.detail:''}`}))
       ];
       const reasons=[...ownedReasons,...[
         {points:-Math.min(18,unmatched.length*6),text:'Off-plan items: '+names(unmatched)},
         {points:-requirements.requirementPenalty,text:[requirements.gateReason,requirements.missingEmblems.length?'Missing emblems: '+names(requirements.missingEmblems):''].filter(Boolean).join(' · ')},
-        {points:-execution.executionPenalty,text:'Missing core units or upgrades: '+execution.missingCore.map(u=>u.name).join(', ')}
+        {points:-execution.executionPenalty,text:'Missing core units or upgrades: '+execution.missingCore.map(u=>u.name).join(', '),
+          label:'Missing core units or upgrades',units:execution.missingCore.map(({name,apiName})=>({name,apiName}))}
       ].filter(reason=>reason.points)];
       if(heldAugments.length&&!augmentFit.hasRecommendations(guide))reasons.push({points:0,text:'No Academy augment data for this comp — scored from item, economy and combat rules.'});
       if(requirements.unlockReason)reasons.push({points:0,text:requirements.unlockReason});

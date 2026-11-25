@@ -28,7 +28,7 @@ const DecisionUI = (()=>{
       const first=DecisionPlanner.pending(state,action.choice.champion)[0];if(!first)continue;
       const card=[...document.querySelectorAll('#queue .qcard')].find(el=>el.querySelector('[data-action="remove"]')?.dataset.id===first.uid);if(!card)continue;
       const box=document.createElement('div');box.className='inline-pivot decision-pivot';
-      box.innerHTML=`<span>Compatible ${esc(action.choice.tier)} pivot</span><div>${action.crafts.map(compactItem).join('')}</div><button data-batch-champion="${esc(action.choice.champion)}">Build & adjust</button>`;card.append(box);
+      box.innerHTML=`<span>Compatible ${esc(action.choice.tier)} pivot · ${IconUI.championLabel(action.choice.champion)}</span><div>${action.crafts.map(compactItem).join('')}</div><button data-batch-champion="${esc(action.choice.champion)}">Build & adjust</button>`;card.append(box);
     }
   }
   function carouselIcon(target){

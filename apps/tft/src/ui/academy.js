@@ -34,7 +34,7 @@ const AcademyUI=(() => {
     if(listed!==s){
       listed=s;
       const guides=s.guides.slice().sort((a,b)=>academyTier(a.tier).rank-academyTier(b.tier).rank||a.title.localeCompare(b.title));
-      reference.querySelector('ul').innerHTML=guides.map(g=>`<li>${academyTierBadges(g)} <a href="https://tftacademy.com/tierlist/comps/${encodeURIComponent(g.compSlug)}" target="_blank" rel="noopener">${esc(g.title)}</a></li>`).join('');
+      reference.querySelector('ul').innerHTML=guides.map(g=>`<li>${academyTierBadges(g)} <a href="https://tftacademy.com/tierlist/comps/${encodeURIComponent(g.compSlug)}" target="_blank" rel="noopener">${IconUI.championLabel(g.title,g.mainChampion?.apiName||g.title)}</a></li>`).join('');
     }
     reference.querySelector('summary').textContent=`${Academy.live?'Live Academy tier list':'Stale Academy tier list · reference only'} · Set ${s.set} · Patch ${s.patch}`;
   }
@@ -44,7 +44,7 @@ const AcademyUI=(() => {
     const current=Academy.currentGuide(state),list=current?Academy.priorities(current):[];priority.hidden=!list.length;
     priority.innerHTML=list.length?'<span>Academy priority</span>'+list.map((p,n)=>`${n?'<span aria-hidden="true">›</span>':''}<span class="academy-priority-item" title="${esc(byId[p.id]?.name||p.id)}${p.component?' · component preference':''}" aria-label="${n+1}. ${esc(byId[p.id]?.name||p.id)}${p.component?', component preference':''}">${icon(p.id)}${p.component?'<small>component</small>':''}</span>`).join(''):'';
   }
-  const oldRender=render;render=function(){oldRender();document.getElementById('app-title').textContent=state.activeComp?.title||'Carousel';status();drawPriority();};
+  const oldRender=render;render=function(){oldRender();const title=document.getElementById('app-title'),carry=Academy.guide(state)?.mainChampion?.apiName;title.innerHTML=(carry?IconUI.champion(carry):'')+esc(state.activeComp?.title||'Carousel');status();drawPriority();};
   function plannedSet(){
     try{return Academy.decodeCode(state.activeComp?.code).set;}catch{return undefined;}
   }

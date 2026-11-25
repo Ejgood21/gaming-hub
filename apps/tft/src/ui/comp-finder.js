@@ -39,12 +39,17 @@
     mutate(()=>{state.firstAugment=id;state.chosenAugments||=['','',''];state.chosenAugments[0]=id;},'First augment updated.');
   });
   panel.querySelector('#finder-more').addEventListener('click',()=>{expanded=!expanded;draw();});
-  panel.parentElement.addEventListener('click',e=>{
-    const b=e.target.closest('[data-choose-comp]');if(!b)return;
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('[data-choose-comp]');if(!b||b.disabled)return;
+    const dialog=b.closest('dialog');
+    const scrollToPlan=panel.contains(b)||dialog;
     try{
-      exploring=false;
-      mutate(()=>CompFinder.choose(state,b.dataset.chooseComp),'Academy plan loaded. Board and inventory kept.');
-      if(panel.contains(b))window.scrollTo(0,0);
+      mutate(()=>{
+        CompFinder.choose(state,b.dataset.chooseComp);
+        exploring=false;
+      },'Academy plan loaded. Board and inventory kept.');
+      dialog?.close();
+      if(scrollToPlan)window.scrollTo(0,0);
     }catch(err){toast(err.message);}
   });
   const unitsDialog=document.createElement('dialog');unitsDialog.id='explore-unit-dialog';unitsDialog.setAttribute('aria-labelledby','unit-dialog-title');
@@ -131,7 +136,7 @@
       :'Refresh live data to compare your plan with other comps.';
     alternativeButton.hidden=!alternative;
     alternativeButton.dataset.chooseComp=alternative?.id||'';
-    alternativeButton.textContent=alternative?'Pivot to '+alternative.title:'';
+    alternativeButton.innerHTML=alternative?`<span class="inline-entity">${IconUI.champion(alternative.mainChampion?.apiName)}<span>Pivot to ${esc(alternative.title)}</span></span>`:'';
     if(panel.hidden){picker.close();return;}
     document.getElementById('explore-owned-items').innerHTML=state.queue.filter(q=>q.done).map(q=>{
       const name=esc(byId[q.item].name), item=Academy.itemInfo(q.item);
@@ -173,7 +178,9 @@
       }).join('');
       const breakdown=[
         `<li>+${r.tierBonus} · Academy tier ${esc(tier)} ranking bonus</li>`,
-        ...r.reasons.map(({points,text})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${esc(text)}</li>`)
+        ...r.reasons.map(({points,text,label,units})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${units?.length
+          ?esc(label)+' · '+units.map(({name,apiName,stars})=>IconUI.championLabel(name+(stars?' '+stars+'★':''),apiName)).join(', ')
+          :esc(text)}</li>`)
       ].join('');
       return `${heading}<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div><div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}<details class="finder-method"><summary><span class="finder-fit-score">Fit score ${r.fitScore}</span> · <span class="finder-effective-score">Effective score ${r.effectiveScore}</span></summary><ul>${breakdown}</ul></details></div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;

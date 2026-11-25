@@ -2,14 +2,16 @@
    state/event source; visible controls support mouse and keyboard navigation. */
 const IconUI = {
   champion(name,cls=''){
-    const c=Academy.snapshot.champions.find(c=>c.apiName===name||Academy.normalizeName(c.name)===Academy.normalizeName(name));
+    const normalized=Academy.normalizeName(name);
+    const matches=c=>c.apiName===name||Academy.normalizeName(c.name)===normalized;
+    const c=Academy.snapshot.champions.find(matches)||ACADEMY_BUNDLED.champions.find(matches);
     if(!c)return `<span class="champ-fallback ${cls}" aria-hidden="true">?</span>`;
     const embedded=ACADEMY_BUNDLED.champions.find(u=>u.apiName===c.apiName)?.icon;
     const src=embedded?.startsWith('data:')?embedded:c.icon||'https://assets.tftacademy.com/champions/champion_icons/'+encodeURIComponent(c.apiName)+'.webp';
     return `<img class="champ-icon ${cls}" src="${esc(src)}" alt="" width="28" height="28">`;
   },
   itemLabel(id){return `<span class="inline-entity">${icon(id)}<span>${esc(byId[id].name)}</span></span>`;},
-  championLabel(name){return `<span class="inline-entity">${this.champion(name)}<span>${esc(name)}</span></span>`;},
+  championLabel(name,apiName=name){return `<span class="inline-entity">${this.champion(apiName)}<span>${esc(name)}</span></span>`;},
   picker(select,kind,label,noMatch=()=> 'No matches'){
     select.hidden=true;select.setAttribute('aria-hidden','true');select.tabIndex=-1;
     const wrap=document.createElement('div');wrap.className='icon-select';
@@ -33,3 +35,13 @@ const IconUI = {
     return {refresh,close};
   }
 };
+document.addEventListener('error',event=>{
+  const img=event.target;
+  if(!img.classList?.contains('champ-icon'))return;
+  const fallback=document.createElement('span');
+  fallback.className=img.className;
+  fallback.classList.replace('champ-icon','champ-fallback');
+  fallback.textContent='?';
+  fallback.setAttribute('aria-hidden','true');
+  img.replaceWith(fallback);
+},true);

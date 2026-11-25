@@ -3,7 +3,20 @@ const AugmentUI=(()=>{
   const button=document.createElement('button');button.id='augment-open';button.textContent='Augment choices';document.querySelector('.decision-controls').append(button);
   const selected=document.createElement('div');selected.id='chosen-augments';selected.className='chosen-augments';document.querySelector('.decision-controls').after(selected);
   const modal=document.createElement('dialog');modal.id='augment-dialog';modal.setAttribute('aria-labelledby','augment-title');
-  modal.innerHTML='<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div><div class="augment-stage" role="group" aria-label="Augment round"></div><div id="augment-verdict" role="status" aria-live="polite"></div><div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div><div id="augment-offers"></div><details class="augment-method"><summary>How this is compared</summary><p>Academy’s comp recommendations lead. When Academy does not list an offer for your comp, its description is checked against your item recipes, leveling or reroll plan, and combat roles.</p><p>Reroll advice requires an offer with no fit and an unseen Academy match of the same rarity and round in the catalog. Actual rerolls depend on your in-game pool. Record any rewards on the bench when received.</p><p id="augment-source"></p></details>';
+  modal.innerHTML=`<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div>
+    <div class="augment-stage" role="group" aria-label="Augment round"></div>
+    <div id="augment-verdict" role="status" aria-live="polite"></div>
+    <div class="augment-legend" role="group" aria-label="Green means take. Light green means decent. Blue means reroll. Red means do not take.">
+      <span data-verdict="take">Take</span><span data-verdict="decent">Decent</span><span data-verdict="reroll">Reroll</span><span data-verdict="avoid">Do not take</span>
+    </div>
+    <p class="augment-pool">The in-game pool and rerolls left are unknown.</p>
+    <div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div>
+    <div id="augment-offers"></div>
+    <details class="augment-method"><summary>How this is compared</summary>
+      <p>Academy leads. Other offers are checked against your item recipes, economy plan and combat roles.</p>
+      <p>Reroll advice requires an offer with no fit and an unseen Academy match of the same rarity and round.</p>
+      <p id="augment-academy-note"></p><p id="augment-source"></p>
+    </details>`;
   document.body.append(modal);
   const input=document.getElementById('augment-offer-search'),list=document.getElementById('augment-search-results');
   const badge=a=>['','Silver','Gold','Prismatic'][a.tier]||'Augment';
@@ -12,13 +25,14 @@ const AugmentUI=(()=>{
   function drawSelected(){const ids=AugmentAdvisor.slots(state);selected.hidden=!ids.some(Boolean);selected.innerHTML=ids.map((id,n)=>{const a=CompFinder.augment(id);if(!id)return '';return `<button data-edit-augment="${n}" title="${esc(a?.name||'Saved augment')} · ${AugmentAdvisor.stages[n]}" aria-label="Review ${esc(a?.name||'saved augment')} at ${AugmentAdvisor.stages[n]}">${augmentIcon(id)}<span>${esc(a?.name||'Saved augment')}</span><small>${AugmentAdvisor.stages[n]}</small></button>`;}).join('');}
   function search(){
     const o=offers(),norm=Academy.normalizeName(query);list.hidden=!norm;
-    const held=AugmentAdvisor.held(state);
     const relevance=name=>name===norm?0:name.startsWith(norm)?1:2;
     const groups=new Map();
+    const available=norm?AugmentAdvisor.available(state,o):[];
+    if(variants)variants=variants.filter(a=>available.some(choice=>choice.apiName===a.apiName));
     if(norm&&!variants){
-      for(const a of CompFinder.augmentOptions(AugmentAdvisor.stages[o.round])){
+      for(const a of available){
         const key=a.name.trim().replace(/\s+/g,' ').toLowerCase();
-        if(!Academy.normalizeName(a.name).includes(norm)||a.ids.some(id=>held.includes(id)||o.ids.includes(id)))continue;
+        if(!Academy.normalizeName(a.name).includes(norm))continue;
         if(!groups.has(key))groups.set(key,[]);
         groups.get(key).push(a);
       }
@@ -40,24 +54,35 @@ const AugmentUI=(()=>{
     const o=offers(),comparison=getResult(),logged=AugmentAdvisor.slots(state)[o.round];
     modal.querySelector('.augment-stage').innerHTML=AugmentAdvisor.stages.map((s,n)=>`<button data-augment-round="${n}" aria-pressed="${o.round===n}">${n+1}${['st','nd','rd'][n]} · ${s}${AugmentAdvisor.slots(state)[n]?' ✓':''}</button>`).join('');
     const verdict=document.getElementById('augment-verdict');verdict.dataset.action=comparison.action;verdict.textContent=comparison.message;
-    if(comparison.academyNotice){const hint=document.createElement('small');hint.textContent=comparison.academyNotice;verdict.append(hint);}
-    if(logged){const hint=document.createElement('small');hint.textContent='This round is already recorded. Taking a different augment replaces that record.';verdict.append(hint);}
-    document.getElementById('augment-search-label').textContent='Offer '+(activeSlot+1)+' · type a few letters, Enter';
+    document.getElementById('augment-academy-note').textContent=comparison.academyNotice;
+    document.getElementById('augment-search-label').textContent=o.awaiting?.[activeSlot]
+      ?`Offer ${activeSlot+1} · enter replacement after rerolling in game`
+      :`Offer ${activeSlot+1} · type a few letters, Enter${logged?' · replaces recorded pick':''}`;
     document.getElementById('augment-offers').innerHTML=o.ids.map((id,slot)=>{
-      const a=CompFinder.augment(id),r=comparison.rows.find(r=>r.slot===slot),best=comparison.best?.slot===slot&&comparison.action==='take',reroll=comparison.rerolls.find(row=>row.slot===slot);
-      if(!a)return `<article class="augment-offer empty-offer ${slot===activeSlot?'active-slot':''}"><button data-offer-edit="${slot}"><span>${slot+1}</span>${id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
+      const r=comparison.rows.find(r=>r.slot===slot),awaiting=o.awaiting?.[slot],active=slot===activeSlot?'active-slot':'';
+      if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
+      const a=r.augment,reroll=comparison.rerolls.find(row=>row.slot===slot);
       const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
-      const fit=best?'Best supported pick':reroll?'Consider reroll · if available':r?.invalid||r?.offRound?'Check offer':r?.academy?'Academy match':r?.contextual?'Contextual fit':'Limited evidence';
-      const reasons=reroll?[reroll.reason,...r.reasons.slice(1).map(x=>x.text)]:(r?.reasons||[]).map(x=>x.text);
-      const comparisonNote=reroll||r?.contextual
-        ?`<small class="augment-comparison">Reroll advice compares known ${badge(a).toLowerCase()} augments at ${AugmentAdvisor.stages[o.round]}. Your in-game pool may differ.</small>`:'';
-      const rounds=(r?.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
-      return `<article class="augment-offer ${slot===activeSlot?'active-slot':''} ${best?'best-offer':''}"><div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><button class="quiet" data-offer-replace="${slot}">Enter reroll</button></div><div class="augment-fit-label">${fit}</div><div class="augment-reasons">${reasons.map(text=>`<span>${esc(text)}</span>`).join('')}${rounds}</div>${comparisonNote}<details class="augment-description"><summary>Effect</summary><p>${esc(a.description)}</p></details><button class="augment-take" data-augment-take="${slot}" ${r?.invalid?'disabled':''}>${r?.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button></article>`;
+      const reasons=r.reasons.map(x=>x.text);
+      if(reroll)reasons[0]=reroll.reason;
+      const rounds=(r.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
+      return `<article class="augment-offer ${active}" data-verdict="${r.verdict}">
+        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
+        <div class="augment-offer-actions"><button class="augment-take" data-augment-take="${slot}" ${r.invalid?'disabled':''}>${r.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button>
+        <button class="quiet" data-offer-replace="${slot}">Reroll this offer</button>${rounds}</div>
+        <details class="augment-description" ${r.offRound?'open':''}><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p></details>
+      </article>`;
     }).join('');
     document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
-  function open(round,id){offers();if(Number.isInteger(round)&&state.augmentOffers.round!==round){state.augmentOffers={round,ids:['','',''],seen:[]};save();}activeSlot=Math.max(0,offers().ids.findIndex(id=>!id));query='';variants=null;input.value='';contextKey='';modal.showModal();if(id)add(id);draw();input.focus();}
+  function clearSearch(){query='';variants=null;input.value='';searchIndex=0;}
+  function open(round,id){
+    if(Number.isInteger(round)&&offers().round!==round){state.augmentOffers=AugmentAdvisor.newOffers(round);save();}
+    const o=offers(),pending=o.awaiting?.findIndex(Boolean)??-1;
+    activeSlot=pending>=0?pending:Math.max(0,o.ids.findIndex(id=>!id));
+    clearSearch();contextKey='';modal.showModal();if(id)add(id);draw();input.focus();
+  }
   function pick(result){
     if(result.choices?.length>1){
       variants=result.choices;
@@ -67,17 +92,18 @@ const AugmentUI=(()=>{
     }else add(result.apiName);
   }
   function add(id){
-    const o=offers(),a=CompFinder.augment(id);if(!a||o.ids.includes(id)||AugmentAdvisor.held(state).includes(id))return;
-    const slot=activeSlot;query='';variants=null;input.value='';searchIndex=0;
-    mutate(()=>{offers().ids[slot]=id;},'Offer '+(slot+1)+' entered.');
+    const slot=activeSlot,nextOffers=structuredClone(offers());
+    if(!AugmentAdvisor.enter({...state,augmentOffers:nextOffers},slot,id))return;
+    clearSearch();
+    mutate(()=>{state.augmentOffers=nextOffers;},'Offer '+(slot+1)+' entered.');
     const next=offers().ids.findIndex((id,n)=>n>slot&&!id);activeSlot=next>=0?next:Math.max(0,offers().ids.findIndex(id=>!id));draw();input.focus();
   }
   function enterAt(round,id){
     const a=CompFinder.augment(id);
     if(!a||!AugmentAdvisor.eligible(a,round))return;
     if(modal.open){
-      query='';variants=null;input.value='';activeSlot=1;
-      mutate(()=>{state.augmentOffers={round,ids:[id,'',''],seen:[]};});
+      clearSearch();activeSlot=1;
+      mutate(()=>{state.augmentOffers=AugmentAdvisor.newOffers(round);AugmentAdvisor.enter(state,0,id);});
       input.focus();
     }else open(round,id);
   }
@@ -87,15 +113,19 @@ const AugmentUI=(()=>{
   document.addEventListener('click',e=>{
     let b=e.target.closest('[data-offer-result]');if(b)pick(searchRows[Number(b.dataset.offerResult)]);
     b=e.target.closest('[data-edit-augment]');if(b)open(Number(b.dataset.editAugment));
-    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;query='';variants=null;input.value='';activeSlot=0;mutate(()=>state.augmentOffers={round,ids:['','',''],seen:[]},'Augment round changed.');input.focus();}
-    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);query='';variants=null;input.value='';draw();input.focus();}
+    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;clearSearch();activeSlot=0;mutate(()=>state.augmentOffers=AugmentAdvisor.newOffers(round),'Augment round changed.');input.focus();}
+    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);clearSearch();draw();input.focus();}
     b=e.target.closest('[data-offer-move]');if(b)enterAt(Number(b.dataset.offerMove),b.dataset.augmentId);
-    b=e.target.closest('[data-offer-replace]');if(b){activeSlot=Number(b.dataset.offerReplace);query='';variants=null;input.value='';mutate(()=>{const o=offers(),id=o.ids[activeSlot];if(id&&!o.seen.includes(id))o.seen.push(id);o.ids[activeSlot]='';},'Enter the new offer after rerolling in game.');input.focus();}
+    b=e.target.closest('[data-offer-replace]');if(b){
+      activeSlot=Number(b.dataset.offerReplace);clearSearch();
+      mutate(()=>AugmentAdvisor.replace(state,activeSlot),'Enter the new offer after rerolling in game.');
+      input.focus();
+    }
     b=e.target.closest('[data-augment-take]');if(b){let recorded=false;mutate(()=>{recorded=AugmentAdvisor.record(state,Number(b.dataset.augmentTake));},'Augment recorded. Enter any item rewards when received.');if(recorded)modal.close();}
   });
   const previous=render;render=function(){previous();contextKey='';draw();};
-  document.addEventListener('carousel-new-game',()=>{modal.close();query='';variants=null;input.value='';contextKey='';drawSelected();});
+  document.addEventListener('carousel-new-game',()=>{modal.close();clearSearch();contextKey='';drawSelected();});
   document.addEventListener('carousel-meta-updated',()=>{contextKey='';draw();});
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and Enter for each of the three offers. Entry advances automatically. The round defaults to your next unrecorded augment; change it if needed. Took this records the selected augment, keeps your inventory untouched and updates comp fit. Enter reroll replaces only that offer after you reroll in game. Reroll guidance is conditional; the app does not know the replacement pool or rerolls left.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and press Enter for each offer. Entry advances automatically. The round defaults to your next unrecorded augment. Click Reroll this offer to clear the slot, then enter the replacement after rerolling in game. Took this records the choice and updates comp fit. Record any item rewards when received.</li>');
   drawSelected();return {open,refresh:draw};
 })();

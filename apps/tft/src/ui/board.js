@@ -18,7 +18,7 @@
     if(q&&!Academy.canEquip(state,name,q.item,q.uid)){toast(name+' has no room for this item.');return;}
     if(q)mutate(()=>{q.champion=name;},'Item holder updated.');assign.close();});
   document.addEventListener('click',e=>{const b=e.target.closest('[data-assign-holder]');if(b)openHolder(b.dataset.assignHolder);});
-  const champIcon=(unit)=>{const c=Academy.snapshot.champions.find(c=>c.apiName===unit.apiName),embedded=ACADEMY_BUNDLED.champions.find(c=>c.apiName===unit.apiName)?.icon;return {cost:c?.cost||1,name:c?.name||unit.apiName.replace(/^DA_/,''),src:embedded?.startsWith('data:')?embedded:c?.icon||'https://assets.tftacademy.com/champions/champion_icons/'+encodeURIComponent(unit.apiName)+'.webp'};};
+  const champion=(unit)=>Academy.snapshot.champions.find(c=>c.apiName===unit.apiName)||{cost:1,name:unit.apiName.replace(/^DA_/,'')};
   function renderBoard(){
     const guide=Academy.guide(state);overview.hidden=!guide;origin.hidden=!guide;if(!guide)return;
     const activePatch=state.activeComp?.patch;
@@ -29,15 +29,15 @@
     source.href='https://tftacademy.com/tierlist/comps'+(sourceGuide.compSlug?'/'+encodeURIComponent(sourceGuide.compSlug):'');
     source.setAttribute('aria-label','View original '+guide.title+' guide on TFT Academy (opens in a new tab)');
     const holders=Academy.equipment(state),allocated=Tracker.allocate(state,DATA.items),rows=new Map(allocated.rows.map(q=>[q.uid,q]));
-    const names=new Set(guide.finalComp.map(c=>champIcon(c).name));
+    const names=new Set(guide.finalComp.map(c=>champion(c).name));
     const plan=state.queue.filter(q=>names.has(q.done?holders.get(q.uid):q.champion));
     const cell=(u)=>{
       if(!u)return '<div class="board-cell empty-cell" aria-hidden="true"><span></span></div>';
-      const c=champIcon(u),items=plan.filter(q=>(q.done?holders.get(q.uid):q.champion)===c.name);
+      const c=champion(u),items=plan.filter(q=>(q.done?holders.get(q.uid):q.champion)===c.name);
       const baseline=u.items.map(id=>Academy.itemMap.get(id));const actual=items.map(q=>q.item);
       const adjusted=baseline.length!==actual.length||!MetaBuilds.fits(baseline,actual);
       const color=['','#a5a5a5','#19bc69','#158ee8','#a046d0','#eacb4e'][Math.min(5,c.cost)]||'#a5a5a5';
-      return `<div class="board-cell unit-cell" style="--unit-color:${color}" aria-label="${esc(c.name)}, Academy target ${u.stars||1} star${u.stars===1?'':'s'}"><button class="board-champion" data-champion-builds="${esc(c.name)}" aria-label="Open ${esc(c.name)} S/A item builds" aria-haspopup="dialog" aria-expanded="false" title="${esc(c.name)} · S/A item builds"><span class="champion-hex"><img class="champion-portrait" src="${esc(c.src)}" alt="" width="64" height="64"></span><span class="board-stars">${u.stars>1?'★'.repeat(u.stars):''}</span><span class="board-name">${esc(c.name)}</span></button><div class="board-items">${items.map(q=>{
+      return `<div class="board-cell unit-cell" style="--unit-color:${color}" aria-label="${esc(c.name)}, Academy target ${u.stars||1} star${u.stars===1?'':'s'}"><button class="board-champion" data-champion-builds="${esc(c.name)}" aria-label="Open ${esc(c.name)} S/A item builds" aria-haspopup="dialog" aria-expanded="false" title="${esc(c.name)} · S/A item builds"><span class="champion-hex">${IconUI.champion(u.apiName,'champion-portrait')}</span><span class="board-stars">${u.stars>1?'★'.repeat(u.stars):''}</span><span class="board-name">${esc(c.name)}</span></button><div class="board-items">${items.map(q=>{
         const r=rows.get(q.uid),ready=!q.done&&r?.slots.length===2&&r.slots.every(s=>s.have),label=q.done?'Completed':ready?'Components ready':'Planned';
         return `<button class="board-item ${q.done?'is-done':ready?'is-ready':'is-planned'}" ${q.done?`data-assign-holder="${q.uid}"`:`data-board-target="${q.uid}"`} title="${esc(byId[q.item].name)} · ${label}${q.done?' · click to change holder':' · click to pivot'}" aria-label="${esc(c.name)}: ${esc(byId[q.item].name)}, ${label}">${icon(q.item)}<b>${q.done?'✓':ready?'◐':''}</b></button>`;
       }).join('')}</div>${adjusted?'<span class="board-adjusted" title="Your item plan differs from Academy">↔</span>':''}</div>`;

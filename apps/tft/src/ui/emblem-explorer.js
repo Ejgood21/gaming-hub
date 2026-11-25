@@ -20,6 +20,18 @@
   const cache = new Map();
   let selection, request, revision = Academy.revision;
 
+  function compRow(guide, choices) {
+    if (!choices.has(guide.id)) {
+      const fit=CompFinder.evaluate(state,guide);
+      choices.set(guide.id,fit.blocked?fit.gateReason:fit.selectable?'':'This guide’s items are not available yet.');
+    }
+    const unavailable=choices.get(guide.id);
+    return `<div class="emblem-comp"><strong>${IconUI.championLabel(guide.title,guide.mainChampion?.apiName||guide.title)}</strong>
+      ${academyTierBadges(guide)}
+      <button type="button" class="quiet" data-choose-comp="${esc(guide.id)}" aria-label="Choose ${esc(guide.title)}"
+        ${unavailable?`disabled title="${esc(unavailable)}"`:''}>Aim here</button></div>`;
+  }
+
   function drawCatalog(focus) {
     const owned = new Set(state.queue.filter(item=>item.done).map(item=>item.item));
     const items = EmblemExplorer.catalog().map(item=>({
@@ -44,7 +56,7 @@
     dialog.scrollTop = 0;
   }
 
-  async function showMeta(emblem, target) {
+  async function showMeta(emblem, target, choices) {
     if (!Academy.live) return;
     const {patch} = Academy.snapshot;
     const current = new AbortController();
@@ -63,9 +75,9 @@
       target.innerHTML = `<p class="emblem-source">Patch ${esc(data.patch)} · ranked, last 3 days · checked ${esc(checked)}</p>` + (holders.length
         ? `<p class="emblem-source">${holders.length} ${holders.length===1?'holder':'holders'} with ${EmblemExplorer.minimumSamples}+ samples, ranked by average place.</p>
         <ol class="emblem-list">${holders.map(holder=>`<li class="emblem-holder">
-          <div><strong>${esc(holder.name)}</strong><span>${holder.avg.toFixed(2)} avg · ${holder.samples.toLocaleString()} samples</span></div>
-          ${holder.comps.length?`<details><summary>Academy comps featuring ${esc(holder.name)} (${holder.comps.length})</summary>
-          <ul>${holder.comps.map(guide=>`<li>${esc(guide.title)} ${academyTierBadges(guide)}</li>`).join('')}</ul></details>`:'<p class="emblem-source">No current Academy comp features this holder.</p>'}
+          <div><strong>${IconUI.championLabel(holder.name,holder.id)}</strong><span>${holder.avg.toFixed(2)} avg · ${holder.samples.toLocaleString()} samples</span></div>
+          ${holder.comps.length?`<details><summary>Academy comps featuring ${IconUI.championLabel(holder.name,holder.id)} (${holder.comps.length})</summary>
+          <ul>${holder.comps.map(guide=>`<li>${compRow(guide,choices)}</li>`).join('')}</ul></details>`:'<p class="emblem-source">No current Academy comp features this holder.</p>'}
         </li>`).join('')}</ol>`
         : '<p class="emblem-source">Too few MetaTFT samples to rank holders for this emblem.</p>');
     } catch {
@@ -86,13 +98,14 @@
     title.innerHTML = `${icon(id)} ${esc(item.name)}`;
     const routes = EmblemExplorer.academyRoutes(emblem);
     const labels = {final:'Final board', alternate:'Alternate build', flex:'Flex option'};
+    const choices = new Map();
     results.innerHTML = `<section aria-labelledby="emblem-academy-title">
       <h3 id="emblem-academy-title">TFT Academy comps</h3>
       ${!Academy.isCurrent() ? '<p class="emblem-source">Current Academy routes need a successful live refresh.</p>' :
         `<p class="emblem-source">Live · Patch ${esc(Academy.snapshot.patch)} · ranked by tier</p>
         ${routes.length?`<ol class="emblem-list">${routes.map(({guide,holders})=>`<li class="emblem-route">
-          <div><strong>${esc(guide.title)}</strong>${academyTierBadges(guide)}</div>
-          <p>${holders.map(holder=>`${esc(holder.name)} · ${labels[holder.use]}`).join(' / ')}</p>
+          ${compRow(guide,choices)}
+          <p>${holders.map(holder=>`${IconUI.championLabel(holder.name,holder.apiName)} · ${labels[holder.use]}`).join(' / ')}</p>
         </li>`).join('')}</ol>`:'<p class="emblem-source">No current Academy guide lists a holder for this emblem.</p>'}`}
     </section>${Academy.live?'<section aria-labelledby="emblem-meta-title"><h3 id="emblem-meta-title">MetaTFT best holders</h3><div id="emblem-meta-results" aria-live="polite"></div></section>':''}`;
     if (moveFocus) {
@@ -100,7 +113,7 @@
       dialog.scrollTop = 0;
     }
     const meta = results.querySelector('#emblem-meta-results');
-    if (meta) showMeta(emblem, meta);
+    if (meta) showMeta(emblem, meta, choices);
   }
 
   openButton.addEventListener('click',()=>{browse(); dialog.showModal();});
