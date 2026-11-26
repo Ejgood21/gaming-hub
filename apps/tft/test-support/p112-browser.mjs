@@ -21,12 +21,36 @@ async function fitsWidth(dialog) {
   assert.equal(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+1),true);
 }
 
+async function namedVerdict(card, verdict, line) {
+  const title = card.locator('.augment-verdict-line');
+  assert.equal(await title.isVisible(),true);
+  assert.equal(await title.textContent(),line);
+  assert.equal(await title.evaluate(el=>{
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    return range.getClientRects().length;
+  }),1);
+  assert.equal(await card.getAttribute('data-verdict'),verdict);
+  assert.equal(await card.evaluate(el=>getComputedStyle(el).borderLeftColor),colors[verdict]);
+}
+
+async function yiRank(page) {
+  const row = suggestion(page,'Yi Rengar');
+  if (!await row.isVisible()) await page.locator('#finder-more').click();
+  assert.equal(await choose(row,'Yi Rengar').isEnabled(),true);
+  return {
+    rank:Number(await row.locator('.finder-rank').textContent()),
+    fit:Number((await row.locator('.finder-fit-score').textContent()).slice('Fit score '.length)),
+    effective:Number((await row.locator('.finder-effective-score').textContent()).slice('Effective score '.length))
+  };
+}
+
 export async function waitForLive18_7(page) {
   await page.locator('#academy-status').getByText(/Live · Patch 18\.7/).waitFor({timeout:25000});
   await page.locator('.academy-reference > summary').getByText(/Set 18 · Patch 18\.7/).waitFor();
 }
 
-export async function checkEmblemAiming(page, {checkFallback = false} = {}) {
+export async function checkEmblemAiming(page, {checkFallback = false, expectedUnownedRank} = {}) {
   await page.getByLabel('More options',{exact:true}).click();
   await page.getByRole('button',{name:'New game',exact:true}).click();
   await waitForLive18_7(page);
@@ -75,10 +99,9 @@ export async function checkEmblemAiming(page, {checkFallback = false} = {}) {
   await undo.click();
 
   await page.getByRole('button',{name:'Remove owned Brawler Emblem',exact:true}).click();
-  await page.locator('#finder-more').click();
+  const withoutBrawler = await yiRank(page);
+  if (expectedUnownedRank !== undefined) assert.equal(withoutBrawler.rank,expectedUnownedRank);
   const yi = suggestion(page,'Yi Rengar');
-  assert.equal(await yi.locator('.finder-rank').textContent(),'9');
-  assert.equal(await choose(yi,'Yi Rengar').isEnabled(),true);
   await choose(yi,'Yi Rengar').click();
   await title.getByText('Yi Rengar',{exact:true}).waitFor();
   await undo.click();
@@ -102,6 +125,64 @@ export async function checkEmblemAiming(page, {checkFallback = false} = {}) {
   await choose(suggestion(page,'AP Fast 9'),'AP Fast 9').click();
   await title.getByText('AP Fast 9',{exact:true}).waitFor();
   assert.ok(await portrait(page.locator('#next-build')).count()>0);
+  return withoutBrawler;
+}
+
+export async function checkKarmaBoardAndOffers(page) {
+  await page.getByLabel('More options',{exact:true}).click();
+  await page.getByRole('button',{name:'New game',exact:true}).click();
+  await waitForLive18_7(page);
+  const champions = ['Karma','Veigar','Ahri','Lux','Morgana','Lillia'];
+  for (const name of champions) {
+    await page.locator('#explore-unit-search').fill(name);
+    await page.getByRole('button',{name:'Add '+name,exact:true}).click();
+  }
+  const bench = page.locator('#component-toggle');
+  const collapsibleBench = await bench.isVisible();
+  if (collapsibleBench) await bench.click();
+  await page.getByRole('button',{name:'Add one Tear of the Goddess',exact:true}).click();
+  if (collapsibleBench) await bench.click();
+  const tearOnly = await yiRank(page);
+  await page.locator('#owned-item-search').fill('Crownguard');
+  await page.getByRole('button',{name:'Record owned Crownguard',exact:true}).click();
+  const beforeAim = await yiRank(page);
+  const before = await saved(page);
+
+  await page.getByRole('button',{name:'Explore emblems',exact:true}).click();
+  const explorer = page.locator('#emblem-explorer');
+  await explorer.locator(`[data-explore-emblem="${brawler}"]`).click();
+  await choose(explorer,'Yi Rengar').click();
+  await explorer.waitFor({state:'hidden'});
+  await page.locator('#app-title').getByText('Yi Rengar',{exact:true}).waitFor();
+  const after = await saved(page);
+  assert.deepEqual(after.currentUnits,before.currentUnits);
+  assert.deepEqual(after.owned,{TearOfTheGoddess:1});
+  assert.deepEqual(after.queue.filter(item=>item.done).map(item=>item.item),['Crownguard']);
+  await page.locator('#explore-mode').click();
+  const afterAim = await yiRank(page);
+  assert.equal(afterAim.fit,beforeAim.fit);
+  assert.equal(afterAim.effective,beforeAim.effective);
+  await page.locator('#explore-mode').click();
+
+  await page.getByRole('button',{name:'Augment choices',exact:true}).click();
+  const dialog = page.locator('#augment-dialog');
+  const search = dialog.getByRole('searchbox');
+  assert.equal(await dialog.locator('[data-augment-round="0"]').getAttribute('aria-pressed'),'true');
+  for (const name of ['Buried Treasures III','Jeweled Lotus I',"Pandora's Items"]) {
+    await search.fill(name);
+    await dialog.locator('#augment-search-results').getByText(name,{exact:true}).click();
+  }
+  const cards = dialog.locator('.augment-offer');
+  await cards.nth(1).getByText(/Jeweled Lotus I is listed by Academy for 3-2 and 4-2/).waitFor();
+  await cards.nth(1).getByText('Why and effect',{exact:true}).click();
+  assert.equal(await cards.locator('details[open]').count(),0);
+  await namedVerdict(cards.nth(0),'take','Take Buried Treasures III');
+  await namedVerdict(cards.nth(1),'avoid','Do not take Jeweled Lotus I');
+  await namedVerdict(cards.nth(2),'decent',"Decent: Pandora's Items");
+  assert.equal(await dialog.locator('#augment-verdict').textContent(),'Take Buried Treasures III');
+  await fitsWidth(dialog);
+  await page.getByRole('button',{name:'Close augment chooser',exact:true}).click();
+  return {tearOnly,beforeAim,afterAim};
 }
 
 export async function checkMarkMade(page) {
@@ -194,6 +275,7 @@ export async function checkAugmentRerolls(page) {
 
   await enterThree('Deadlier Caps');
   await expectVerdicts(['reroll','decent','avoid']);
+  await namedVerdict(offer(0),'reroll','Reroll: Deadlier Caps');
   assert.equal(await summary.textContent(),'Reroll Deadlier Caps if available');
   await offer(0).getByText('Why and effect',{exact:true}).click();
   await offer(0).getByText(/Same-rarity Academy match.*Upward Mobility/).waitFor();

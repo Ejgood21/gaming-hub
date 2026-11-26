@@ -170,9 +170,10 @@
 .augment-offer.active-slot{border-color:#7b91ad}
 .augment-offer[data-verdict]{background:var(--verdict-fill);border-color:var(--verdict-accent);border-left-width:4px;padding-left:7px}
 .augment-offer-heading,.augment-offer-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.augment-offer-heading>button:first-child{flex:1;background:transparent;border:0;padding:0;text-align:left;min-width:120px}
+.augment-offer-heading>button:first-child{flex:1 0 100%;background:transparent;border:0;padding:0;text-align:left;min-width:0}
 .augment-offer-heading>button>span{display:flex;align-items:center;gap:7px}
 .augment-offer-heading strong{font-size:14px}
+.augment-verdict-line{color:var(--verdict-ink)}
 .augment-rarity{font-size:10px;font-weight:500;color:#ced9e4;white-space:nowrap}
 .rarity-2{color:#f3d47d}.rarity-3{color:#ddbef9}
 .augment-offer-heading .augment-fit-label{font-size:11px;color:var(--verdict-ink);border:1px solid var(--verdict-accent);border-radius:4px;padding:2px 5px}
@@ -683,6 +684,7 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
 module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DATA}) {
   const stages = ['2-1', '3-2', '4-2'];
   const {augmentFit} = CompFinder;
+  const verdictPrefixes = {take:'Take ', decent:'Decent: ', reroll:'Reroll: ', avoid:'Do not take '};
 
   return {
     stages,
@@ -775,18 +777,19 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       });
       const valid=rows.filter(r=>!r.invalid&&!r.offRound).sort((a,b)=>
         Number(!!b.academy)-Number(!!a.academy)||b.score-a.score||a.slot-b.slot);
-      const complete=offers.ids.every(Boolean)&&valid.length===3;
+      const allEntered=offers.ids.every(Boolean)&&rows.length===offers.ids.length;
       const best=valid[0],rerolls=[];
       let action='enter',message='Enter your three offers';
       if(best?.academy){
         action='take';
-        message=`Take ${best.augment.name}`;
-      }else if(complete){
-        const alternatives=this.available(plan,offers).filter(a=>this.eligible(a,round))
-          .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
-        for(const row of valid.filter(r=>!r.contextual)){
-          const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
-          if(example)rerolls.push({slot:row.slot,reason:`No Academy match or item, economy or combat fit. Same-rarity Academy match in the catalog: ${example.augment.name}.`});
+      }else if(allEntered&&best){
+        if(valid.length===rows.length){
+          const alternatives=this.available(plan,offers).filter(a=>this.eligible(a,round))
+            .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
+          for(const row of valid.filter(r=>!r.contextual)){
+            const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
+            if(example)rerolls.push({slot:row.slot,reason:`No Academy match or item, economy or combat fit. Same-rarity Academy match in the catalog: ${example.augment.name}.`});
+          }
         }
         if(rerolls.length){
           action='reroll';
@@ -794,10 +797,9 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
           message=names.length===1?`Reroll ${names[0]} if available`:'Reroll a blue offer if available';
         }else if(best.contextual&&best.score>0){
           action='lean';
-          message=`Take ${best.augment.name}`;
         }else{
           action='unknown';
-          message='No clear pick';
+          message=rows.some(r=>r.offRound)?'Check the round on the marked offer':'No clear pick';
         }
       }else if(rows.length||offers.awaiting?.some(Boolean)){
         action='partial';
@@ -807,11 +809,13 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       for(const row of rows){
         const top=row===best&&(action==='take'||action==='lean');
         [row.verdict,row.label]=row.invalid||row.offRound?['avoid','Check offer']:
-          top?['take','Take this']:
+          top?['take',row.academy?'Academy match':'Contextual fit']:
           rerolls.some(r=>r.slot===row.slot)?['reroll','Reroll if available']:
           row.academy?['decent','Academy match']:
           row.contextual?['decent','Contextual fit']:['avoid','Limited evidence'];
+        row.verdictLine=verdictPrefixes[row.verdict]+row.augment.name;
       }
+      if(action==='take'||action==='lean')message=best.verdictLine;
       const academyNotice=ctx.fitGuide&&!augmentFit.hasRecommendations(ctx.fitGuide) ?
         `Academy lists no recommended augment for this comp (${ctx.fitGuide.title}). Fit uses item, economy and combat rules.` : '';
       return {rows,best,action,message,rerolls,round,academyNotice};
@@ -3309,7 +3313,7 @@ const DialogDismiss = {
   panel.innerHTML=`<div class="finder-heading"><div><h2 id="finder-title">Explore builds</h2><p>Your board, your drops → an Academy plan to aim for.</p></div></div>
   <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
-  <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>Ranked by effective score within each group</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
+  <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>Ranks update with your board, items and augments</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
   <details class="finder-method"><summary>How this is ranked</summary><p>Effective score = fit + ${CompFinder.tierFitGap} points per tier step. S adds ${2*CompFinder.tierFitGap}, A and unlocked X add ${CompFinder.tierFitGap}, and B adds 0. Ties go to the higher fit.</p><p>Academy routes for owned emblems come first. Fit includes up to +${CompFinder.primaryEmblemCap} for Academy emblem matches and +${CompFinder.flexEmblemCap} for other emblem matches. Builds that still require an unlock appear last.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
@@ -3652,14 +3656,14 @@ const AugmentUI=(()=>{
       :`Offer ${activeSlot+1} · type a few letters, Enter${logged?' · replaces recorded pick':''}`;
     document.getElementById('augment-offers').innerHTML=o.ids.map((id,slot)=>{
       const r=comparison.rows.find(r=>r.slot===slot),awaiting=o.awaiting?.[slot],active=slot===activeSlot?'active-slot':'';
-      if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
+      if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Do not take unavailable offer':'Add offer '+(slot+1)}</button></article>`;
       const a=r.augment,reroll=comparison.rerolls.find(row=>row.slot===slot);
-      const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
+      const title=`<span>${augmentIcon(id)}<strong class="augment-verdict-line">${esc(r.verdictLine)}</strong></span>`;
       const reasons=r.reasons.map(x=>x.text);
       if(reroll)reasons[0]=reroll.reason;
       const rounds=(r.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
       return `<article class="augment-offer ${active}" data-verdict="${r.verdict}">
-        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
+        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${title}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
         <div class="augment-offer-actions"><button class="augment-take" data-augment-take="${slot}" ${r.invalid?'disabled':''}>${r.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button>
         <button class="quiet" data-offer-replace="${slot}">Reroll this offer</button>${rounds}</div>
         <details class="augment-description" ${r.offRound?'open':''}><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p></details>

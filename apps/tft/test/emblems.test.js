@@ -9,6 +9,8 @@ const meta = require('../data/metatft-18.3b.json');
 const core = require('../data/core-items.json');
 // Public guide and placement rows observed on Patch 18.7 on November 24, 2026.
 const live = require('../test-support/p111-live-emblems.json');
+// All rankable guide tiers and their relevant inputs from the November 25 live replay.
+const rankReplay = require('../test-support/p113-live-rank.json');
 
 const brawler = 'DA_18_EmblemBrawler';
 const vanguard = 'DA_18_EmblemVanguard';
@@ -51,7 +53,7 @@ test('18.7 Brawler owned puts Adaptor Reroll and Yi Rengar ahead of flex and ite
   assert.ok(strongBoard.slice(0,2).every(row=>brawlerLeaders.includes(row.guide.title)));
 });
 
-test('18.7 Brawler unowned leaves Yi Rengar at #9 and keeps Ravager Rengar gated', () => {
+test('Nov 24 18.7 guide fixture: Alune board without Brawler gives Yi Rengar rank 9 and keeps Ravager Rengar gated', () => {
   const {Academy, CompFinder} = setup();
   const input = plan(Academy, false);
   const rows = CompFinder.ranked(input);
@@ -60,6 +62,7 @@ test('18.7 Brawler unowned leaves Yi Rengar at #9 and keeps Ravager Rengar gated
   assert.equal(yi.blocked, false);
   assert.equal(yi.emblemBonus, 0);
   assert.equal(yi.rankGroup, 1);
+  assert.equal(yi.fitScore, -12);
   assert.equal(yi.effectiveScore, 0);
   const ravager = rows.find(row=>row.guide.title==='Ravager Rengar');
   assert.equal(ravager.blocked, true);
@@ -67,6 +70,34 @@ test('18.7 Brawler unowned leaves Yi Rengar at #9 and keeps Ravager Rengar gated
   assert.throws(()=>CompFinder.choose(input, ravager.guide.id), /Only play with Ravager emblem/);
   CompFinder.choose(input, yi.guide.id);
   assert.equal(input.activeComp.title, 'Yi Rengar');
+});
+
+test('Nov 25 18.7 Academy capture: Yi Rengar remains selectable as the board and inventory change', () => {
+  const {Academy, CompFinder} = setup();
+  Academy.useSnapshot({...academy, ...rankReplay});
+  const alune = plan(Academy, false);
+  const karma = {
+    owned:{TearOfTheGoddess:1}, pins:[], queue:[],
+    currentUnits:['DA_Karma18','DA_18_Veigar','DA_18_Ahri','DA_Lux18_Base','DA_18_Morgana','DA_18_Lillia']
+      .map(apiName=>({apiName,stars:1}))
+  };
+  const checkRank = (input, expected) => {
+    const rows = CompFinder.recommendations(input).rows;
+    const index = rows.findIndex(row=>row.guide.title==='Yi Rengar');
+    assert.ok(index>=0);
+    const {guide,fitScore,effectiveScore,emblemBonus,rankGroup,blocked,selectable} = rows[index];
+    assert.deepEqual([index+1,fitScore,effectiveScore], expected);
+    assert.deepEqual([emblemBonus,rankGroup,blocked,selectable], [0,1,false,true]);
+    return guide.id;
+  };
+
+  CompFinder.choose(alune, checkRank(alune,[8,-12,0]));
+  checkRank(karma,[8,-10.5,1.5]);
+  karma.queue.push({uid:'crownguard',item:'Crownguard',done:true});
+  CompFinder.choose(karma, checkRank(karma,[19,-16.5,-4.5]));
+  assert.equal(alune.activeComp.title, 'Yi Rengar');
+  assert.equal(karma.activeComp.title, 'Yi Rengar');
+  checkRank(karma,[19,-16.5,-4.5]);
 });
 
 test('the Brawler explorer ranks the two Master Yi builds first and names the flex holder', () => {

@@ -60,14 +60,14 @@ const AugmentUI=(()=>{
       :`Offer ${activeSlot+1} · type a few letters, Enter${logged?' · replaces recorded pick':''}`;
     document.getElementById('augment-offers').innerHTML=o.ids.map((id,slot)=>{
       const r=comparison.rows.find(r=>r.slot===slot),awaiting=o.awaiting?.[slot],active=slot===activeSlot?'active-slot':'';
-      if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Limited evidence · Augment unavailable':'Add offer '+(slot+1)}</button></article>`;
+      if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Do not take unavailable offer':'Add offer '+(slot+1)}</button></article>`;
       const a=r.augment,reroll=comparison.rerolls.find(row=>row.slot===slot);
-      const name=`<span>${augmentIcon(id)}<strong>${esc(a.name)}</strong></span>`;
+      const title=`<span>${augmentIcon(id)}<strong class="augment-verdict-line">${esc(r.verdictLine)}</strong></span>`;
       const reasons=r.reasons.map(x=>x.text);
       if(reroll)reasons[0]=reroll.reason;
       const rounds=(r.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
       return `<article class="augment-offer ${active}" data-verdict="${r.verdict}">
-        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${name}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
+        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${title}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
         <div class="augment-offer-actions"><button class="augment-take" data-augment-take="${slot}" ${r.invalid?'disabled':''}>${r.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button>
         <button class="quiet" data-offer-replace="${slot}">Reroll this offer</button>${rounds}</div>
         <details class="augment-description" ${r.offRound?'open':''}><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p></details>
