@@ -151,10 +151,6 @@
 [data-verdict=decent]{--verdict-accent:#aadf91;--verdict-fill:#253b2b;--verdict-ink:#e0ffcf}
 [data-verdict=reroll]{--verdict-accent:#6daaff;--verdict-fill:#192f4d;--verdict-ink:#dceaff}
 [data-verdict=avoid]{--verdict-accent:#f68d88;--verdict-fill:#41252a;--verdict-ink:#ffdfdf}
-.augment-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:7px;font-size:11px;color:#d1def0}
-.augment-legend span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.augment-legend span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--verdict-accent)}
-#augment-dialog .augment-pool{font-size:11px;margin:5px 0;color:#aebfd4}
 .augment-search-wrap{position:relative;margin:10px 0}
 .augment-search-wrap label{display:block;font-size:12px;color:#b4c5db;margin-bottom:5px}
 #augment-search-results{position:relative;max-height:280px;overflow:auto;background:#101922;border:1px solid #53657c;border-radius:7px;margin-top:3px}
@@ -169,33 +165,30 @@
 .augment-offer{background:#141e28;border:1px solid #334153;border-radius:9px;padding:8px 10px}
 .augment-offer.active-slot{border-color:#7b91ad}
 .augment-offer[data-verdict]{background:var(--verdict-fill);border-color:var(--verdict-accent);border-left-width:4px;padding-left:7px}
-.augment-offer-heading,.augment-offer-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.augment-offer-heading>button:first-child{flex:1 0 100%;background:transparent;border:0;padding:0;text-align:left;min-width:0}
-.augment-offer-heading>button>span{display:flex;align-items:center;gap:7px}
-.augment-offer-heading strong{font-size:14px}
-.augment-verdict-line{color:var(--verdict-ink)}
+.augment-offer-heading{display:grid;justify-items:start;gap:2px}
+.augment-offer-heading>button{background:transparent;border:0;padding:0;color:#d5dbe1;font-size:12px;text-align:left}
+.augment-offer-heading>button:hover{text-decoration:underline}
+.augment-verdict-line{color:var(--verdict-ink);font-size:16px;line-height:1.25}
 .augment-rarity{font-size:10px;font-weight:500;color:#ced9e4;white-space:nowrap}
-.rarity-2{color:#f3d47d}.rarity-3{color:#ddbef9}
-.augment-offer-heading .augment-fit-label{font-size:11px;color:var(--verdict-ink);border:1px solid var(--verdict-accent);border-radius:4px;padding:2px 5px}
-.augment-offer-actions{margin-top:5px}
-.augment-offer-actions button{font-size:11px;padding:4px 8px;min-height:28px}
-.augment-offer[data-verdict=take] .augment-take{background:#25663e;border-color:#70dc98}
+#augment-dialog .augment-phrase{color:#f0f2f4;font-size:13px;line-height:1.3;margin:4px 0 0}
+.augment-offer-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:5px}
+.augment-offer-actions .augment-take{min-height:34px;padding:4px 8px;background:transparent;border-color:#a4adb6;color:#f1f3f5;font-size:11px}
+.augment-offer-actions .augment-reroll{min-height:44px;padding:8px 14px;background:#e1e5e9;border-color:#e1e5e9;color:#1a2027;font-size:13px;font-weight:750}
+.augment-offer-actions .augment-reroll:hover{filter:brightness(1.12)}
 .augment-offer[data-verdict=reroll] [data-offer-replace]{background:#244d83;border-color:#82b7ff}
+.augment-offer[data-verdict=reroll] .augment-reroll{color:#fff}
 .augment-description{font-size:11px;color:#d1def0;margin-top:4px}
 .augment-description summary{cursor:pointer}
 .augment-description ul{margin:5px 0;padding-left:19px}
 .augment-description p{font-size:12px!important;margin:5px 0!important;white-space:pre-line}
 .empty-offer button{width:100%;text-align:left;background:transparent;border:0;font-size:13px;color:#c4d4e7;padding:2px}
 .empty-offer button span{display:inline-flex;border:1px solid #647c9d;border-radius:50%;width:23px;height:23px;align-items:center;justify-content:center;margin-right:10px}
-.augment-method{font-size:11px;color:#a7bad0;margin-top:12px}
-.augment-method p{font-size:11px!important}
 .chosen-augments{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 12px}
 .chosen-augments[hidden]{display:none}
 .chosen-augments button{display:flex;gap:6px;align-items:center;padding:4px 7px;font-size:11px;background:#1a2531;border-color:#37475a}
 .chosen-augments img{width:23px;height:23px}.chosen-augments small{font-size:9px}
 @media(max-width:450px){
   .augment-stage button{padding:7px;font-size:11px}
-  .augment-offer-heading strong{font-size:12px}
   .chosen-augments button span{max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
 
@@ -681,10 +674,29 @@ module.exports = function createAcademy({DATA, ACADEMY_BUNDLED, byId, PivotPlann
 "./augment-advisor": (module, require) => {
 'use strict';
 
-module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DATA}) {
+module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, OfflineTracker, DATA}) {
   const stages = ['2-1', '3-2', '4-2'];
   const {augmentFit} = CompFinder;
   const verdictPrefixes = {take:'Take ', decent:'Decent: ', reroll:'Reroll: ', avoid:'Do not take '};
+  const verdictPhrases = {
+    take:'Fits your comp',
+    decent:'Decent for your comp',
+    reroll:'Reroll this one',
+    avoid:"Doesn't fit your comp"
+  };
+  const completedTypes = new Set(['craftables','radiants','ornns','emblems']);
+
+  function otherComp(augment, options, target) {
+    const ids=options.find(option=>option.ids.includes(augment.apiName))?.ids||[augment.apiName];
+    const endorsers=Academy.snapshot.guides.filter(guide=>ids.some(id=>augmentFit.recommendation(guide,id)));
+    const titles=[...new Set(endorsers.map(guide=>guide.title).filter(Boolean))];
+    if(titles.length!==1||endorsers.some(guide=>(target?.id&&target.id===guide.id)||target?.title===guide.title))return '';
+    return titles[0];
+  }
+
+  function pluralItemName(name) {
+    return name.replace(/(\w+)(?= of |$)/i, '$1s');
+  }
 
   return {
     stages,
@@ -771,22 +783,26 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
     },
     compare(plan,offers=this.ensure(plan)){
       const ctx=this.context(plan),round=offers.round;
+      const options=CompFinder.augmentOptions(stages[round]);
+      const selected=ctx.guide||plan.activeComp?.guide||plan.activeComp;
       const rows=offers.ids.flatMap((id,slot)=>{
         const augment=CompFinder.augment(id);
-        return augment?[{...this.evaluate(augment,ctx,round),slot}]:[];
+        if(!augment)return [];
+        const onlyComp=otherComp(augment,options,selected||ctx.fitGuide);
+        return [{...this.evaluate(augment,ctx,round),slot,onlyComp,otherSelectedComp:!!(selected&&onlyComp)}];
       });
       const valid=rows.filter(r=>!r.invalid&&!r.offRound).sort((a,b)=>
         Number(!!b.academy)-Number(!!a.academy)||b.score-a.score||a.slot-b.slot);
       const allEntered=offers.ids.every(Boolean)&&rows.length===offers.ids.length;
-      const best=valid[0],rerolls=[];
+      const best=valid.find(row=>!row.otherSelectedComp),rerolls=[];
       let action='enter',message='Enter your three offers';
       if(best?.academy){
         action='take';
-      }else if(allEntered&&best){
-        if(valid.length===rows.length){
+      }else if(allEntered&&valid.length){
+        if(best&&valid.length===rows.length){
           const alternatives=this.available(plan,offers).filter(a=>this.eligible(a,round))
             .map(a=>this.evaluate(a,ctx,round)).filter(r=>r.academy);
-          for(const row of valid.filter(r=>!r.contextual)){
+          for(const row of valid.filter(r=>!r.contextual&&!r.otherSelectedComp)){
             const example=alternatives.find(r=>r.augment.tier===row.augment.tier);
             if(example)rerolls.push({slot:row.slot,reason:`No Academy match or item, economy or combat fit. Same-rarity Academy match in the catalog: ${example.augment.name}.`});
           }
@@ -795,7 +811,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
           action='reroll';
           const names=rerolls.map(r=>rows.find(row=>row.slot===r.slot).augment.name);
           message=names.length===1?`Reroll ${names[0]} if available`:'Reroll a blue offer if available';
-        }else if(best.contextual&&best.score>0){
+        }else if(best?.contextual&&best.score>0){
           action='lean';
         }else{
           action='unknown';
@@ -808,21 +824,49 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, DA
       }
       for(const row of rows){
         const top=row===best&&(action==='take'||action==='lean');
-        [row.verdict,row.label]=row.invalid||row.offRound?['avoid','Check offer']:
-          top?['take',row.academy?'Academy match':'Contextual fit']:
-          rerolls.some(r=>r.slot===row.slot)?['reroll','Reroll if available']:
-          row.academy?['decent','Academy match']:
-          row.contextual?['decent','Contextual fit']:['avoid','Limited evidence'];
+        row.verdict=row.invalid||row.offRound||row.otherSelectedComp?'avoid':
+          top?'take':
+          rerolls.some(r=>r.slot===row.slot)?'reroll':
+          row.academy||row.contextual?'decent':'avoid';
         row.verdictLine=verdictPrefixes[row.verdict]+row.augment.name;
+        row.phrase=row.offRound?`Wrong round — Academy lists it for ${row.augment.stages.join(' and ')}`:
+          row.invalid?'Already taken':
+          row.onlyComp?`Only fits ${row.onlyComp}`:verdictPhrases[row.verdict];
       }
       if(action==='take'||action==='lean')message=best.verdictLine;
       const academyNotice=ctx.fitGuide&&!augmentFit.hasRecommendations(ctx.fitGuide) ?
         `Academy lists no recommended augment for this comp (${ctx.fitGuide.title}). Fit uses item, economy and combat rules.` : '';
       return {rows,best,action,message,rerolls,round,academyNotice};
     },
+    itemGrants(augment){
+      const catalog=Academy.snapshot.items.filter(item=>completedTypes.has(item.type)&&Academy.itemMap.has(item.apiName));
+      return (augment?.description||'').split(/\bgain\s+/i).slice(1).flatMap(clause=>{
+        const [rewards]=clause.split(/[.!?](?=\s|$)|[;\n]/,1);
+        if(/\bor\b/i.test(rewards))return [];
+        return rewards.split(/\s*,\s*|\s+and\s+/i).flatMap(reward=>{
+          const grant=/^(?:an?|([1-9]\d?))\s+(.+)$/i.exec(reward.replace(/^and\s+/i,'').trim());
+          if(!grant)return [];
+          const count=Number(grant[1]||1);
+          const name=Academy.normalizeName(grant[2].replace(/(?:\s+item)?(?:\s+now)?$/i,''));
+          const item=catalog.find(item=>Academy.normalizeName(item.name)===name||
+            count>1&&Academy.normalizeName(pluralItemName(item.name))===name);
+          return item?[{id:Academy.itemMap.get(item.apiName),name:item.name,count}]:[];
+        });
+      });
+    },
     record(plan,slot){
       const offers=this.ensure(plan),id=offers.ids[slot],a=CompFinder.augment(id);
       if(!a||this.held(plan).includes(id))return false;
+      for(const grant of this.itemGrants(a)){
+        for(let copy=0;copy<grant.count;copy++){
+          let row=plan.queue.find(q=>!q.done&&q.item===grant.id&&Academy.canEquip(plan,q.champion,grant.id));
+          if(!row){
+            row={uid:crypto.randomUUID(),item:grant.id,champion:''};
+            plan.queue.push(row);
+          }
+          OfflineTracker.receive(plan,row);
+        }
+      }
       const selected=this.slots(plan);selected[offers.round]=id;plan.chosenAugments=selected;plan.firstAugment=selected[0];
       plan.augmentOffers=this.newOffers(Math.min(2,offers.round+1));return true;
     }
@@ -3602,17 +3646,8 @@ const AugmentUI=(()=>{
   modal.innerHTML=`<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div>
     <div class="augment-stage" role="group" aria-label="Augment round"></div>
     <div id="augment-verdict" role="status" aria-live="polite"></div>
-    <div class="augment-legend" role="group" aria-label="Green means take. Light green means decent. Blue means reroll. Red means do not take.">
-      <span data-verdict="take">Take</span><span data-verdict="decent">Decent</span><span data-verdict="reroll">Reroll</span><span data-verdict="avoid">Do not take</span>
-    </div>
-    <p class="augment-pool">The in-game pool and rerolls left are unknown.</p>
     <div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div>
-    <div id="augment-offers"></div>
-    <details class="augment-method"><summary>How this is compared</summary>
-      <p>Academy leads. Other offers are checked against your item recipes, economy plan and combat roles.</p>
-      <p>Reroll advice requires an offer with no fit and an unseen Academy match of the same rarity and round.</p>
-      <p id="augment-academy-note"></p><p id="augment-source"></p>
-    </details>`;
+    <div id="augment-offers"></div>`;
   document.body.append(modal);
   const input=document.getElementById('augment-offer-search'),list=document.getElementById('augment-search-results');
   const badge=a=>['','Silver','Gold','Prismatic'][a.tier]||'Augment';
@@ -3641,7 +3676,7 @@ const AugmentUI=(()=>{
     const results=searchRows.map((a,n)=>{
       const multiple=a.choices?.length>1;
       const detail=multiple?'Choose the matching effect or rarity.':AugmentAdvisor.eligible(a,o.round)?a.description:AugmentAdvisor.roundNotice(a,o.round);
-      return `<button class="${n===searchIndex?'search-active':''}" data-offer-result="${n}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span>${variants?'':`<strong>${esc(a.name)}</strong>`}<small>${esc(detail)}</small></span>${multiple?'':`<b class="augment-rarity rarity-${a.tier}">${badge(a)}</b>`}</button>`;
+      return `<button class="${n===searchIndex?'search-active':''}" data-offer-result="${n}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span>${variants?'':`<strong>${esc(a.name)}</strong>`}<small>${esc(detail)}</small></span>${multiple?'':`<b class="augment-rarity">${badge(a)}</b>`}</button>`;
     }).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query))+'</p>';
     if(results!==lastSearchResults){list.innerHTML=results;lastSearchResults=results;}
   }
@@ -3650,7 +3685,6 @@ const AugmentUI=(()=>{
     const o=offers(),comparison=getResult(),logged=AugmentAdvisor.slots(state)[o.round];
     modal.querySelector('.augment-stage').innerHTML=AugmentAdvisor.stages.map((s,n)=>`<button data-augment-round="${n}" aria-pressed="${o.round===n}">${n+1}${['st','nd','rd'][n]} · ${s}${AugmentAdvisor.slots(state)[n]?' ✓':''}</button>`).join('');
     const verdict=document.getElementById('augment-verdict');verdict.dataset.action=comparison.action;verdict.textContent=comparison.message;
-    document.getElementById('augment-academy-note').textContent=comparison.academyNotice;
     document.getElementById('augment-search-label').textContent=o.awaiting?.[activeSlot]
       ?`Offer ${activeSlot+1} · enter replacement after rerolling in game`
       :`Offer ${activeSlot+1} · type a few letters, Enter${logged?' · replaces recorded pick':''}`;
@@ -3658,18 +3692,18 @@ const AugmentUI=(()=>{
       const r=comparison.rows.find(r=>r.slot===slot),awaiting=o.awaiting?.[slot],active=slot===activeSlot?'active-slot':'';
       if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Do not take unavailable offer':'Add offer '+(slot+1)}</button></article>`;
       const a=r.augment,reroll=comparison.rerolls.find(row=>row.slot===slot);
-      const title=`<span>${augmentIcon(id)}<strong class="augment-verdict-line">${esc(r.verdictLine)}</strong></span>`;
       const reasons=r.reasons.map(x=>x.text);
       if(reroll)reasons[0]=reroll.reason;
+      if(comparison.academyNotice)reasons.push(comparison.academyNotice);
       const rounds=(r.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
       return `<article class="augment-offer ${active}" data-verdict="${r.verdict}">
-        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${title}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
+        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${esc(a.name)}</button><strong class="augment-verdict-line">${esc(r.verdictLine)}</strong></div>
+        <p class="augment-phrase">${esc(r.phrase)}</p>
+        <details class="augment-description"><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p>${rounds}</details>
         <div class="augment-offer-actions"><button class="augment-take" data-augment-take="${slot}" ${r.invalid?'disabled':''}>${r.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button>
-        <button class="quiet" data-offer-replace="${slot}">Reroll this offer</button>${rounds}</div>
-        <details class="augment-description" ${r.offRound?'open':''}><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p></details>
+        <button class="augment-reroll" data-offer-replace="${slot}">Reroll this offer</button></div>
       </article>`;
     }).join('');
-    document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
   function clearSearch(){query='';variants=null;input.value='';searchIndex=0;}
@@ -3717,12 +3751,22 @@ const AugmentUI=(()=>{
       mutate(()=>AugmentAdvisor.replace(state,activeSlot),'Enter the new offer after rerolling in game.');
       input.focus();
     }
-    b=e.target.closest('[data-augment-take]');if(b){let recorded=false;mutate(()=>{recorded=AugmentAdvisor.record(state,Number(b.dataset.augmentTake));},'Augment recorded. Enter any item rewards when received.');if(recorded)modal.close();}
+    b=e.target.closest('[data-augment-take]');if(b){
+      const slot=Number(b.dataset.augmentTake),augment=CompFinder.augment(offers().ids[slot]);
+      let recorded=false;
+      mutate(()=>{recorded=AugmentAdvisor.record(state,slot);});
+      if(recorded){
+        modal.close();
+        const items=AugmentAdvisor.itemGrants(augment).map(({name,count})=>count>1?`${count} × ${name}`:name);
+        const added=new Intl.ListFormat().format(items);
+        toast(added?`Augment recorded. Added ${added}.`:'Augment recorded.');
+      }
+    }
   });
   const previous=render;render=function(){previous();contextKey='';draw();};
   document.addEventListener('carousel-new-game',()=>{modal.close();clearSearch();contextKey='';drawSelected();});
   document.addEventListener('carousel-meta-updated',()=>{contextKey='';draw();});
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and press Enter for each offer. Entry advances automatically. The round defaults to your next unrecorded augment. Click Reroll this offer to clear the slot, then enter the replacement after rerolling in game. Took this records the choice and updates comp fit. Record any item rewards when received.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and press Enter for each offer. Entry advances automatically. The round defaults to your next unrecorded augment. Click Reroll this offer to clear the slot, then enter the replacement after rerolling in game. Took this records your choice and adds any named completed items it grants. Record random items, components, and chest or anvil rewards when received.</li>');
   drawSelected();return {open,refresh:draw};
 })();
 

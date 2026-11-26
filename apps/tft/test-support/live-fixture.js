@@ -6,7 +6,7 @@ const academy = require('../data/academy-18.3b.json');
 const liveFixtureUpdated = Date.parse('2026-10-01T12:00:00Z');
 function liveFixture({academyPatch = '18.3b', metaPatch = '18.3b', metaSet = 18, omitAcademyPatch = false,
                       staleGuideDates = false, fail = false, timeout = false, guides = academy.guides,
-                      allowOtherUnits = false} = {}) {
+                      assets = academy, allowOtherUnits = false} = {}) {
   const updated = staleGuideDates ? '2026-09-26T12:00:00Z' : academy.sourceUpdated;
   const liveGuides = guides.map(g=>({...g,isPublic:true,updated}));
   const fetchJSON = async url => {
@@ -22,7 +22,7 @@ function liveFixture({academyPatch = '18.3b', metaPatch = '18.3b', metaSet = 18,
     } else if (pathname.includes('/api/assets/')) {
       const kind = pathname.split('/').at(-1);
       assert.equal(searchParams.get('set'), '18');
-      data = {[kind]:academy[kind]};
+      data = {[kind]:assets[kind]};
     } else {
       const unit = searchParams.get('unit');
       if (!allowOtherUnits) assert.equal(unit, 'DA_18_Ashe');
