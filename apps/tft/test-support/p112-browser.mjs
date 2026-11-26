@@ -173,6 +173,13 @@ export async function checkKarmaBoardAndOffers(page) {
     await dialog.locator('#augment-search-results').getByText(name,{exact:true}).click();
   }
   const cards = dialog.locator('.augment-offer');
+  assert.deepEqual(await cards.locator('.augment-phrase').allTextContents(),[
+    'Fits your comp','Wrong round — Academy lists it for 3-2 and 4-2','Decent for your comp'
+  ]);
+  assert.equal(await cards.locator('details[open], .augment-fit-label, .augment-rarity').count(),0);
+  assert.equal(await dialog.getByText('How this is compared',{exact:true}).count(),0);
+  assert.equal(await cards.nth(1).getByText(/Jeweled Lotus I is listed by Academy/).isVisible(),false);
+  await cards.nth(1).getByText('Why and effect',{exact:true}).click();
   await cards.nth(1).getByText(/Jeweled Lotus I is listed by Academy for 3-2 and 4-2/).waitFor();
   await cards.nth(1).getByText('Why and effect',{exact:true}).click();
   assert.equal(await cards.locator('details[open]').count(),0);
@@ -276,6 +283,12 @@ export async function checkAugmentRerolls(page) {
   await enterThree('Deadlier Caps');
   await expectVerdicts(['reroll','decent','avoid']);
   await namedVerdict(offer(0),'reroll','Reroll: Deadlier Caps');
+  assert.equal(await offer(0).locator('.augment-phrase').textContent(),'Reroll this one');
+  assert.deepEqual(await offer(0).evaluate(card=>{
+    const reroll=card.querySelector('[data-offer-replace]').getBoundingClientRect();
+    const take=card.querySelector('[data-augment-take]').getBoundingClientRect();
+    return [reroll.height>=44,reroll.width>take.width,reroll.left>take.right,reroll.right<card.getBoundingClientRect().right];
+  }),[true,true,true,true]);
   assert.equal(await summary.textContent(),'Reroll Deadlier Caps if available');
   await offer(0).getByText('Why and effect',{exact:true}).click();
   await offer(0).getByText(/Same-rarity Academy match.*Upward Mobility/).waitFor();
@@ -297,4 +310,61 @@ export async function checkAugmentRerolls(page) {
   assert.equal(await summary.textContent(),'Take Flowing Tears');
   assert.equal(await dialog.getByText('Upward Mobility',{exact:false}).count(),0);
   await recordFirst('Deadlier Caps','DA_DeadlierCaps');
+}
+
+export async function checkCompFlipAndGrants(page) {
+  const dialog = page.locator('#augment-dialog');
+  const open = page.getByRole('button',{name:'Augment choices',exact:true});
+  const close = page.getByRole('button',{name:'Close augment chooser',exact:true});
+  const search = dialog.getByRole('searchbox');
+  const offer = slot => dialog.locator('.augment-offer').nth(slot);
+  const enter = async name => {
+    await search.fill(name);
+    await dialog.locator('#augment-search-results').getByText(name,{exact:true}).click();
+  };
+  const aim = async title => {
+    await page.locator('#explore-mode').click();
+    const row = suggestion(page,title);
+    if (!await row.isVisible()) await page.locator('#finder-more').click();
+    await choose(row,title).click();
+    await page.locator('#app-title').getByText(title,{exact:true}).waitFor();
+  };
+  await aim('AP Fast 9');
+  await open.click();
+  for (const [slot,name] of ['Upward Mobility','Speedy Double Kill','Kingslayer'].entries()) {
+    await offer(slot).locator('[data-offer-edit]').click();
+    await enter(name);
+  }
+  await namedVerdict(offer(0),'take','Take Upward Mobility');
+  const before = (await saved(page)).augmentOffers.ids;
+  await close.click();
+
+  await aim('Mamawood');
+  await open.click();
+  assert.deepEqual((await saved(page)).augmentOffers.ids,before);
+  await namedVerdict(offer(0),'avoid','Do not take Upward Mobility');
+  assert.equal(await offer(0).locator('.augment-phrase').textContent(),'Only fits AP Fast 9');
+  await namedVerdict(offer(1),'take','Take Speedy Double Kill');
+
+  const checkGrant = async (slot, item, name) => {
+    const before = await saved(page);
+    const count = state => state.queue.filter(row=>row.done&&row.item===item).length;
+    const previousCount = count(before);
+    await offer(slot).getByRole('button',{name:'Took this',exact:true}).click();
+    await dialog.waitFor({state:'hidden'});
+    const after = await saved(page);
+    assert.equal(count(after),previousCount+1);
+    assert.deepEqual(after.owned,before.owned);
+    assert.equal(await page.locator('#toast').textContent(),`Augment recorded. Added ${name}.`);
+    await page.locator(`#completed .completeitem[aria-label^="${name}"]`).first().waitFor();
+    await page.locator('#undo').click();
+    const restored = await saved(page);
+    assert.deepEqual(restored.queue,before.queue);
+    assert.deepEqual(restored.chosenAugments,before.chosenAugments);
+  };
+  await checkGrant(1,'GuinsoosRageblade',"Guinsoo's Rageblade");
+  await open.click();
+  await offer(0).locator('[data-offer-edit]').click();
+  await enter('Solo Plate');
+  await checkGrant(0,'GargoyleStoneplate','Gargoyle Stoneplate');
 }

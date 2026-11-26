@@ -6,17 +6,8 @@ const AugmentUI=(()=>{
   modal.innerHTML=`<div class="modal-heading"><h2 id="augment-title">Choose your augment</h2><button data-close="augment-dialog" aria-label="Close augment chooser">×</button></div>
     <div class="augment-stage" role="group" aria-label="Augment round"></div>
     <div id="augment-verdict" role="status" aria-live="polite"></div>
-    <div class="augment-legend" role="group" aria-label="Green means take. Light green means decent. Blue means reroll. Red means do not take.">
-      <span data-verdict="take">Take</span><span data-verdict="decent">Decent</span><span data-verdict="reroll">Reroll</span><span data-verdict="avoid">Do not take</span>
-    </div>
-    <p class="augment-pool">The in-game pool and rerolls left are unknown.</p>
     <div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div>
-    <div id="augment-offers"></div>
-    <details class="augment-method"><summary>How this is compared</summary>
-      <p>Academy leads. Other offers are checked against your item recipes, economy plan and combat roles.</p>
-      <p>Reroll advice requires an offer with no fit and an unseen Academy match of the same rarity and round.</p>
-      <p id="augment-academy-note"></p><p id="augment-source"></p>
-    </details>`;
+    <div id="augment-offers"></div>`;
   document.body.append(modal);
   const input=document.getElementById('augment-offer-search'),list=document.getElementById('augment-search-results');
   const badge=a=>['','Silver','Gold','Prismatic'][a.tier]||'Augment';
@@ -45,7 +36,7 @@ const AugmentUI=(()=>{
     const results=searchRows.map((a,n)=>{
       const multiple=a.choices?.length>1;
       const detail=multiple?'Choose the matching effect or rarity.':AugmentAdvisor.eligible(a,o.round)?a.description:AugmentAdvisor.roundNotice(a,o.round);
-      return `<button class="${n===searchIndex?'search-active':''}" data-offer-result="${n}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span>${variants?'':`<strong>${esc(a.name)}</strong>`}<small>${esc(detail)}</small></span>${multiple?'':`<b class="augment-rarity rarity-${a.tier}">${badge(a)}</b>`}</button>`;
+      return `<button class="${n===searchIndex?'search-active':''}" data-offer-result="${n}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span>${variants?'':`<strong>${esc(a.name)}</strong>`}<small>${esc(detail)}</small></span>${multiple?'':`<b class="augment-rarity">${badge(a)}</b>`}</button>`;
     }).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query))+'</p>';
     if(results!==lastSearchResults){list.innerHTML=results;lastSearchResults=results;}
   }
@@ -54,7 +45,6 @@ const AugmentUI=(()=>{
     const o=offers(),comparison=getResult(),logged=AugmentAdvisor.slots(state)[o.round];
     modal.querySelector('.augment-stage').innerHTML=AugmentAdvisor.stages.map((s,n)=>`<button data-augment-round="${n}" aria-pressed="${o.round===n}">${n+1}${['st','nd','rd'][n]} · ${s}${AugmentAdvisor.slots(state)[n]?' ✓':''}</button>`).join('');
     const verdict=document.getElementById('augment-verdict');verdict.dataset.action=comparison.action;verdict.textContent=comparison.message;
-    document.getElementById('augment-academy-note').textContent=comparison.academyNotice;
     document.getElementById('augment-search-label').textContent=o.awaiting?.[activeSlot]
       ?`Offer ${activeSlot+1} · enter replacement after rerolling in game`
       :`Offer ${activeSlot+1} · type a few letters, Enter${logged?' · replaces recorded pick':''}`;
@@ -62,18 +52,18 @@ const AugmentUI=(()=>{
       const r=comparison.rows.find(r=>r.slot===slot),awaiting=o.awaiting?.[slot],active=slot===activeSlot?'active-slot':'';
       if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Do not take unavailable offer':'Add offer '+(slot+1)}</button></article>`;
       const a=r.augment,reroll=comparison.rerolls.find(row=>row.slot===slot);
-      const title=`<span>${augmentIcon(id)}<strong class="augment-verdict-line">${esc(r.verdictLine)}</strong></span>`;
       const reasons=r.reasons.map(x=>x.text);
       if(reroll)reasons[0]=reroll.reason;
+      if(comparison.academyNotice)reasons.push(comparison.academyNotice);
       const rounds=(r.rounds||[]).map(round=>`<button class="quiet" data-offer-move="${round}" data-augment-id="${esc(id)}">Enter at ${AugmentAdvisor.stages[round]}</button>`).join('');
       return `<article class="augment-offer ${active}" data-verdict="${r.verdict}">
-        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${title}</button><span class="augment-rarity rarity-${a.tier}">${badge(a)}</span><strong class="augment-fit-label">${r.label}</strong></div>
+        <div class="augment-offer-heading"><button data-offer-edit="${slot}" aria-label="Change offer ${slot+1}: ${esc(a.name)}">${esc(a.name)}</button><strong class="augment-verdict-line">${esc(r.verdictLine)}</strong></div>
+        <p class="augment-phrase">${esc(r.phrase)}</p>
+        <details class="augment-description"><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p>${rounds}</details>
         <div class="augment-offer-actions"><button class="augment-take" data-augment-take="${slot}" ${r.invalid?'disabled':''}>${r.offRound?'Took this at '+AugmentAdvisor.stages[o.round]:'Took this'}</button>
-        <button class="quiet" data-offer-replace="${slot}">Reroll this offer</button>${rounds}</div>
-        <details class="augment-description" ${r.offRound?'open':''}><summary>Why and effect</summary><ul>${reasons.map(text=>`<li>${esc(text)}</li>`).join('')}</ul><p>${esc(a.description)}</p></details>
+        <button class="augment-reroll" data-offer-replace="${slot}">Reroll this offer</button></div>
       </article>`;
     }).join('');
-    document.getElementById('augment-source').textContent='Academy snapshot: '+(Academy.snapshot.sourceUpdated?new Date(Academy.snapshot.sourceUpdated).toLocaleDateString():'bundled data')+'. Refreshes with the app’s Academy data.';
     search();
   }
   function clearSearch(){query='';variants=null;input.value='';searchIndex=0;}
@@ -121,11 +111,21 @@ const AugmentUI=(()=>{
       mutate(()=>AugmentAdvisor.replace(state,activeSlot),'Enter the new offer after rerolling in game.');
       input.focus();
     }
-    b=e.target.closest('[data-augment-take]');if(b){let recorded=false;mutate(()=>{recorded=AugmentAdvisor.record(state,Number(b.dataset.augmentTake));},'Augment recorded. Enter any item rewards when received.');if(recorded)modal.close();}
+    b=e.target.closest('[data-augment-take]');if(b){
+      const slot=Number(b.dataset.augmentTake),augment=CompFinder.augment(offers().ids[slot]);
+      let recorded=false;
+      mutate(()=>{recorded=AugmentAdvisor.record(state,slot);});
+      if(recorded){
+        modal.close();
+        const items=AugmentAdvisor.itemGrants(augment).map(({name,count})=>count>1?`${count} × ${name}`:name);
+        const added=new Intl.ListFormat().format(items);
+        toast(added?`Augment recorded. Added ${added}.`:'Augment recorded.');
+      }
+    }
   });
   const previous=render;render=function(){previous();contextKey='';draw();};
   document.addEventListener('carousel-new-game',()=>{modal.close();clearSearch();contextKey='';drawSelected();});
   document.addEventListener('carousel-meta-updated',()=>{contextKey='';draw();});
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and press Enter for each offer. Entry advances automatically. The round defaults to your next unrecorded augment. Click Reroll this offer to clear the slot, then enter the replacement after rerolling in game. Took this records the choice and updates comp fit. Record any item rewards when received.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and press Enter for each offer. Entry advances automatically. The round defaults to your next unrecorded augment. Click Reroll this offer to clear the slot, then enter the replacement after rerolling in game. Took this records your choice and adds any named completed items it grants. Record random items, components, and chest or anvil rewards when received.</li>');
   drawSelected();return {open,refresh:draw};
 })();

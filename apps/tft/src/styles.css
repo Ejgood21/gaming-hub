@@ -149,10 +149,6 @@
 [data-verdict=decent]{--verdict-accent:#aadf91;--verdict-fill:#253b2b;--verdict-ink:#e0ffcf}
 [data-verdict=reroll]{--verdict-accent:#6daaff;--verdict-fill:#192f4d;--verdict-ink:#dceaff}
 [data-verdict=avoid]{--verdict-accent:#f68d88;--verdict-fill:#41252a;--verdict-ink:#ffdfdf}
-.augment-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:7px;font-size:11px;color:#d1def0}
-.augment-legend span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.augment-legend span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--verdict-accent)}
-#augment-dialog .augment-pool{font-size:11px;margin:5px 0;color:#aebfd4}
 .augment-search-wrap{position:relative;margin:10px 0}
 .augment-search-wrap label{display:block;font-size:12px;color:#b4c5db;margin-bottom:5px}
 #augment-search-results{position:relative;max-height:280px;overflow:auto;background:#101922;border:1px solid #53657c;border-radius:7px;margin-top:3px}
@@ -167,33 +163,30 @@
 .augment-offer{background:#141e28;border:1px solid #334153;border-radius:9px;padding:8px 10px}
 .augment-offer.active-slot{border-color:#7b91ad}
 .augment-offer[data-verdict]{background:var(--verdict-fill);border-color:var(--verdict-accent);border-left-width:4px;padding-left:7px}
-.augment-offer-heading,.augment-offer-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.augment-offer-heading>button:first-child{flex:1 0 100%;background:transparent;border:0;padding:0;text-align:left;min-width:0}
-.augment-offer-heading>button>span{display:flex;align-items:center;gap:7px}
-.augment-offer-heading strong{font-size:14px}
-.augment-verdict-line{color:var(--verdict-ink)}
+.augment-offer-heading{display:grid;justify-items:start;gap:2px}
+.augment-offer-heading>button{background:transparent;border:0;padding:0;color:#d5dbe1;font-size:12px;text-align:left}
+.augment-offer-heading>button:hover{text-decoration:underline}
+.augment-verdict-line{color:var(--verdict-ink);font-size:16px;line-height:1.25}
 .augment-rarity{font-size:10px;font-weight:500;color:#ced9e4;white-space:nowrap}
-.rarity-2{color:#f3d47d}.rarity-3{color:#ddbef9}
-.augment-offer-heading .augment-fit-label{font-size:11px;color:var(--verdict-ink);border:1px solid var(--verdict-accent);border-radius:4px;padding:2px 5px}
-.augment-offer-actions{margin-top:5px}
-.augment-offer-actions button{font-size:11px;padding:4px 8px;min-height:28px}
-.augment-offer[data-verdict=take] .augment-take{background:#25663e;border-color:#70dc98}
+#augment-dialog .augment-phrase{color:#f0f2f4;font-size:13px;line-height:1.3;margin:4px 0 0}
+.augment-offer-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:5px}
+.augment-offer-actions .augment-take{min-height:34px;padding:4px 8px;background:transparent;border-color:#a4adb6;color:#f1f3f5;font-size:11px}
+.augment-offer-actions .augment-reroll{min-height:44px;padding:8px 14px;background:#e1e5e9;border-color:#e1e5e9;color:#1a2027;font-size:13px;font-weight:750}
+.augment-offer-actions .augment-reroll:hover{filter:brightness(1.12)}
 .augment-offer[data-verdict=reroll] [data-offer-replace]{background:#244d83;border-color:#82b7ff}
+.augment-offer[data-verdict=reroll] .augment-reroll{color:#fff}
 .augment-description{font-size:11px;color:#d1def0;margin-top:4px}
 .augment-description summary{cursor:pointer}
 .augment-description ul{margin:5px 0;padding-left:19px}
 .augment-description p{font-size:12px!important;margin:5px 0!important;white-space:pre-line}
 .empty-offer button{width:100%;text-align:left;background:transparent;border:0;font-size:13px;color:#c4d4e7;padding:2px}
 .empty-offer button span{display:inline-flex;border:1px solid #647c9d;border-radius:50%;width:23px;height:23px;align-items:center;justify-content:center;margin-right:10px}
-.augment-method{font-size:11px;color:#a7bad0;margin-top:12px}
-.augment-method p{font-size:11px!important}
 .chosen-augments{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 12px}
 .chosen-augments[hidden]{display:none}
 .chosen-augments button{display:flex;gap:6px;align-items:center;padding:4px 7px;font-size:11px;background:#1a2531;border-color:#37475a}
 .chosen-augments img{width:23px;height:23px}.chosen-augments small{font-size:9px}
 @media(max-width:450px){
   .augment-stage button{padding:7px;font-size:11px}
-  .augment-offer-heading strong{font-size:12px}
   .chosen-augments button span{max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
 

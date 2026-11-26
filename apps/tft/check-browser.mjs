@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
-import {checkAugmentRerolls, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
+import {checkAugmentRerolls, checkCompFlipAndGrants, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
 
 const require = createRequire(import.meta.url);
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const liveFixture = require('./test-support/live-fixture');
 const academy = require('./data/academy-18.3b.json');
 const emblems = require('./test-support/p111-live-emblems.json');
+const rankReplay = require('./test-support/p113-live-rank.json');
 const {apFast9, mamawood, covenElise, solarEclipse, currentUnits, darkRitual} = require('./test-support/p16-comps');
 const origin = 'https://carousel.test';
 let fixture = liveFixture({omitAcademyPatch:true,allowOtherUnits:true,guides:academy.guides.map(guide =>
@@ -31,15 +32,14 @@ async function newPage(width, ignoreHTTPSErrors = false) {
   return page;
 }
 
-async function replayFixtures() {
-  const page = await newPage(390);
+async function routeFixture(page, respond) {
   await page.route(/^https:\/\/(?:tftacademy\.com|api-hc\.metatft\.com)\//,async route=>{
     const url = new URL(route.request().url());
     if(url.pathname.endsWith('/unit_items')){
       await route.fulfill({headers:{'Access-Control-Allow-Origin':'*'},json:{data:emblems.vanguardRows}});
       return;
     }
-    const response = await fixture(url);
+    const response = await respond(url);
     await route.fulfill({
       headers:{'Access-Control-Allow-Origin':'*'},
       ...(response.type==='opaque'?{status:204}:{json:await response.json()})
@@ -48,6 +48,11 @@ async function replayFixtures() {
   await page.route(/^https:\/\/(?:assets\.tftacademy\.com|raw\.communitydragon\.org)\//,route=>route.fulfill({
     contentType:'image/gif',body:Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7','base64')
   }));
+}
+
+async function replayFixtures() {
+  const page = await newPage(390);
+  await routeFixture(page,url=>fixture(url));
 
   async function checkWidth(selectors){
     const clipped = await page.evaluate(selectors=>{
@@ -313,7 +318,8 @@ async function replayFixtures() {
   assert.deepEqual(await page.locator('#augment-search-results .augment-rarity').allTextContents(),['Gold','Prismatic']);
   await offerSearch.fill('Deadlier Caps');
   await offerSearch.press('Enter');
-  await page.getByText('Deadlier Caps is listed by Academy for 2-1, not 3-2.',{exact:true}).waitFor();
+  await page.getByText('Wrong round — Academy lists it for 2-1',{exact:true}).waitFor();
+  await page.locator('.augment-offer[data-verdict="avoid"]').getByText('Why and effect',{exact:true}).click();
   await page.getByRole('button',{name:'Enter at 2-1',exact:true}).click();
   assert.equal(await page.locator('[data-augment-round="0"]').getAttribute('aria-pressed'),'true');
   assert.equal((await savedPlan()).augmentOffers.ids[0],'DA_DeadlierCaps');
@@ -384,10 +390,34 @@ async function replayFixtures() {
   await checkAugmentRerolls(page);
   assert.deepEqual(errors,[]);
   console.log('Fixture replay passed at 390px, including emblem Aim, champion portraits, all four augment colors and both rerolls. Components also passed at 1440px. Zero console errors.');
+  await page.close();
+}
+
+async function replayAugmentFixtures() {
+  const liveOffers = new Map(rankReplay.augments.map(augment=>[augment.apiName,augment]));
+  const fixture = liveFixture({
+    academyPatch:'18.7',metaPatch:'18.7',allowOtherUnits:true,guides:rankReplay.guides,
+    assets:{...rankReplay,augments:academy.augments.map(augment=>liveOffers.get(augment.apiName)||augment)}
+  });
+  for (const width of [390,1440]) {
+    const page = await newPage(width);
+    await routeFixture(page,fixture);
+    await page.goto(origin);
+    const alune = await checkEmblemAiming(page,{expectedUnownedRank:8});
+    await checkMarkMade(page);
+    await checkAugmentRerolls(page);
+    const karma = await checkKarmaBoardAndOffers(page);
+    assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
+    await checkCompFlipAndGrants(page);
+    assert.deepEqual(errors,[]);
+    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, Yi Rengar #8/#8/#19 and Mark made passed · zero console errors`);
+    await page.close();
+  }
 }
 
 async function replayLive() {
   for (const width of [390,1440]) {
+    const previousErrors = errors.length;
     const page = await newPage(width,process.env.TFT_BROWSER_IGNORE_HTTPS_ERRORS==='1');
     const sourcePaths = new Set();
     page.on('response',response=>{
@@ -400,20 +430,25 @@ async function replayLive() {
     await checkMarkMade(page);
     await checkAugmentRerolls(page);
     const karma = await checkKarmaBoardAndOffers(page);
+    await checkCompFlipAndGrants(page);
     console.log(`${width} × 844 · Yi Rengar without Brawler · ${JSON.stringify({alune,karma})}`);
     for (const path of ['/api/tierlist/comps','/api/assets/augments',
       '/tft-stat-api/unit_detail_overall','/tft-stat-api/unit_detail_items','/tft-explorer-api/unit_items']) {
       assert.ok(sourcePaths.has(path),`Missing successful live response for ${path}`);
     }
-    assert.deepEqual(errors,[]);
-    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · both emblem Aim paths, portraits, Mark made, exact 2-1 offers and both rerolls passed · zero console errors`);
+    assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
+    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · exact 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, emblem Aim, portraits and Mark made passed · ${errors.length-previousErrors} console errors`);
     await page.close();
   }
+  assert.deepEqual(errors,[]);
 }
 
 try {
   if (process.argv.includes('--live')) await replayLive();
-  else await replayFixtures();
+  else {
+    await replayFixtures();
+    await replayAugmentFixtures();
+  }
 } catch (error) {
   if(errors.length)console.error(errors);
   throw error;
