@@ -51,7 +51,6 @@ export async function waitForLive18_7(page) {
 }
 
 export async function checkEmblemAiming(page, {checkFallback = false, expectedUnownedRank} = {}) {
-  await page.getByLabel('More options',{exact:true}).click();
   await page.getByRole('button',{name:'New game',exact:true}).click();
   await waitForLive18_7(page);
   const unitSearch = page.locator('#explore-unit-search');
@@ -129,7 +128,6 @@ export async function checkEmblemAiming(page, {checkFallback = false, expectedUn
 }
 
 export async function checkKarmaBoardAndOffers(page) {
-  await page.getByLabel('More options',{exact:true}).click();
   await page.getByRole('button',{name:'New game',exact:true}).click();
   await waitForLive18_7(page);
   const champions = ['Karma','Veigar','Ahri','Lux','Morgana','Lillia'];
@@ -367,4 +365,102 @@ export async function checkCompFlipAndGrants(page) {
   await offer(0).locator('[data-offer-edit]').click();
   await enter('Solo Plate');
   await checkGrant(0,'GargoyleStoneplate','Gargoyle Stoneplate');
+}
+
+export async function checkAugmentReferencesAndCarousel(page) {
+  const menu = page.locator('#utility-menu');
+  const more = page.getByLabel('More options',{exact:true});
+  const newGame = page.getByRole('button',{name:'New game',exact:true});
+  await page.evaluate(()=>scrollTo(0,0));
+  assert.equal(await menu.getAttribute('open'),null);
+  assert.ok(await newGame.evaluate(button=>{
+    const {left,right,top,bottom,height} = button.getBoundingClientRect();
+    const hit = document.elementFromPoint((left+right)/2,(top+bottom)/2);
+    return height>=44&&left>=0&&right<=innerWidth&&top>=0&&bottom<=innerHeight&&button.contains(hit);
+  }));
+  if(page.viewportSize().width===390)await newGame.tap();
+  else await newGame.click();
+  assert.equal((await saved(page)).queue.length,0);
+  for (const [label,id] of [['Import a game','team-code-dialog'],['How it works','help'],['Settings','settings-dialog']]) {
+    await more.click();
+    assert.deepEqual(await menu.locator('.utility-options button').allTextContents(),['Import a game','How it works','Settings']);
+    await menu.getByRole('button',{name:label,exact:true}).click();
+    const dialog = page.locator('#'+id);
+    await dialog.waitFor();
+    await page.keyboard.press('Escape');
+    await dialog.waitFor({state:'hidden'});
+  }
+
+  const select = async title=>{
+    await waitForLive18_7(page);
+    const unitSearch=page.locator('#explore-unit-search');
+    for(const name of ['Ahri','Morgana']){
+      await unitSearch.fill(name);
+      await page.getByRole('button',{name:'Add '+name,exact:true}).click();
+    }
+    const button=choose(suggestion(page,title),title);
+    if(!await button.isVisible())await page.locator('#finder-more').click();
+    await button.click();
+    await page.locator('#app-title').getByText(title,{exact:true}).waitFor();
+  };
+  await select('Ahri Morgana');
+  const next=page.locator('#next-build strong');
+  const first=page.locator('#shopping .decision-need').first();
+  assert.equal(await next.textContent(),'Spear of Shojin');
+  assert.match(await first.locator('[data-action="pin"]').getAttribute('data-id'),/^(TearOfTheGoddess|BFSword)$/);
+  assert.equal(await first.locator('.carousel-for').textContent(),'For Spear of Shojin');
+  const belt=page.locator('#shopping [data-action="pin"][data-id="GiantsBelt"]');
+  assert.equal(await belt.locator('..').locator('.component-shortage').textContent(),'×4');
+  await belt.click();
+  assert.equal(await next.textContent(),'Spear of Shojin');
+  assert.equal(await first.locator('[data-action="pin"]').getAttribute('data-id'),'GiantsBelt');
+  assert.equal(await first.locator('.carousel-pin-label').textContent(),'Pinned');
+  assert.notEqual(await first.locator('.carousel-for').textContent(),'For Spear of Shojin');
+  await first.locator('[data-action="pin"]').click();
+  assert.equal(await first.locator('.carousel-for').textContent(),'For Spear of Shojin');
+
+  await newGame.click();
+  await select('Spellweaver Ahri');
+  const dialog=page.locator('#augment-dialog');
+  const search=dialog.getByRole('searchbox');
+  const close=()=>dialog.getByRole('button',{name:'Close augment chooser',exact:true}).click();
+  const reference=dialog.locator('#augment-reference .augment-offer');
+  const entries=[
+    ['A.F.K.','AFK','avoid','Do not take A.F.K.','Outside the current augment pool',/17 gold/],
+    ['Manaflow I','Manaflow I','avoid','Do not take Manaflow I','Outside the current augment pool',/2 extra Mana per attack/],
+    ['Spellweaver Emblem','Spellweaver Emblem','take','Take Spellweaver Emblem','Emblem fits your comp',/holder gains the Spellweaver trait/]
+  ];
+  for(const [name,alias,verdict,line,phrase,effect] of entries){
+    const check=async ()=>{
+      await namedVerdict(reference,verdict,line);
+      assert.equal(await reference.locator('.augment-phrase').textContent(),phrase);
+      await reference.getByText('Why and effect',{exact:true}).click();
+      await reference.locator('.augment-description').getByText(effect).waitFor();
+      assert.equal(await reference.getByRole('button',{name:'Took this',exact:true}).count(),0);
+    };
+    await page.getByRole('button',{name:'Augment choices',exact:true}).click();
+    await search.fill(name);
+    await dialog.locator('#augment-search-results button').filter({hasText:name}).click();
+    await check();
+    await close();
+
+    await page.locator('#explore-mode').click();
+    await page.getByRole('button',{name:'First augment',exact:true}).click();
+    await page.getByRole('searchbox',{name:'Search first augment',exact:true}).fill(alias);
+    await page.locator('#first-augment-choices button').filter({hasText:name}).click();
+    await check();
+    await close();
+    await page.locator('#explore-mode').click();
+    assert.equal((await saved(page)).firstAugment||'','');
+  }
+}
+
+export async function checkChampionStats(page) {
+  const reference=page.locator('#meta-reference');
+  for(const name of ['Ivern','Alune','Morgana','Sentinel']){
+    await page.locator(`#position-board [data-champion-builds="${name}"]`).click();
+    await page.locator('#meta-diagnostics > p').filter({hasText:new RegExp('^'+name+' · live · [1-9]\\d* ranked builds')}).waitFor({state:'attached'});
+    await reference.locator('.reference-build .build-games').first().waitFor();
+    await reference.getByRole('button',{name:'Close builds',exact:true}).click();
+  }
 }

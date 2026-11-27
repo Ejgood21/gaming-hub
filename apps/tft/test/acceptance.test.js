@@ -134,6 +134,38 @@ test('A8: carousel ranks a twice-needed Sword above a once-needed Bow', () => {
   assert.ok(rows[sword].gain >= rows[bow].gain);
 });
 
+test('Ahri Morgana carousel points to the banner item ahead of larger shortages and honors pins', () => {
+  const replay = require('../test-support/p113-live-rank.json');
+  const {Academy, CompFinder, DecisionPlanner, Tracker, DATA, byId} = createModel({
+    academy: {...academy, ...replay, patch: '18.7'}, meta, core
+  });
+  const input = plan();
+  CompFinder.choose(input, Academy.snapshot.guides.find(g => g.title === 'Ahri Morgana').id);
+
+  const expected = () => Tracker.allocate(input, DATA.items).next;
+  const first = () => DecisionPlanner.carousel(input)[0];
+  const agrees = () => {
+    const next = expected(), pick = first();
+    assert.ok(next.slots.some(slot => !slot.have && slot.id === pick.id));
+    assert.equal(pick.targets[0].uid, next.uid);
+    assert.equal(byId[pick.targets[0].item].name, byId[next.item].name);
+  };
+
+  assert.equal(expected().item, 'SpearOfShojin');
+  assert.equal(Tracker.allocate(input, DATA.items).needs.GiantsBelt.count, 4);
+  agrees();
+
+  input.pins = ['GiantsBelt'];
+  assert.equal(first().id, 'GiantsBelt');
+  assert.notEqual(first().targets[0].uid, expected().uid);
+
+  input.pins = [];
+  input.owned = {BFSword: 1, TearOfTheGoddess: 1};
+  assert.equal(input.queue[0].item, 'SpearOfShojin');
+  assert.equal(expected().item, 'JeweledGauntlet');
+  agrees();
+});
+
 test('A9: component anvil preserves priority and records the receipt as other', () => {
   const {DecisionPlanner} = model();
   const input = plan({queue: [queue('GuinsoosRageblade'), queue('InfinityEdge'), queue('SpearOfShojin')]});

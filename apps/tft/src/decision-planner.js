@@ -171,8 +171,10 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
         if(!evaluations.has(rank)){const eligible=order.length?baselineGroups.filter(g=>holderRank(g.name)<=rank):baselineGroups;evaluations.set(rank,{groups:eligible,base:this.solve(plan,eligible)});}
         return evaluations.get(rank);
       };
+      const forNext=target=>!!plan.activeComp&&target.uid===allocation.next.uid;
       return componentOrder.filter((id,n)=>n<8||needs[id]||pivots[id]?.length).map(id=>{
-        const targets=(planned[id]||[]).slice().sort((a,b)=>holderRank(a.champion)-holderRank(b.champion)||a.rank-b.rank),alternatives=pivots[id]||[],baseline=needs[id],priority=Academy.componentPreference(plan,id);
+        const targets=(planned[id]||[]).slice().sort((a,b)=>Number(forNext(b))-Number(forNext(a))||holderRank(a.champion)-holderRank(b.champion)||a.rank-b.rank);
+        const alternatives=pivots[id]||[],baseline=needs[id],priority=Academy.componentPreference(plan,id);
         const carrierRank=targets.length?holderRank(targets[0].champion):Infinity;
         let gain=0,score=0,best={actions:[]};
         if(baseline){
@@ -184,8 +186,8 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
         }else if(alternatives.length){
           const b=alternatives[0];score=(b.tier==='S'?20:10)+Math.max(0,Math.min(2,b.score))-Math.min(6,b.missing)*.1;
         }
-        return {id,score,gain,best,carrierRank,pivot:!!alternatives.length,pivotTier:alternatives[0]?.tier||'',targets,pivotTargets:alternatives,count:baseline?.count||0,rank:baseline?.rank??99,items:baseline?.items||[],finishes:targets};
-      }).sort((a,b)=>Number(b.count>0)-Number(a.count>0)||Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||b.count-a.count||(a.count&&b.count?a.carrierRank-b.carrierRank:0)||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
+        return {id,score,gain,best,carrierRank,forNext:targets.some(forNext),pivot:!!alternatives.length,pivotTier:alternatives[0]?.tier||'',targets,pivotTargets:alternatives,count:baseline?.count||0,rank:baseline?.rank??99,items:baseline?.items||[],finishes:targets};
+      }).sort((a,b)=>Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||Number(b.forNext)-Number(a.forNext)||Number(b.count>0)-Number(a.count>0)||b.count-a.count||(a.count&&b.count?a.carrierRank-b.carrierRank:0)||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
     },
     discovery(plan){
       const candidates=CompFinder.ranked(plan,{allowSparse:true}).filter(r=>!r.blocked).slice(0,8);

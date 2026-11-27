@@ -8,7 +8,7 @@ const DecisionUI = (()=>{
   document.querySelector('.bench .panelhead').after(controls);
   const suggestion=document.createElement('div');suggestion.id='bench-plan';suggestion.className='bench-plan';document.getElementById('craft-strip').before(suggestion);
   const intent=document.createElement('div');intent.id='reference-intents';intent.className='reference-owned';document.getElementById('reference-owned').after(intent);
-  document.querySelector('.shoppingintro').textContent='×N = still missing from your queue, after your bench. Planned needs first.';
+  document.querySelector('.shoppingintro').textContent='×N = still missing from your queue, after your bench. Pins override the next item.';
   document.querySelector('.shoppingfoot').textContent='★ Pin within planned needs or alternatives. Got one records a carousel pick.';
   document.querySelector('.loot-note p').textContent='A historical bag heuristic, not verified current-set odds. Used only after equally useful component choices and pins. It does not predict when another component will drop.';
   function signature(){
@@ -41,7 +41,8 @@ const DecisionUI = (()=>{
     const row=(r,n)=>{
       const target=r.targets?.[0]||r.pivotTargets?.[0];
       const label=r.count||r.discovery?'':r.pivot?'Pivot item':'Not needed';
-      return `<div class="need decision-need ${state.pins.includes(r.id)?'pinned':''}"><span class="pick-rank">${n+1}</span>${icon(r.id)}<div class="needname">${esc(shortNames[r.id])} ${r.count?`<b class="component-shortage" aria-label="${r.count} still needed">×${r.count}</b>`:''}${label?`<span class="component-option">${label}</span>`:''}</div>${carouselIcon(target)}<button data-action="pin" data-id="${r.id}" class="pin" aria-pressed="${state.pins.includes(r.id)}" aria-label="Pin ${esc(byId[r.id].name)}">${state.pins.includes(r.id)?'★':'☆'}</button><button data-action="gain" data-id="${r.id}" class="got" aria-label="Got one ${esc(byId[r.id].name)} from carousel">+ Got one</button></div>`;
+      const pinned=state.pins.includes(r.id);
+      return `<div class="need decision-need ${state.pins.includes(r.id)?'pinned':''}"><span class="pick-rank">${n+1}</span>${icon(r.id)}<div class="needname">${esc(shortNames[r.id])} ${r.count?`<b class="component-shortage" aria-label="${r.count} still needed">×${r.count}</b>`:''}${label?`<span class="component-option">${label}</span>`:''}${pinned?'<span class="carousel-pin-label">Pinned</span>':''}</div>${carouselIcon(target)}${target?`<small class="carousel-for">For ${esc(byId[target.item].name)}</small>`:''}<button data-action="pin" data-id="${r.id}" class="pin" aria-pressed="${state.pins.includes(r.id)}" aria-label="Pin ${esc(byId[r.id].name)}">${state.pins.includes(r.id)?'★':'☆'}</button><button data-action="gain" data-id="${r.id}" class="got" aria-label="Got one ${esc(byId[r.id].name)} from carousel">+ Got one</button></div>`;
     };
     document.getElementById('shopping').innerHTML=rows.map(row).join('');
   }
@@ -54,10 +55,11 @@ const DecisionUI = (()=>{
     const query=Academy.normalizeName(pivotQuery),rows=[];
     for(const i of DATA.items){if(!Academy.normalizeName(i.name).includes(query))continue;const choice=DecisionPlanner.pivot(state,pivotChampion,i.id);if(choice)rows.push({item:i,choice,ready:OfflineTracker.canCraft(state.owned,i)});}
     rows.sort((a,b)=>Number(b.ready)-Number(a.ready)||'SA'.indexOf(a.choice.tier)-'SA'.indexOf(b.choice.tier)||b.choice.score-a.choice.score||a.item.name.localeCompare(b.item.name));
+    const notice=MetaBuilds.pivotNotice(pivotChampion);
     document.getElementById('champion-pivot-results').innerHTML=rows.map(({item:i,choice:b,ready})=>{
       const owned=state.queue.some(q=>q.done&&q.item===i.id&&!q.champion);
       return `<article class="decision-row"><div class="decision-primary">${icon(i.id)}<div><strong>${esc(i.name)}</strong><small>MetaTFT ${b.tier} · ${b.games.toLocaleString()} games</small></div></div><div class="pivot-combination">${b.items.map(id=>`<span class="${DecisionPlanner.equipped(state,pivotChampion).some(x=>Academy.itemMatches(id,x))?'is-equipped':''}">${compactItem(id)}</span>`).join('')}</div><div class="decision-actions"><button data-plan-pivot="${esc(i.id)}">Plan pivot</button>${ready?`<button data-build-pivot="${esc(i.id)}">Build now</button>`:''}${owned?`<button data-owned-pivot="${esc(i.id)}">Use owned</button>`:''}</div></article>`;
-    }).join('')||'<p class="decision-note">No supported S/A combination contains that item alongside your completed items. Your current plan stays intact.</p>';
+    }).join('')||`<p class="decision-note">${notice||'No supported S/A combination contains that item alongside your completed items. Your current plan stays intact.'}</p>`;
   }
   function openPivot(name){pivotChampion=name;pivotQuery='';document.getElementById('champion-pivot-search').value='';drawPivot();pivot.showModal();MetaBuilds.request(name);document.getElementById('champion-pivot-search').focus();}
   function draw(){

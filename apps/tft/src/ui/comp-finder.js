@@ -31,6 +31,11 @@
   const picker=IconUI.picker(select,'augment','First augment',query=>AugmentAdvisor.searchNotice(query));
   select.addEventListener('change',()=>{
     const id=select.value,augment=CompFinder.augment(id);
+    if(id.startsWith('reference:')){
+      select.value=state.firstAugment||'';
+      AugmentUI.open(undefined,id);
+      return;
+    }
     if(augment&&id!==state.firstAugment&&!AugmentAdvisor.eligible(augment,0)){
       select.value=state.firstAugment||'';
       AugmentUI.open(0,id);
@@ -148,6 +153,7 @@
     if(itemsDialog.open)drawItemsDialog();
     const selected=state.firstAugment||'';
     const catalog=CompFinder.augments().map(a=>({...a,value:a.ids.includes(selected)?selected:a.apiName}));
+    catalog.push(...AugmentAdvisor.references().map(a=>({...a,value:a.apiName})));
     const signature=JSON.stringify(catalog.map(a=>[a.value,a.name]))+'|'+selected;
     if(signature!==catalogSignature){
       catalogSignature=signature;

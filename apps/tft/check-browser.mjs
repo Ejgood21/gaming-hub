@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
-import {checkAugmentRerolls, checkCompFlipAndGrants, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
+import {checkAugmentReferencesAndCarousel, checkChampionStats, checkAugmentRerolls, checkCompFlipAndGrants, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
 
 const require = createRequire(import.meta.url);
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -71,7 +71,6 @@ async function replayFixtures() {
     has:page.getByRole('heading',{name:title,exact:true})
   });
   const newGame = async () => {
-    await page.getByLabel('More options', {exact:true}).click();
     await page.getByRole('button',{name:'New game',exact:true}).click();
   };
   const choose = title => suggestion(title).locator('[data-choose-comp]').click();
@@ -103,8 +102,7 @@ async function replayFixtures() {
   const patchLabels = await opener.locator('li small').allTextContents();
   assert.ok(patchLabels.length>=2 && patchLabels.length<=3 && patchLabels.every(label=>label==='Patch 18.3b'));
   const utility = page.getByLabel('More options',{exact:true});
-  const expectedUtilities = ['Mark made','Save a backup','Restore a backup','Import a game','New game',
-    'Reset all saved data','Run checks','How it works','Data & keys'];
+  const expectedUtilities = ['Import a game','How it works','Settings'];
   for(let n=0;n<3;n++){
     await utility.click();
     assert.deepEqual(await page.locator('#utility-menu[open] .utility-options button').allTextContents(),expectedUtilities);
@@ -404,13 +402,15 @@ async function replayAugmentFixtures() {
     await routeFixture(page,fixture);
     await page.goto(origin);
     const alune = await checkEmblemAiming(page,{expectedUnownedRank:8});
+    await checkChampionStats(page);
     await checkMarkMade(page);
     await checkAugmentRerolls(page);
     const karma = await checkKarmaBoardAndOffers(page);
     assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
     await checkCompFlipAndGrants(page);
+    await checkAugmentReferencesAndCarousel(page);
     assert.deepEqual(errors,[]);
-    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, Yi Rengar #8/#8/#19 and Mark made passed · zero console errors`);
+    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, Yi Rengar #8/#8/#19, Mark made, augment references, menu, Carousel agreement and champion stats passed · zero console errors`);
     await page.close();
   }
 }
@@ -427,17 +427,19 @@ async function replayLive() {
     });
     await page.goto(origin);
     const alune = await checkEmblemAiming(page);
+    await checkChampionStats(page);
     await checkMarkMade(page);
     await checkAugmentRerolls(page);
     const karma = await checkKarmaBoardAndOffers(page);
     await checkCompFlipAndGrants(page);
+    await checkAugmentReferencesAndCarousel(page);
     console.log(`${width} × 844 · Yi Rengar without Brawler · ${JSON.stringify({alune,karma})}`);
     for (const path of ['/api/tierlist/comps','/api/assets/augments',
       '/tft-stat-api/unit_detail_overall','/tft-stat-api/unit_detail_items','/tft-explorer-api/unit_items']) {
       assert.ok(sourcePaths.has(path),`Missing successful live response for ${path}`);
     }
     assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
-    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · exact 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, emblem Aim, portraits and Mark made passed · ${errors.length-previousErrors} console errors`);
+    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · exact 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, emblem Aim, portraits, Mark made, augment references, menu, Carousel agreement and champion stats passed · ${errors.length-previousErrors} console errors`);
     await page.close();
   }
   assert.deepEqual(errors,[]);

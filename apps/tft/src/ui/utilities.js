@@ -5,7 +5,6 @@
   const menu=document.createElement('details');menu.id='utility-menu';menu.className='utility-menu';
   menu.innerHTML='<summary aria-label="More options" title="More options">⋯</summary><div class="utility-options"></div>';
   const options=menu.querySelector('.utility-options');
-  const newGame=actions.querySelector('[data-action="reset"]');
   const shortcut=(name, run)=>{
     const button=document.createElement('button');
     button.type='button';
@@ -16,8 +15,6 @@
     });
     return button;
   };
-  const markMade=shortcut('Mark made',()=>document.querySelector('#queue button[data-action="make"]')?.click());
-  const runChecks=shortcut('Run checks',()=>document.getElementById('refresh-live-data').click());
   const resetDialog=document.createElement('dialog');
   resetDialog.id='reset-carousel-data';
   resetDialog.setAttribute('aria-labelledby','reset-carousel-title');
@@ -35,27 +32,16 @@
     }
     location.reload();
   });
-  options.append(
-    markMade,
-    shortcut('Save a backup',()=>document.getElementById('export-backup').click()),
-    shortcut('Restore a backup',()=>document.getElementById('import-open').click()),
-    shortcut('Import a game',()=>AcademyUI.openImport()),
-    newGame,
+  document.querySelector('#settings-dialog .backup-buttons').append(
     shortcut('Reset all saved data',()=>{
       resetDialog.returnValue='';
       resetDialog.showModal();
-    }),
-    runChecks,
-    help,
-    settings
+    })
   );
+  options.append(shortcut('Import a game',()=>AcademyUI.openImport()),help,settings);
   actions.append(menu);
   top.append(actions);
   document.querySelector('.pagehead').remove();
-  menu.querySelector('summary').addEventListener('click',()=>{
-    markMade.disabled=!document.querySelector('#queue button[data-action="make"]');
-    runChecks.disabled=AcademyUI.isChecking();
-  });
   menu.addEventListener('click',e=>{if(e.target.closest('button'))menu.open=false;});
   document.addEventListener('click',e=>{if(!menu.contains(e.target))menu.removeAttribute('open');});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.open){menu.removeAttribute('open');menu.querySelector('summary').focus();}});
