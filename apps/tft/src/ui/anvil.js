@@ -2,7 +2,7 @@
    Numeric shortcuts are scoped to the topmost component-anvil dialog. */
 const AnvilUI=(()=>{
   const types=[['components','Components'],['ornns','Artifacts'],['craftables','Completed'],['radiants','Radiant'],['emblems','Emblems']];
-  let type='ornns',mode='browse',query='',rows=[],matches=[],searchIndex=0,offers={};
+  let type='components',mode='browse',query='',rows=[],matches=[],searchIndex=0,offers={};
   const modal=document.createElement('dialog');modal.id='anvil-dialog';modal.setAttribute('aria-labelledby','anvil-dialog-title');
   modal.innerHTML='<div class="modal-heading"><h2 id="anvil-dialog-title">Anvil choices</h2><button data-close="anvil-dialog" aria-label="Close anvil choices">×</button></div><div id="anvil-tabs" class="decision-tabs" role="group" aria-label="Anvil item category"></div><div class="anvil-mode" role="group" aria-label="Browse or compare anvil offers"><button data-anvil-mode="browse">Full priority list</button><button data-anvil-mode="compare">My offers</button></div><p id="anvil-instructions" class="decision-note"></p><div id="anvil-component-keys" class="anvil-component-keys" hidden></div><div class="anvil-search-wrap"><label for="anvil-search" class="visuallyhidden">Find an offered item</label><input id="anvil-search" class="search" type="search" autocomplete="off" placeholder="Find an offered item…"><div id="anvil-search-matches" hidden></div></div><div id="anvil-offer-chips" class="anvil-offer-chips"></div><div id="anvil-verdict" role="status" aria-live="polite"></div><div id="anvil-results" class="decision-list"></div>';
   document.body.append(modal);
@@ -50,7 +50,7 @@ const AnvilUI=(()=>{
     }).join('')||(mode==='compare'?'':'<p class="decision-note">No matching items.</p>');
     drawSearch();
   }
-  function open(){setQuery();draw(true);modal.showModal();if(type!=='components')input.focus();}
+  function open(){type='components';mode='browse';setQuery();draw(true);modal.showModal();}
   document.getElementById('anvil-open').addEventListener('click',open);
   input.addEventListener('input',e=>{query=e.target.value;searchIndex=0;draw();});
   input.addEventListener('keydown',e=>{

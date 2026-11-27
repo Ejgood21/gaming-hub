@@ -65,6 +65,10 @@ export async function checkEmblemAiming(page, {checkFallback = false, expectedUn
   const ownedSearch = page.locator('#owned-item-search');
   await ownedSearch.fill('Brawler');
   await page.getByRole('button',{name:'Record owned Brawler Emblem',exact:true}).click();
+  // Both Aim actions should use the same live item-build data for the emblem holder.
+  await page.evaluate(()=>window.MetaReference.open('Master Yi'));
+  await page.locator('#meta-diagnostics > p').filter({hasText:/^Master Yi · live · [1-9]\d* ranked builds/}).waitFor({state:'attached'});
+  await page.getByRole('button',{name:'Close builds',exact:true}).click();
   const top = page.locator('.comp-suggestion').first();
   await top.getByRole('heading',{name:'Adaptor Reroll',exact:true}).waitFor();
   assert.deepEqual(await page.locator('.comp-suggestion h3').allTextContents().then(titles=>titles.slice(0,2)),

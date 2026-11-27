@@ -13,22 +13,23 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
     }
     for (const part of Object.keys(needed)) needed[part] = Math.max(0, needed[part] - (plan.owned[part] || 0));
     const champions = new Map(Academy.snapshot.champions.map(unit => [unit.apiName, unit]));
-    const carries = (guide?.finalComp || []).flatMap(unit => {
+    // Evaluate what the candidate comp can use after you build it.
+    const plannedCarriers = (guide?.finalComp || []).flatMap(unit => {
       const champion = champions.get(unit.apiName);
       return champion&&(unit.items.length||unit.apiName===guide.mainChampion?.apiName) ?
         [{...champion,boardIndex:unit.boardIndex}] : [];
     });
     const planItems = [...new Set([...targets.map(t => t.item), ...placedItems])];
-    return {needed, carries, planItems, style: `${guide?.style || ''} ${guide?.title || ''}`};
+    return {needed, plannedCarriers, planItems, style: `${guide?.style || ''} ${guide?.title || ''}`};
   }
 
-  function rule(augment, {needed, carries, planItems, style}) {
+  function rule(augment, {needed, plannedCarriers, planItems, style}) {
     const text = augment.description || '';
     const normalized = Academy.normalizeName(text);
     const component = DATA.components.find(part => needed[part.id] && normalized.includes(Academy.normalizeName(part.name)));
     const item = planItems.map(id => byId[id]).find(item => item?.name.length > 5 && normalized.includes(Academy.normalizeName(item.name)));
     const grants = /\b(?:gain|grants?|choose|receive)\b/i.test(text);
-    const casters = carries.filter(unit => /Caster/i.test(unit.role));
+    const casters = plannedCarriers.filter(unit => /Caster/i.test(unit.role));
     const level = Number(style.match(leveling)?.[1]);
 
     if (component && grants) return {points: 4, text: 'Offers a component your current targets need', detail: component.name};
@@ -39,7 +40,7 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
       const breadth = Object.values(needed).filter(Boolean).length;
       if (!breadth) return;
       if (/\bmana spent\b/i.test(text) && casters.length && planItems.some(id => manaItems.has(id))) {
-        return {points: Math.min(8, 3 + casters.length + Math.floor(breadth / 3)), text: 'Component generation feeds your item plan and rewards Mana spent by your casters'};
+        return {points: Math.min(8, 3 + casters.length + Math.floor(breadth / 3)), text: 'Component generation feeds your item plan and rewards Mana spent by the comp’s casters'};
       }
       return {points: Math.min(4, Math.ceil(breadth / 2)), text: 'Random components can fill your remaining recipes'};
     }
@@ -62,14 +63,14 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
     if (!/\b(?:gains?|gaining|grants?|gets?|deal|have|receive|increase)\b/i.test(text)) return;
     const cost = Number(text.match(/(?:your|allied) (\d)-cost champions/i)?.[1]);
     const backRow = /back row/i.test(text);
-    const eligible = carries.filter(unit => (!cost||unit.cost===cost)&&(!backRow||unit.boardIndex>=21));
+    const eligible = plannedCarriers.filter(unit => (!cost||unit.cost===cost)&&(!backRow||unit.boardIndex>=21));
     const benefits = [
-      [/\b(?:starting mana|mana regen|restore mana|gain \d+ mana)\b/i, unit => /Caster/i.test(unit.role), 'Mana helps your casters use their abilities'],
-      [/\bability power\b/i, unit => /Magic (?!Tank)/i.test(unit.role), 'Ability Power supports your magic damage dealers'],
-      [/\battack damage\b/i, unit => /Attack (?!Tank)/i.test(unit.role), 'Attack Damage supports your physical damage dealers'],
-      [/\battack speed\b/i, unit => /Marksman/i.test(unit.role), 'Attack Speed supports your marksmen'],
-      [/\b(?:damage amp|critical strike)\b/i, unit => !/Tank/i.test(unit.role), 'Combat stats support your damage dealers'],
-      [/\b(?:armor|magic resist|durability|max health)\b/i, unit => /Tank/i.test(unit.role), 'Defensive stats support your tanks']
+      [/\b(?:starting mana|mana regen|restore mana|gain \d+ mana)\b/i, unit => /Caster/i.test(unit.role), 'Mana helps the comp’s casters use their abilities'],
+      [/\bability power\b/i, unit => /Magic (?!Tank)/i.test(unit.role), 'Ability Power supports the comp’s magic damage dealers'],
+      [/\battack damage\b/i, unit => /Attack (?!Tank)/i.test(unit.role), 'Attack Damage supports the comp’s physical damage dealers'],
+      [/\battack speed\b/i, unit => /Marksman/i.test(unit.role), 'Attack Speed supports the comp’s marksmen'],
+      [/\b(?:damage amp|critical strike)\b/i, unit => !/Tank/i.test(unit.role), 'Combat stats support the comp’s damage dealers'],
+      [/\b(?:armor|magic resist|durability|max health)\b/i, unit => /Tank/i.test(unit.role), 'Defensive stats support the comp’s tanks']
     ];
     const benefit = benefits.find(([effect, role]) => effect.test(text) && eligible.some(role));
     if (benefit) return {points: 4, text: benefit[2], detail: [...new Set(eligible.filter(benefit[1]).map(unit => unit.name))].join(', ')};

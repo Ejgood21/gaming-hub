@@ -20,20 +20,21 @@ const plan = overrides => ({queue: [], owned: {}, pins: [], ...overrides});
 const queue = (item, options) => ({uid: item, item, done: false, ...options});
 const caitlyn = {apiName: 'DA_18_Caitlyn', stars: 2};
 
-test('A1: empty, sparse and unsupported plans show opening guidance', () => {
+test('A1: the finder shows current tiers before any items, augments or champions are recorded', () => {
   const {CompFinder} = model();
   assert.deepEqual(Object.fromEntries(['S','A','B','C','X'].map(tier =>
     [tier, academy.guides.filter(g => g.tier === tier).length])), {S:0,A:9,B:18,C:11,X:7});
-  for (const entry of [
-    plan(), plan({currentUnits: [caitlyn]}),
-    plan({queue: [queue('ForceOfNature', {done: true}), queue('TacticiansScepter', {done: true})]})
-  ]) {
-    const result = CompFinder.recommendations(entry);
-    assert.deepEqual(result.rows, []);
-    assert.match(result.notice, /Not enough to recommend yet/);
-    assert.ok(result.guidance.length >= 2);
-    assert.equal(result.tierNotice, 'No S-tier comp in this snapshot — top band is A');
-  }
+  const activeComp = {guide:guide('Ahri Morgana')};
+  const input = plan({activeComp,queue:[queue('SpearOfShojin')]});
+  const {rows,tierNotice,notice} = CompFinder.recommendations(input);
+  const tiers = rows.filter(row=>!row.blocked).map(row=>row.guide.tier);
+  assert.equal(tiers[0],'A');
+  assert.ok(tiers.includes('B'));
+  assert.deepEqual(tiers,tiers.slice().sort((a,b)=>CompFinder.tierRank(a)-CompFinder.tierRank(b)));
+  assert.ok(rows.every(row=>row.unitScore===0&&row.executionPenalty===0));
+  assert.equal(CompFinder.alternative(input),undefined);
+  assert.equal(notice,'');
+  assert.equal(tierNotice,'No S-tier comp in this snapshot — top band is A');
 });
 
 test('A2: Rageblade and Caitlyn 2★ make Caitlyn Hunters the top B guide', () => {
@@ -353,6 +354,8 @@ test('a higher tier still wins close fit, but yields to a 12-point lead', () => 
   const [tierWinner,close] = CompFinder.ranked(input);
   assert.equal(tierWinner.guide.id,upper.id);
   assert.ok(close.fitScore>tierWinner.fitScore&&close.fitScore-tierWinner.fitScore<12);
+  input.activeComp = {id:upper.id};
+  assert.equal(CompFinder.alternative(input),undefined);
   input.queue.push(queue('BlueBuff',{done:true}));
   input.currentUnits = [{apiName:'DA_18_Alune',stars:2}];
   const [fitWinner,runnerUp] = CompFinder.ranked(input);
@@ -373,7 +376,7 @@ test('the 12-point threshold is inclusive for each tier step', () => {
   for (const [tier, gap] of [['A',12],['B',24]]) {
     const lower = {...apFast9,tier};
     Academy.useSnapshot({...academy,patch:'18.7',guides:[higher,lower]});
-    const rows = lowerFit => CompFinder.ranked(plan({lowerFit}),{allowSparse:true});
+    const rows = lowerFit => CompFinder.ranked(plan({lowerFit,owned:{ChainVest:1}}));
     assert.equal(rows(7+gap-.01)[0].guide,higher);
     const [winner, runnerUp] = rows(7+gap);
     assert.equal(winner.guide,lower);
@@ -392,7 +395,7 @@ test('three tiers with sub-12 adjacent fit gaps have one effective-score order',
   CompFinder.evaluate = (input,guide) => ({guide,fitScore:fit[guide.tier],selectable:true});
   for (const guides of [[higher,middle,lower],[lower,higher,middle],[middle,lower,higher]]) {
     Academy.useSnapshot({...academy,patch:'18.7',guides});
-    const rows = CompFinder.ranked(plan(),{allowSparse:true});
+    const rows = CompFinder.ranked(plan({owned:{ChainVest:1}}));
     assert.deepEqual(rows.map(row=>row.guide),[higher,middle,lower]);
     assert.deepEqual(rows.map(row=>row.effectiveScore),[31,30.5,30]);
   }
@@ -412,10 +415,36 @@ test('Patch 18.7 Rod + Vest: Woven Magic improves Defender Cassio by 24 fit poin
   const top = () => CompFinder.ranked(input).slice(0,3);
   const scores = rows => rows.map(r=>[r.guide.title,r.fitScore,r.effectiveScore]);
   assert.deepEqual(scores(top()),[['Mamawood',7,31],['AP Fast 9',4.5,28.5],['10 Riftbeast',7.5,19.5]]);
+  const [leader,,higherRawFit] = top();
+  input.activeComp = {id:leader.guide.id};
+  assert.equal(CompFinder.alternative(input),undefined);
+  input.activeComp = {id:higherRawFit.guide.id};
+  assert.equal(CompFinder.alternative(input)?.guide.id,leader.guide.id);
   input.firstAugment = 'DA_WovenMagic';
   const after = top();
   assert.deepEqual(scores(after),[['AP Fast 9',11.5,35.5],['Mamawood',11,35],['Defender Cassio',30.5,30.5]]);
   assert.deepEqual(after[2].augmentMatches.map(a=>[a.name,a.points,a.academy]),[['Woven Magic',24,'listed']]);
+});
+
+test('with no champions, a single component or chosen augment can change the top route', () => {
+  const {Academy,CompFinder} = model();
+  const alphabeticallyFirst = {...mamawood,title:'A route',tier:'S'};
+  const componentFit = {...apFast9,title:'Z route'};
+  const augmentFit = {...apFast9,id:'augment-fit',title:'Y route',tier:'A',mainAugment:{apiName:'DA_WovenMagic'}};
+  Academy.useSnapshot({...academy,patch:'18.7',guides:[alphabeticallyFirst,componentFit,augmentFit]});
+  const input = plan({currentUnits:[],activeComp:{guide:alphabeticallyFirst}});
+  assert.equal(CompFinder.recommendations(input).rows[0].guide.id,alphabeticallyFirst.id);
+  input.owned.NeedlesslyLargeRod = 1;
+  const [fromComponent] = CompFinder.ranked(input);
+  assert.equal(fromComponent.guide.id,componentFit.id);
+  assert.ok(fromComponent.componentScore>0);
+  input.firstAugment = 'DA_WovenMagic';
+  const [fromAugment] = CompFinder.ranked(input);
+  assert.equal(fromAugment.guide.id,augmentFit.id);
+  assert.equal(fromAugment.unitScore,0);
+  assert.equal(fromAugment.executionPenalty,0);
+  assert.equal(fromAugment.augmentMatches[0].academy,'featured');
+  assert.deepEqual(input.currentUnits,[]);
 });
 
 test('Patch 18.7 Rod + Vest and Yi / Kog’Maw / Vi at 3★: Adaptor Reroll passes S', () => {
