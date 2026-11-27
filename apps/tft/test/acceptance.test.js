@@ -124,15 +124,44 @@ test("A7: Thief's Gloves fill all slots for a holder", () => {
   assert.equal(PlanAdvisor.suggest(input, 'Caitlyn').kind, 'full');
 });
 
-test('A8: carousel ranks a twice-needed Sword above a once-needed Bow', () => {
-  const {DecisionPlanner} = model();
-  const input = plan({queue: [queue('GuinsoosRageblade'), queue('InfinityEdge'), queue('SpearOfShojin')]});
-  const rows = DecisionPlanner.carousel(input);
-  const sword = rows.findIndex(r => r.id === 'BFSword'), bow = rows.findIndex(r => r.id === 'RecurveBow');
-  assert.equal(rows[sword].count, 2);
-  assert.equal(rows[bow].count, 1);
-  assert.ok(sword < bow);
-  assert.ok(rows[sword].gain >= rows[bow].gain);
+test('A8: the shortlist, carousel and anvil apply the same component priorities', () => {
+  const {DecisionPlanner, OfflineTracker} = model();
+  const sword='BFSword', gloves='SparringGloves';
+  const input = OfflineTracker.cleanState(plan({
+    queue:[queue('InfinityEdge'),queue('SpearOfShojin')],
+    owned:{TearOfTheGoddess:1},
+    lootHistory:{complete:true,counts:{[gloves]:2}},
+    lootTieBreak:false
+  }));
+  const ranks = expected => {
+    for(const rows of [OfflineTracker.shortlist(input),DecisionPlanner.carousel(input),DecisionPlanner.anvil(input,'components')]){
+      assert.deepEqual(rows.filter(r=>r.count>0).map(r=>[r.id,r.count]),expected);
+    }
+  };
+  ranks([[gloves,1],[sword,2]]);
+  input.pins=[sword];
+  ranks([[sword,2],[gloves,1]]);
+  input.pins=[];
+  input.queue.reverse();
+  ranks([[sword,2],[gloves,1]]);
+  input.queue.reverse();
+  input.activeComp={itemPriority:[{id:sword,component:true}]};
+  ranks([[sword,2],[gloves,1]]);
+  input.activeComp=null;
+  input.lootHistory.counts={[gloves]:7,[sword]:2};
+  ranks([[sword,2],[gloves,1]]);
+  input.lootHistory={complete:false,counts:{[gloves]:2}};
+  ranks([[sword,2],[gloves,1]]);
+  input.queue.pop();
+  ranks([[sword,1],[gloves,1]]);
+});
+
+test('complete history does not affect special component priorities', () => {
+  const {DecisionPlanner, OfflineTracker} = model();
+  const input = plan({queue:[queue('TacticiansRing')],lootHistory:{complete:true,counts:{FryingPan:2}}});
+  const order = ['Spatula','FryingPan'];
+  assert.deepEqual(OfflineTracker.shortlist(input).map(r=>r.id),order);
+  assert.deepEqual(DecisionPlanner.carousel(input).filter(r=>r.count>0).map(r=>r.id),order);
 });
 
 test('Ahri Morgana carousel points to the banner item ahead of larger shortages and honors pins', () => {
@@ -169,8 +198,8 @@ test('Ahri Morgana carousel points to the banner item ahead of larger shortages 
 
 test('A9: component anvil preserves priority and records the receipt as other', () => {
   const {DecisionPlanner} = model();
-  const input = plan({queue: [queue('GuinsoosRageblade'), queue('InfinityEdge'), queue('SpearOfShojin')]});
-  const offers = DecisionPlanner.anvil(input, 'components').filter(r => ['BFSword','NeedlesslyLargeRod'].includes(r.id));
+  const input = plan({queue: [queue('InfinityEdge'), queue('SpearOfShojin')]});
+  const offers = DecisionPlanner.anvil(input, 'components').filter(r => ['BFSword','SparringGloves'].includes(r.id));
   assert.equal(offers[0].id, 'BFSword');
   assert.match(offers[0].reason, /2 still needed/);
   DecisionPlanner.receiveAnvil(input, offers[0]);

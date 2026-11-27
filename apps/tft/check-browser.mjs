@@ -3,6 +3,7 @@ import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
 import {checkAugmentReferencesAndCarousel, checkChampionStats, checkAugmentRerolls, checkCompFlipAndGrants, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
 import {checkChampionOptionalPlay} from './test-support/p116-browser.mjs';
+import {checkComponentPriorities} from './test-support/p117-browser.mjs';
 
 const require = createRequire(import.meta.url);
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -417,8 +418,9 @@ async function replayAugmentFixtures() {
     await checkCompFlipAndGrants(page);
     await checkAugmentReferencesAndCarousel(page);
     await checkChampionOptionalPlay(page);
+    await checkComponentPriorities(page);
     assert.deepEqual(errors,[]);
-    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, rerolls, comp flip, item grants, Yi Rengar #8/#8/#19, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste and anvil passed · zero console errors`);
+    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, rerolls, comp flip, item grants, Yi Rengar #8/#8/#19, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste, anvil and P1.17 component priorities passed · zero console errors`);
     await page.close();
   }
 }
@@ -442,13 +444,14 @@ async function replayLive() {
     await checkCompFlipAndGrants(page);
     await checkAugmentReferencesAndCarousel(page);
     await checkChampionOptionalPlay(page);
+    await checkComponentPriorities(page);
     console.log(`${width} × 844 · Yi Rengar without Brawler · ${JSON.stringify({alune,karma})}`);
     for (const path of ['/api/tierlist/comps','/api/assets/augments',
       '/tft-stat-api/unit_detail_overall','/tft-stat-api/unit_detail_items','/tft-explorer-api/unit_items']) {
       assert.ok(sourcePaths.has(path),`Missing successful live response for ${path}`);
     }
     assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
-    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · 2-1 offers, rerolls, comp flip, item grants, emblem Aim, portraits, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste and anvil passed · ${errors.length-previousErrors} console errors`);
+    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · 2-1 offers, rerolls, comp flip, item grants, emblem Aim, portraits, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste, anvil and P1.17 component priorities passed · ${errors.length-previousErrors} console errors`);
     await page.close();
   }
   assert.deepEqual(errors,[]);

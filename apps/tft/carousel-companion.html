@@ -65,9 +65,6 @@
 .completed-strip .completeitem button{color:#a8b4c1;border-color:#34404c;background:#1a222b}
 .bench-source{font-size:11px;color:#a6b4c2;display:flex;gap:7px;align-items:center;margin-left:auto}
 .bench-source select{padding:3px 7px;font-size:12px;min-height:29px;background:#1c2530;color:#d0dae5;border:1px solid #3b4856;border-radius:5px}
-.loot-note{padding:8px 12px;border-top:1px solid #303b46;color:#97a8ba;font-size:11px;line-height:1.5}
-.loot-note summary{cursor:pointer}.loot-note p{margin:8px 0;font-size:11px}.loot-note label{display:flex;gap:7px;align-items:center}
-#loot-counts{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;align-items:center}#loot-counts>span{display:inline-flex;align-items:center;gap:3px}#loot-counts .icon{width:19px;height:19px}.needname .loot-history-label{font-size:10px;color:#98a8bc;margin-top:3px;white-space:normal}
 .champion-builds{margin:0 11px 8px;padding:4px 7px;min-height:28px;align-self:start;font-size:12px;color:#b4c6e0;background:#1d2938;border:1px solid #3a4d66;border-radius:5px;text-align:left}
 #browse-meta{font-size:12px;padding:5px 8px;white-space:nowrap}.queuehead{flex-wrap:wrap;gap:8px}
 #meta-reference{width:650px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:16px;overflow:hidden}
@@ -1526,7 +1523,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
         return evaluations.get(rank);
       };
       const forNext=target=>!!plan.activeComp&&target.uid===allocation.next.uid;
-      return componentOrder.filter((id,n)=>n<8||needs[id]||pivots[id]?.length).map(id=>{
+      const rows=componentOrder.filter((id,n)=>n<8||needs[id]||pivots[id]?.length).map(id=>{
         const targets=(planned[id]||[]).slice().sort((a,b)=>Number(forNext(b))-Number(forNext(a))||holderRank(a.champion)-holderRank(b.champion)||a.rank-b.rank);
         const alternatives=pivots[id]||[],baseline=needs[id],priority=Academy.componentPreference(plan,id);
         const carrierRank=targets.length?holderRank(targets[0].champion):Infinity;
@@ -1540,12 +1537,13 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
         }else if(alternatives.length){
           const b=alternatives[0];score=(b.tier==='S'?20:10)+Math.max(0,Math.min(2,b.score))-Math.min(6,b.missing)*.1;
         }
-        return {id,score,gain,best,carrierRank,forNext:targets.some(forNext),pivot:!!alternatives.length,pivotTier:alternatives[0]?.tier||'',targets,pivotTargets:alternatives,count:baseline?.count||0,rank:baseline?.rank??99,items:baseline?.items||[],finishes:targets};
-      }).sort((a,b)=>Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||Number(b.forNext)-Number(a.forNext)||Number(b.count>0)-Number(a.count>0)||b.count-a.count||(a.count&&b.count?a.carrierRank-b.carrierRank:0)||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
+        return {id,score,gain,best,pivot:!!alternatives.length,pivotTier:alternatives[0]?.tier||'',targets,pivotTargets:alternatives,count:baseline?.count||0,rank:baseline?.rank??99,items:baseline?.items||[],finishes:targets};
+      });
+      return OfflineTracker.rankComponents(plan,rows);
     },
     discovery(plan){
       const candidates=CompFinder.ranked(plan).filter(r=>!r.blocked).slice(0,8);
-      return componentOrder.slice(0,8).map(id=>{
+      const rows=componentOrder.slice(0,8).map(id=>{
         let score=0;const items=new Set(),routes=[];
         for(const r of candidates){
           const pending=r.remaining||r.build.entries,pool={...plan.owned};let best=0;
@@ -1558,7 +1556,8 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
           if(best){score+=best*(1+Math.max(0,r.fitScore)/100);routes.push(r.guide.title);}
         }
         return {id,score,gain:0,count:0,rank:99,items:[],routes,discovery:true,targets:[...items].map(item=>({item,source:'discovery'})),pivotTargets:[],finishes:[...items].map(item=>({item})),best:{actions:[]}};
-      }).sort((a,b)=>Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
+      });
+      return OfflineTracker.rankComponents(plan,rows);
     },
     anvil(plan,type='ornns'){
       if(type==='components')return this.carousel(plan).filter(r=>componentOrder.slice(0,8).includes(r.id)).map(r=>({...r,item:byId[r.id],component:true,champion:'',reason:r.count?r.count+' still needed for your queue':r.discovery?'Flexible component':r.pivot?'Pivot item':'Not needed'}));
@@ -1673,8 +1672,7 @@ module.exports = function createEmblemExplorer({Academy, academyTier}) {
 'use strict';
 
 module.exports = function createLootTracker({componentOrder}) {
-  /* Source history is independent of inventory. This is a conservative historical
-     bag heuristic, not a verified current-set probability model. */
+  const basicComponents=componentOrder.slice(0,8);
   return {
     clean(value, owned) {
       const sources=['loot','carousel','other'];
@@ -1688,7 +1686,7 @@ module.exports = function createLootTracker({componentOrder}) {
     },
     gain(plan,id,source='loot') {
       if((plan.owned[id]||0)>=99)return;
-      const h=this.ensure(plan);if(!componentOrder.slice(0,8).includes(id))source='other';
+      const h=this.ensure(plan);if(!basicComponents.includes(id))source='other';
       h.loose[id].push(source);if(source==='loot')h.counts[id]=(h.counts[id]||0)+1;
       plan.owned[id]=(plan.owned[id]||0)+1;
     },
@@ -1699,11 +1697,12 @@ module.exports = function createLootTracker({componentOrder}) {
       plan.owned[id]--;
     },
     take(plan,id) {return this.ensure(plan).loose[id].shift()||'other';},
-    compare(plan,x,y) {
-      const h=plan.lootHistory;if(!h?.complete||plan.lootTieBreak===false||!componentOrder.slice(0,8).includes(x)||!componentOrder.slice(0,8).includes(y))return 0;
-      // More prior natural drops => prefer taking this equally urgent component
-      // now. No percentages, stage refill assumptions, or promised future drops.
-      return (h.counts[y]||0)-(h.counts[x]||0);
+    scarcity(plan,id) {
+      const history=plan.lootHistory;
+      if(history?.complete!==true||!basicComponents.includes(id))return 0;
+      // Historical item bags suggest that components drawn more often may be
+      // less likely to arrive from orbs. Cap this heuristic for the current set.
+      return Math.min(2,history.counts[id]||0);
     }
   };
 };
@@ -1902,6 +1901,17 @@ module.exports = function createModel({core, academy, meta, secondaryTiers, requ
 
 module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, LootTracker, componentOrder}) {
   /* Manual tracker helpers. No network access or game connection. */
+  function compareComponentPriority(plan,a,b) {
+    const pinned=Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id));
+    if(pinned)return pinned;
+    if(!a.count||!b.count)return Number(b.count>0)-Number(a.count>0)||b.score-a.score;
+    return a.rank-b.rank
+      || Academy.componentPreference(plan,a.id)-Academy.componentPreference(plan,b.id)
+      || LootTracker.scarcity(plan,b.id)-LootTracker.scarcity(plan,a.id)
+      || b.count-a.count;
+  }
+  const rankComponents=(plan,rows)=>rows.sort((a,b)=>compareComponentPriority(plan,a,b)
+    || componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
   return {
     cleanState(value) {
       if (!value || !Array.isArray(value.queue) || typeof value.owned !== 'object' || !value.owned) throw new Error('Choose a Carousel backup or tracker state.');
@@ -1921,7 +1931,7 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
         tempo:value.tempo==='urgent'?'urgent':'balanced',
         pivotIntents:Object.fromEntries(Object.entries(value.pivotIntents||{}).filter(([name,ids])=>name.length<120&&Array.isArray(ids)).map(([name,ids])=>[name,ids.filter(id=>valid.has(id)).slice(0,3)])),
         firstAugment:typeof value.firstAugment==='string'?value.firstAugment.slice(0,120):'',
-        lootHistory:LootTracker.clean(value.lootHistory,value.owned),lootTieBreak:value.lootTieBreak!==false,
+        lootHistory:LootTracker.clean(value.lootHistory,value.owned),
         activeComp:value.activeComp&&typeof value.activeComp.title==='string'?{guide:Academy.cleanGuide(value.activeComp.guide),title:value.activeComp.title.slice(0,120),id:String(value.activeComp.id||'').slice(0,100),code:String(value.activeComp.code||'').slice(0,100),patch:String(value.activeComp.patch||'').slice(0,16),itemPriority:Array.isArray(value.activeComp.itemPriority)?value.activeComp.itemPriority.filter(p=>p&&typeof p.id==='string'&&(p.component?componentOrder.includes(p.id):valid.has(p.id))).slice(0,30).map(p=>({id:p.id,component:!!p.component})):[]}:null,
         queue:value.queue.map(q=>({uid:crypto.randomUUID(),recommendedOrder:Number.isFinite(q.recommendedOrder)&&q.recommendedOrder>=0?q.recommendedOrder:undefined,item:q.item,academyItem:valid.has(q.academyItem)?q.academyItem:'',planSource:['academy','meta','manual'].includes(q.planSource)?q.planSource:'',done:!!q.done,received:!!q.received,champion:typeof q.champion==='string'?q.champion.slice(0,100):'',earlyChampion:typeof q.earlyChampion==='string'?q.earlyChampion.slice(0,100):'',sourceComp:typeof q.sourceComp==='string'?q.sourceComp.slice(0,120):'',sourceURL:typeof q.sourceURL==='string'&&q.sourceURL.startsWith('https://tftacademy.com/tierlist/comps/')?q.sourceURL:'',usedSources:Object.fromEntries(componentOrder.map(id=>[id,(Array.isArray(q.usedSources?.[id])?q.usedSources[id]:[]).slice(0,Math.min(2,count(q.used?.[id]))).map(s=>['loot','carousel','other'].includes(s)?s:'other')])),used:Object.fromEntries(componentOrder.map(id=>[id,Math.min(2,count(q.used?.[id]))]))})),
         owned:Object.fromEntries(componentOrder.map(id=>[id,count(value.owned[id])])),
@@ -1930,6 +1940,11 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
     },
     recipeCounts:Tracker.recipeCounts,
     canCraft:Tracker.canCraft,
+    compareComponentPriority,
+    rankComponents,
+    rankedNeeds(plan,needs) {
+      return rankComponents(plan,Object.entries(needs).map(([id,need])=>({id,...need})));
+    },
     craftOptions(plan) {
       const allocated=Tracker.allocate(plan,DATA.items);
       const options=allocated.rows.filter(q=>this.canCraft(plan.owned,byId[q.item])&&Academy.canEquip(plan,q.champion,q.item));
@@ -1945,10 +1960,11 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
     },
     shortlist(plan) {
       const a=Tracker.allocate(plan,DATA.items);
-      return Object.entries(a.needs).sort(([x,v],[y,w])=>(Number(plan.pins.includes(y))-Number(plan.pins.includes(x)))||v.rank-w.rank||Academy.componentPreference(plan,x)-Academy.componentPreference(plan,y)||w.count-v.count||LootTracker.compare(plan,x,y)||componentOrder.indexOf(x)-componentOrder.indexOf(y)).map(([id,need])=>{
+      return this.rankedNeeds(plan,a.needs).map(need=>{
+        const {id}=need;
         const after=Tracker.allocate({...plan,owned:{...plan.owned,[id]:(plan.owned[id]||0)+1}},DATA.items);
         const finishes=after.rows.filter((q,n)=>q.slots.every(s=>s.have)&&!a.rows[n].slots.every(s=>s.have));
-        return {id,...need,finishes};
+        return {...need,finishes};
       });
     },
     receive(plan,q) {q.done=true;q.received=true;q.used={};q.usedSources={};},
@@ -2743,7 +2759,7 @@ const componentRail=`<aside class="component-rail panel" aria-label="Component b
   </button>
   <div id="bench" class="benchgrid"></div>
 </aside>`;
-document.getElementById('app').innerHTML=`<header class="topbar"><div class="brand"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2 29 9v14l-13 7L3 23V9Z" stroke="currentColor" stroke-width="1.8"/><path d="m16 8 7 4v8l-7 4-7-4v-8Z" stroke="currentColor" stroke-width="1.8"/></svg><div><h1 id="app-title">Carousel</h1><div id="comp-fit" hidden></div><small>Ctrl + V anywhere to import</small></div></div><div class="topright"><button data-action="help" class="helpbutton">How it works</button></div></header><main class="wrap"><div class="pagehead"><div class="actions"><button data-action="undo" id="undo" class="quiet" disabled>↶ Undo</button><button data-action="reset" class="quiet">New game</button></div></div><div id="storage-warning"></div><div class="climb-layout"><div class="climb-plan"><div id="next-build" hidden></div><div class="workspace"><section class="centercol" aria-labelledby="queue-title"><div class="queuehead"><div><h2 id="queue-title">Build Queue</h2></div></div><div id="queue"></div><div id="completed"></div></section><aside class="rightcol panel shopping" aria-labelledby="shopping-title"><div class="panelhead"><h2 id="shopping-title">Carousel priorities</h2></div><p class="shoppingintro">The components your builds still need.</p><div id="shopping" class="shoppinglist"></div><div class="shoppingfoot">★ Pin within planned needs or alternatives.</div></aside></div></div>${componentRail}</div><section class="bench panel" aria-labelledby="game-decisions-title"><div class="panelhead"><h2 id="game-decisions-title">Game decisions</h2></div></section><footer class="footer"><span id="saved">Saved in this browser · Export a backup before moving this file</span><span>Bundled recipes · Patch ${esc(DATA.patch)} · verified ${esc(DATA.curatedAt)} · <a href="https://tftacademy.com/api/assets/items?set=${DATA.set}" target="_blank" rel="noopener">${esc(DATA.source)}</a><span id="recipe-freshness"> · may be stale</span></span></footer></main><div class="toast" id="toast" role="status" aria-live="polite"></div><dialog id="help"><h2>A little planning. A better carousel.</h2><ol><li>Drag a card by its grip to reorder. Reset order restores the recommended sequence without changing targets. Keyboard: focus the grip, press Space, move with arrow keys, then Enter; Escape cancels. Loose components are reserved from the top down; each component counts only once.</li><li>Add components on your bench, or click <b>Got one</b> on your carousel priorities. Green ingredients are already covered. Click a missing ingredient in a build to record one.</li><li><b>Mark made</b> completes a queued item. It spends a full recipe automatically when available. Otherwise, it records the item as received and keeps your loose components.</li><li>Star a component to prioritize it within planned needs or alternatives. Stars do not change your build order.</li></ol><p>This is a manual tracker. No live-game connection or API key is used. Progress stays in this browser; other devices have their own tracker.</p><p>Comp plans can include emblems and special items; items without a recipe do not add component needs. Offline tracking uses saved recipes. Current comp recommendations require a successful live refresh.</p><p>Item assets belong to Riot Games. This companion is not endorsed by Riot Games.</p><div class="dialogactions"><button data-action="close-help" class="primary">Got it</button></div></dialog>`;
+document.getElementById('app').innerHTML=`<header class="topbar"><div class="brand"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2 29 9v14l-13 7L3 23V9Z" stroke="currentColor" stroke-width="1.8"/><path d="m16 8 7 4v8l-7 4-7-4v-8Z" stroke="currentColor" stroke-width="1.8"/></svg><div><h1 id="app-title">Carousel</h1><div id="comp-fit" hidden></div><small>Ctrl + V anywhere to import</small></div></div><div class="topright"><button data-action="help" class="helpbutton">How it works</button></div></header><main class="wrap"><div class="pagehead"><div class="actions"><button data-action="undo" id="undo" class="quiet" disabled>↶ Undo</button><button data-action="reset" class="quiet">New game</button></div></div><div id="storage-warning"></div><div class="climb-layout"><div class="climb-plan"><div id="next-build" hidden></div><div class="workspace"><section class="centercol" aria-labelledby="queue-title"><div class="queuehead"><div><h2 id="queue-title">Build Queue</h2></div></div><div id="queue"></div><div id="completed"></div></section><aside class="rightcol panel shopping" aria-labelledby="shopping-title"><div class="panelhead"><h2 id="shopping-title">Carousel priorities</h2></div><p class="shoppingintro">The components your builds still need.</p><div id="shopping" class="shoppinglist"></div><div class="shoppingfoot">Got one = carousel · ★ Pin to put first</div></aside></div></div>${componentRail}</div><section class="bench panel" aria-labelledby="game-decisions-title"><div class="panelhead"><h2 id="game-decisions-title">Game decisions</h2></div></section><footer class="footer"><span id="saved">Saved in this browser · Export a backup before moving this file</span><span>Bundled recipes · Patch ${esc(DATA.patch)} · verified ${esc(DATA.curatedAt)} · <a href="https://tftacademy.com/api/assets/items?set=${DATA.set}" target="_blank" rel="noopener">${esc(DATA.source)}</a><span id="recipe-freshness"> · may be stale</span></span></footer></main><div class="toast" id="toast" role="status" aria-live="polite"></div><dialog id="help"><h2>A little planning. A better carousel.</h2><ol><li>Drag a card by its grip to reorder. Reset order restores the recommended sequence without changing targets. Keyboard: focus the grip, press Space, move with arrow keys, then Enter; Escape cancels. Loose components are reserved from the top down; each component counts only once.</li><li>Add components on your bench, or click <b>Got one</b> on your carousel priorities. Green ingredients are already covered. Click a missing ingredient in a build to record one.</li><li><b>Mark made</b> completes a queued item. It spends a full recipe automatically when available. Otherwise, it records the item as received and keeps your loose components.</li><li>Star a component to prioritize it within planned needs or alternatives. Stars do not change your build order.</li></ol><p>This is a manual tracker. No live-game connection or API key is used. Progress stays in this browser; other devices have their own tracker.</p><p>Comp plans can include emblems and special items; items without a recipe do not add component needs. Offline tracking uses saved recipes. Current comp recommendations require a successful live refresh.</p><p>Item assets belong to Riot Games. This companion is not endorsed by Riot Games.</p><div class="dialogactions"><button data-action="close-help" class="primary">Got it</button></div></dialog>`;
 const componentToggle=document.getElementById('component-toggle');
 componentToggle.addEventListener('click',()=>{
  componentToggle.setAttribute('aria-expanded',String(componentToggle.getAttribute('aria-expanded')==='false'));
@@ -2763,8 +2779,8 @@ function render(){
  }
  document.getElementById('queue').innerHTML=a.rows.map((q,n)=>{const i=byId[q.item],ready=i.recipe.length===2&&q.slots.every(c=>c.have);return `<article class="qcard" data-queue-uid="${q.uid}" aria-label="${esc(i.name)} · ${esc(q.champion||'Unassigned')}"><div class="qtop"><button class="queue-grip" aria-label="Reorder ${esc(i.name)}" aria-describedby="queue-drag-help" aria-pressed="false" data-focus="drag-${q.uid}">⠿</button>${icon(i.id)}<div class="itemtitle"><h3>${esc(i.name)}</h3>${q.champion?`<small class="item-owner">For ${q.earlyChampion&&q.earlyChampion!==q.champion?`${IconUI.championLabel(q.earlyChampion)} → `:''}${IconUI.championLabel(q.champion)}</small>`:'<small class="item-owner">Unassigned</small>'}</div><div class="recipe">${q.slots.map((c,idx)=>`${idx?'<span class="plus">+</span>':''}${c.have?`<span class="componentpill have" title="${esc(byId[c.id].name)} reserved for this item">${icon(c.id)}<span aria-hidden="true">✓</span></span>`:`<button class="componentpill" data-action="gain" data-id="${c.id}" data-focus="slot-${q.uid}-${idx}" aria-label="Record one ${esc(byId[c.id].name)} received">${icon(c.id)}<span aria-hidden="true">+</span></button>`}`).join('')}</div>${btn('remove',q.uid,`Remove ${i.name}`,'×','remove')}</div><div class="qbottom">${btn('make',q.uid,i.special?`Record ${i.name} received; no components used`:`Mark ${i.name} made`,i.special?'✓ Received':ready?'✓ Ready · Mark made':'✓ Mark made',`make ${ready?'ready':''}`)}</div></article>`;}).join('')||`<div class="empty"><div class="emptyicon" aria-hidden="true">${done.length?'✓':'+'}</div><h3>${done.length?'Every build, checked off.':'No items queued yet'}</h3><p>${done.length?'Your completed items are tracked above.':'Choose a comp in Explore builds or paste an Academy team code.'}</p></div>`;
  document.getElementById('completed').innerHTML=done.map(q=>`<div class="completeitem" role="listitem" title="${esc(byId[q.item].name)}${q.champion?' · '+esc(q.champion):''}" aria-label="${esc(byId[q.item].name)}${q.champion?' for '+esc(q.champion):''}">${icon(q.item)}${q.champion?IconUI.champion(q.champion,'completed-portrait'):''}${btn('restore',q.uid,`Restore ${byId[q.item].name}${q.champion?' for '+q.champion:''} to queue and return its tracked ingredients`,'Restore','quiet')}</div>`).join('');
- const needs=Object.entries(a.needs).sort(([x,v],[y,w])=>(Number(state.pins.includes(y))-Number(state.pins.includes(x)))||v.rank-w.rank||Academy.componentPreference(state,x)-Academy.componentPreference(state,y)||w.count-v.count||LootTracker.compare(state,x,y)||componentOrder.indexOf(x)-componentOrder.indexOf(y));
- document.getElementById('shopping').innerHTML=needs.map(([id,n])=>`<div class="need ${state.pins.includes(id)?'pinned':''}"><div class="needtop">${icon(id)}<div class="needname">${esc(byId[id].name)}<small title="${esc(n.items.join(', '))}">For ${esc(n.items[0])}${n.items.length>1?` +${n.items.length-1}`:''}</small></div><span class="needed" aria-label="${n.count} needed">×${n.count}</span></div><div class="needactions"><button class="pin ${state.pins.includes(id)?'active':''}" data-action="pin" data-id="${id}" data-focus="pin-${id}" aria-label="Prioritize ${esc(byId[id].name)}" aria-pressed="${state.pins.includes(id)}">${state.pins.includes(id)?'★':'☆'}</button>${btn('gain',id,`Record one ${byId[id].name} received`,'+ Got one','got')}</div></div>`).join('')||`<div class="shopempty" style="grid-column:1/-1"><b>${a.rows.some(q=>byId[q.item].special)?'No components left to chase.':a.rows.length?'You have the ingredients.':done.length?'All planned items made.':'Your shopping list starts here.'}</b>${a.rows.length?'Check off your items as you make them.':'Add a build to see which components to collect.'}</div>`;
+ const needs=OfflineTracker.rankedNeeds(state,a.needs);
+ document.getElementById('shopping').innerHTML=needs.map(({id,count,items})=>`<div class="need ${state.pins.includes(id)?'pinned':''}"><div class="needtop">${icon(id)}<div class="needname">${esc(byId[id].name)}<small title="${esc(items.join(', '))}">For ${esc(items[0])}${items.length>1?` +${items.length-1}`:''}</small></div><span class="needed" aria-label="${count} needed">×${count}</span></div><div class="needactions"><button class="pin ${state.pins.includes(id)?'active':''}" data-action="pin" data-id="${id}" data-focus="pin-${id}" aria-label="Prioritize ${esc(byId[id].name)}" aria-pressed="${state.pins.includes(id)}">${state.pins.includes(id)?'★':'☆'}</button>${btn('gain',id,`Got one ${byId[id].name} from carousel`,'+ Got one','got')}</div></div>`).join('')||`<div class="shopempty" style="grid-column:1/-1"><b>${a.rows.some(q=>byId[q.item].special)?'No components left to chase.':a.rows.length?'You have the ingredients.':done.length?'All planned items made.':'Your shopping list starts here.'}</b>${a.rows.length?'Check off your items as you make them.':'Add a build to see which components to collect.'}</div>`;
  document.getElementById('bench').innerHTML=components.map(c=>`<div class="benchitem ${(state.owned[c.id]||0)?'has':''}">${icon(c.id)}<strong>${esc(c.name)}</strong><div class="counter">${btn('lose',c.id,`Remove one ${c.name}`,'−','',!(state.owned[c.id]>0))}<output aria-label="${esc(c.name)} owned">${state.owned[c.id]||0}</output>${btn('gain',c.id,`Add one ${c.name}`,'+','',(state.owned[c.id]||0)>=99)}</div></div>`).join('');
  document.getElementById('undo').disabled=!history.length;
  const stock=components.filter(c=>state.owned[c.id]>0);
@@ -2776,7 +2792,7 @@ function render(){
  document.getElementById('saved').textContent=storageOK?'Saved in this browser · Export a backup before moving this file':'Session only · Changes may not survive closing this tab';
  if(focus) document.querySelector(`[data-focus="${CSS.escape(focus)}"]`)?.focus({preventScroll:true});
 }
-function save(){QueueOrder.ensure(state);try{localStorage.setItem(KEY,JSON.stringify(state));storageOK=true;}catch(e){storageOK=false;}}
+function save(){QueueOrder.ensure(state);LootTracker.ensure(state);try{localStorage.setItem(KEY,JSON.stringify(state));storageOK=true;}catch(e){storageOK=false;}}
 let toastTimer;function toast(s){document.getElementById('toast').textContent=s;clearTimeout(toastTimer);toastTimer=setTimeout(()=>document.getElementById('toast').textContent='',2400);}
 function mutate(fn,message){history.push(JSON.stringify(state));if(history.length>40)history.shift();fn();save();render();if(message)toast(message);}
 const itemPivotConfirm=document.createElement('dialog');
@@ -3237,13 +3253,8 @@ const AcademyUI=(() => {
   render();
 })();
 
-/* Compact champion reference and source-aware component entry. */
+/* Compact champion reference. */
 (() => {
-  const note=document.createElement('details');note.className='loot-note';
-  note.innerHTML='<summary id="loot-summary">Loot-history tie-break</summary><p>Among equally urgent needs, prefer components already dropped more often from natural PvE loot. This is a historical bag heuristic, not verified current-set odds. Pins, queue order, Academy priorities and the number needed come first. It does not predict when another component will drop.</p><p>Bench + and 1–8 record PvE loot. Choose component anvils in Anvil choices; those record Other. “Got one” always records carousel. Anvils, augments, special components and recipe clicks do not count as natural drops. − corrects the source of the last loose copy; crafting keeps the drop history. Undo corrects any recent action.</p><label><input type="checkbox" id="loot-enabled"> Use loot history to break ties</label><div id="loot-counts"></div><p id="loot-coverage"></p></details>';
-  document.querySelector('.bench').append(note);
-  document.querySelector('.shoppingfoot').textContent='Got one = carousel · ★ Pin to put first';
-  document.getElementById('loot-enabled').addEventListener('change',e=>mutate(()=>state.lootTieBreak=e.target.checked,'Carousel ordering updated.'));
   const makeDialog=(id,html)=>{const d=document.createElement('dialog');d.id=id;d.innerHTML=html;document.body.append(d);return d;};
   const reference=makeDialog('meta-reference','<div class="modal-heading"><h2 id="reference-title">MetaTFT · S/A item builds</h2><button data-close="meta-reference" aria-label="Close builds">×</button></div><div class="reference-controls"><label>Champion <select id="reference-champion"></select></label><label>Containing item <select id="reference-item"><option value="">Any item</option></select></label></div><div class="reference-options"><label><input type="checkbox" id="reference-equipped" checked> Match completed items</label><button id="reference-pivot">Pivot to an item…</button><button id="reference-site">Open MetaTFT here ↗</button></div><div id="reference-owned" class="reference-owned"></div><div class="reference-hint"><span>Green ✓ = completed on this champion</span><button id="reference-clear">Clear item filter</button></div><details class="reference-data"><summary id="reference-data-summary">Data details</summary><p id="reference-date" class="reference-date"></p></details><div class="reference-table-heading"><span>Build</span><span>Tier</span><span>Avg place</span><span>Games</span></div><div id="reference-results"></div>');
   reference.setAttribute('aria-labelledby','reference-title');
@@ -3309,17 +3320,11 @@ const AcademyUI=(() => {
   document.addEventListener('carousel-meta-updated',()=>{if(reference.open)drawReference();});
   document.addEventListener('carousel-new-game',()=>{reference.close();site.close();document.getElementById('meta-frame').removeAttribute('src');});
   const oldRender=render;render=function(){
-    LootTracker.ensure(state);oldRender();
+    oldRender();
     for(const card of document.querySelectorAll('#queue .qcard')){
       const q=state.queue.find(q=>q.uid===card.dataset.queueUid),owner=card.querySelector('.item-owner');if(!q?.champion||!owner)continue;
       const b=document.createElement('button');b.className='queue-champion';b.dataset.championBuilds=q.champion;b.innerHTML=owner.innerHTML;b.setAttribute('aria-label',q.champion+' S/A builds');b.setAttribute('aria-haspopup','dialog');b.setAttribute('aria-expanded','false');owner.replaceChildren(b);
     }
-    const h=state.lootHistory;
-    document.getElementById('loot-enabled').checked=state.lootTieBreak!==false;document.getElementById('loot-enabled').disabled=!h.complete;
-    document.getElementById('loot-summary').textContent='Loot-history tie-break · '+(!h.complete?'unavailable':state.lootTieBreak===false?'off':'estimate');
-    document.getElementById('loot-coverage').textContent=h.complete?'Tracks natural PvE components from the start of this game.':'This game predates source tracking. Start a new game for a complete history; current inventory is preserved.';
-    document.getElementById('loot-counts').innerHTML='<span>Natural drops</span>'+componentOrder.slice(0,8).map(id=>`<span title="${esc(byId[id].name)}" aria-label="${esc(byId[id].name)}: ${h.counts[id]||0} natural drops">${icon(id)} ×${h.counts[id]||0}</span>`).join('');
-    for(const el of document.querySelectorAll('#shopping .need')){const id=el.querySelector('[data-action="gain"]')?.dataset.id;if(!id)continue;el.querySelector('[data-action="gain"]').setAttribute('aria-label','Got one '+byId[id].name+' from carousel');if(h.complete&&state.lootTieBreak!==false&&(h.counts[id]||0)>0)el.querySelector('.needname').insertAdjacentHTML('beforeend',`<small class="loot-history-label">${h.counts[id]} prior PvE drop${h.counts[id]===1?'':'s'} · tie-break only</small>`);}
     if(reference.open){
       if(lastSnapshot!==Academy.snapshot)champions();
       MetaBuilds.request(selected);drawReference();
@@ -3628,8 +3633,6 @@ const DecisionUI = (()=>{
   const suggestion=document.createElement('div');suggestion.id='bench-plan';suggestion.className='bench-plan';document.getElementById('craft-strip').before(suggestion);
   const intent=document.createElement('div');intent.id='reference-intents';intent.className='reference-owned';document.getElementById('reference-owned').after(intent);
   document.querySelector('.shoppingintro').textContent='×N = still missing from your queue, after your bench. Pins override the next item.';
-  document.querySelector('.shoppingfoot').textContent='★ Pin within planned needs or alternatives. Got one records a carousel pick.';
-  document.querySelector('.loot-note p').textContent='A historical bag heuristic, not verified current-set odds. Used only after equally useful component choices and pins. It does not predict when another component will drop.';
   function signature(){
     const names=[...new Set([...state.queue.map(q=>q.champion),...Academy.snapshot.guides.map(g=>Academy.snapshot.champions.find(c=>c.apiName===g.mainChampion?.apiName)?.name)].filter(Boolean))];
     return JSON.stringify(state)+'|'+Academy.revision+'|'+Academy.live+'|'+Academy.snapshot.sourceUpdated+'|'+names.map(n=>{const d=MetaBuilds.dataFor({champion:n});return (d?.updated||0)+':'+(d?.fetchedAt||0);}).join(',');
@@ -3896,7 +3899,7 @@ const AnvilUI=(()=>{
     const ranked=[...visible]; // model order (including pins) is authoritative
     const best=ranked[0],second=ranked[1];
     const supported=best&&(best.component?best.score>0||state.pins.includes(best.item.id):best.score>0);
-    const tied=second&&best.score===second.score&&(!best.component||(!!best.count===!!second.count&&(!best.count||best.carrierRank===second.carrierRank)&&state.pins.includes(best.item.id)===state.pins.includes(second.item.id)));
+    const tied=second&&(best.component?OfflineTracker.compareComponentPriority(state,best,second)===0:best.score===second.score);
     let verdict='';
     if(mode==='compare')verdict=!ranked.length?'Add your offers to compare.':ranked.length===1?'1 offer entered — add the others to compare.':!supported?'No supported preference among these offers.':tied?'Top options are similarly supported.':'';
     document.getElementById('anvil-verdict').textContent=verdict;

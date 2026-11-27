@@ -1,8 +1,7 @@
 'use strict';
 
 module.exports = function createLootTracker({componentOrder}) {
-  /* Source history is independent of inventory. This is a conservative historical
-     bag heuristic, not a verified current-set probability model. */
+  const basicComponents=componentOrder.slice(0,8);
   return {
     clean(value, owned) {
       const sources=['loot','carousel','other'];
@@ -16,7 +15,7 @@ module.exports = function createLootTracker({componentOrder}) {
     },
     gain(plan,id,source='loot') {
       if((plan.owned[id]||0)>=99)return;
-      const h=this.ensure(plan);if(!componentOrder.slice(0,8).includes(id))source='other';
+      const h=this.ensure(plan);if(!basicComponents.includes(id))source='other';
       h.loose[id].push(source);if(source==='loot')h.counts[id]=(h.counts[id]||0)+1;
       plan.owned[id]=(plan.owned[id]||0)+1;
     },
@@ -27,11 +26,12 @@ module.exports = function createLootTracker({componentOrder}) {
       plan.owned[id]--;
     },
     take(plan,id) {return this.ensure(plan).loose[id].shift()||'other';},
-    compare(plan,x,y) {
-      const h=plan.lootHistory;if(!h?.complete||plan.lootTieBreak===false||!componentOrder.slice(0,8).includes(x)||!componentOrder.slice(0,8).includes(y))return 0;
-      // More prior natural drops => prefer taking this equally urgent component
-      // now. No percentages, stage refill assumptions, or promised future drops.
-      return (h.counts[y]||0)-(h.counts[x]||0);
+    scarcity(plan,id) {
+      const history=plan.lootHistory;
+      if(history?.complete!==true||!basicComponents.includes(id))return 0;
+      // Historical item bags suggest that components drawn more often may be
+      // less likely to arrive from orbs. Cap this heuristic for the current set.
+      return Math.min(2,history.counts[id]||0);
     }
   };
 };

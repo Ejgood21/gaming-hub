@@ -9,8 +9,6 @@ const DecisionUI = (()=>{
   const suggestion=document.createElement('div');suggestion.id='bench-plan';suggestion.className='bench-plan';document.getElementById('craft-strip').before(suggestion);
   const intent=document.createElement('div');intent.id='reference-intents';intent.className='reference-owned';document.getElementById('reference-owned').after(intent);
   document.querySelector('.shoppingintro').textContent='×N = still missing from your queue, after your bench. Pins override the next item.';
-  document.querySelector('.shoppingfoot').textContent='★ Pin within planned needs or alternatives. Got one records a carousel pick.';
-  document.querySelector('.loot-note p').textContent='A historical bag heuristic, not verified current-set odds. Used only after equally useful component choices and pins. It does not predict when another component will drop.';
   function signature(){
     const names=[...new Set([...state.queue.map(q=>q.champion),...Academy.snapshot.guides.map(g=>Academy.snapshot.champions.find(c=>c.apiName===g.mainChampion?.apiName)?.name)].filter(Boolean))];
     return JSON.stringify(state)+'|'+Academy.revision+'|'+Academy.live+'|'+Academy.snapshot.sourceUpdated+'|'+names.map(n=>{const d=MetaBuilds.dataFor({champion:n});return (d?.updated||0)+':'+(d?.fetchedAt||0);}).join(',');
