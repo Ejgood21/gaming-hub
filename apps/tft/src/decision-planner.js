@@ -190,7 +190,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
       }).sort((a,b)=>Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||Number(b.forNext)-Number(a.forNext)||Number(b.count>0)-Number(a.count>0)||b.count-a.count||(a.count&&b.count?a.carrierRank-b.carrierRank:0)||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
     },
     discovery(plan){
-      const candidates=CompFinder.ranked(plan,{allowSparse:true}).filter(r=>!r.blocked).slice(0,8);
+      const candidates=CompFinder.ranked(plan).filter(r=>!r.blocked).slice(0,8);
       return componentOrder.slice(0,8).map(id=>{
         let score=0;const items=new Set(),routes=[];
         for(const r of candidates){
@@ -208,7 +208,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
     },
     anvil(plan,type='ornns'){
       if(type==='components')return this.carousel(plan).filter(r=>componentOrder.slice(0,8).includes(r.id)).map(r=>({...r,item:byId[r.id],component:true,champion:'',reason:r.count?r.count+' still needed for your queue':r.discovery?'Flexible component':r.pivot?'Pivot item':'Not needed'}));
-      const guide=Academy.currentGuide(plan),ranked=guide?[]:CompFinder.ranked(plan,{allowSparse:true}).filter(r=>!r.blocked).slice(0,8);
+      const guide=Academy.currentGuide(plan),ranked=guide?[]:CompFinder.ranked(plan).filter(r=>!r.blocked).slice(0,8);
       const guides=guide?[guide]:ranked.map(r=>r.guide),names=[...new Set(guides.flatMap(g=>g.finalComp.map(u=>Academy.snapshot.champions.find(c=>c.apiName===u.apiName)?.name)).filter(Boolean))];
       const bases=new Map(guides.map(g=>[g.id,Academy.build(g).entries]));
       return CompFinder.ownedCatalog().filter(i=>i.type===type).map(item=>{

@@ -38,6 +38,18 @@
       resetDialog.showModal();
     })
   );
+  const pasteComp=document.createElement('button');
+  pasteComp.type='button';
+  pasteComp.id='paste-comp';
+  pasteComp.className='quiet';
+  pasteComp.textContent='Paste a comp';
+  pasteComp.setAttribute('aria-haspopup','dialog');
+  pasteComp.addEventListener('click',()=>AcademyUI.openImport());
+  const newGame=actions.querySelector('[data-action="reset"]');
+  const gameActions=document.createElement('div');
+  gameActions.className='game-actions';
+  newGame.before(gameActions);
+  gameActions.append(pasteComp,newGame);
   options.append(shortcut('Import a game',()=>AcademyUI.openImport()),help,settings);
   actions.append(menu);
   top.append(actions);

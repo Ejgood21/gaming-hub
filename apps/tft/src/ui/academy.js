@@ -80,13 +80,8 @@ const AcademyUI=(() => {
     let choice;
     try{choice=QuickImport.choose(code,state);}catch(e){feedback.textContent=e.message;feedback.classList.add('error');return;}
     let counts;
-    mutate(()=>{
-      counts=QuickImport.replace(state,choice,code);
-      const playable=new Set(CompFinder.champions().map(unit=>unit.apiName));
-      const imported=state.activeComp.guide.finalComp.filter(unit=>playable.has(unit.apiName));
-      state.currentUnits=CompFinder.units({currentUnits:imported})
-        .map(({apiName,stars})=>({apiName,stars}));
-    },`${choice.guide.title} imported. Current champions updated. Inventory kept.`);
+    mutate(()=>{counts=QuickImport.replace(state,choice,code);},
+      `${choice.guide.title} imported. Current champions, inventory and chosen augments kept.`);
     document.dispatchEvent(new Event('carousel-comp-imported'));
     feedback.textContent=`${counts.pending} targets${counts.covered?' · '+counts.covered+' already owned':''}.`+
       (choice.variants>1?` ${choice.variants} guides share this code. Using ${choice.guide.title}.`:'');
@@ -116,7 +111,7 @@ const AcademyUI=(() => {
   document.addEventListener('carousel-backup-imported',()=>void refreshData(plannedSet()));
   document.addEventListener('carousel-new-game',()=>{intent++;feedback.textContent='';feedback.classList.remove('error');void refreshData();});
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="undo"],#apply-import')){intent++;feedback.textContent='';feedback.classList.remove('error');}},true);
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy; component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Loose components and completed items stay; matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>Only exact champion matches are imported. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Use <b>Paste a comp</b> or paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy. Component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Current champions, chosen augments, loose components and completed items stay. Matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>The team code must match a guide’s final board exactly. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
   void refreshData(plannedSet());
   return {
     isChecking:()=>checking,

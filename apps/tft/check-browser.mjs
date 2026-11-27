@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
 import {checkAugmentReferencesAndCarousel, checkChampionStats, checkAugmentRerolls, checkCompFlipAndGrants, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
+import {checkChampionOptionalPlay} from './test-support/p116-browser.mjs';
 
 const require = createRequire(import.meta.url);
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -131,7 +132,7 @@ async function replayFixtures() {
 
   assert.equal(await alternate.isVisible(),false);
   await choose('Ahri Morgana');
-  await alternate.getByRole('heading',{name:'A better fit for your board',exact:true}).waitFor();
+  await alternate.getByRole('heading',{name:'A better fit for your items and recorded champions',exact:true}).waitFor();
   const before = await page.locator('#app-title').textContent();
   const pivotAction = alternate.getByRole('button',{name:/^Pivot to /});
   const next = (await pivotAction.textContent()).replace(/^Pivot to /,'');
@@ -194,7 +195,7 @@ async function replayFixtures() {
   await page.locator('.academy-reference summary').click();
   await choose('Mamawood');
   await alternate.getByRole('button',{name:'Pivot to AP Fast 9',exact:true}).click();
-  const noPivot=alternate.getByText('No better-fitting pivot available for your board and items.');
+  const noPivot=alternate.getByText(/^No higher-ranked pivot fits your /);
   await noPivot.waitFor();
   await alternate.getByRole('heading',{name:'No better fit yet',exact:true}).waitFor();
   assert.equal(await alternate.getByRole('button').count(),0);
@@ -368,6 +369,7 @@ async function replayFixtures() {
 
   const hex=azirRammus.finalComp.flatMap(u=>academy.champions.find(c=>c.apiName===u.apiName)?.hexIndex||[]);
   const code='02'+hex.map(h=>h.padStart(3,'0')).join('').padEnd(30,'0')+'TFTSet18';
+  const beforePaste = await savedPlan();
   await page.evaluate(code=>{
     const data=new DataTransfer();data.setData('text/plain',code);
     document.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}));
@@ -375,11 +377,11 @@ async function replayFixtures() {
   await page.locator('#app-title').getByText('Azir Rammus',{exact:true}).waitFor();
   await page.locator('.plan-champions > summary').click();
   assert.equal(await page.getByRole('heading',{name:'Current champions',exact:true}).isVisible(),true);
-  const azirStars=page.getByRole('button',{name:'Azir 2 stars',exact:true});
-  assert.equal(await page.getByRole('button',{name:'Azir 3 stars',exact:true}).getAttribute('aria-pressed'),'true');
-  await azirStars.click();
+  assert.deepEqual((await savedPlan()).currentUnits,beforePaste.currentUnits);
+  const aluneStars=page.getByRole('button',{name:'Alune 2 stars',exact:true});
+  await aluneStars.click();
   await page.getByRole('button',{name:'Explore builds',exact:true}).click();
-  assert.equal(await azirStars.getAttribute('aria-pressed'),'true');
+  assert.equal(await aluneStars.getAttribute('aria-pressed'),'true');
 
   fixture=liveFixture({metaPatch:'18.7',omitAcademyPatch:true,allowOtherUnits:true,
     guides:emblems.guides.map(guide=>guide.title==='AP Fast 9'
@@ -393,9 +395,14 @@ async function replayFixtures() {
 
 async function replayAugmentFixtures() {
   const liveOffers = new Map(rankReplay.augments.map(augment=>[augment.apiName,augment]));
+  const savedChampions = new Map(academy.champions.map(champion=>[champion.apiName,champion]));
   const fixture = liveFixture({
     academyPatch:'18.7',metaPatch:'18.7',allowOtherUnits:true,guides:rankReplay.guides,
-    assets:{...rankReplay,augments:academy.augments.map(augment=>liveOffers.get(augment.apiName)||augment)}
+    assets:{
+      ...rankReplay,
+      augments:academy.augments.map(augment=>liveOffers.get(augment.apiName)||augment),
+      champions:rankReplay.champions.map(champion=>({...savedChampions.get(champion.apiName),...champion}))
+    }
   });
   for (const width of [390,1440]) {
     const page = await newPage(width);
@@ -409,8 +416,9 @@ async function replayAugmentFixtures() {
     assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
     await checkCompFlipAndGrants(page);
     await checkAugmentReferencesAndCarousel(page);
+    await checkChampionOptionalPlay(page);
     assert.deepEqual(errors,[]);
-    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, Yi Rengar #8/#8/#19, Mark made, augment references, menu, Carousel agreement and champion stats passed · zero console errors`);
+    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, rerolls, comp flip, item grants, Yi Rengar #8/#8/#19, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste and anvil passed · zero console errors`);
     await page.close();
   }
 }
@@ -433,13 +441,14 @@ async function replayLive() {
     const karma = await checkKarmaBoardAndOffers(page);
     await checkCompFlipAndGrants(page);
     await checkAugmentReferencesAndCarousel(page);
+    await checkChampionOptionalPlay(page);
     console.log(`${width} × 844 · Yi Rengar without Brawler · ${JSON.stringify({alune,karma})}`);
     for (const path of ['/api/tierlist/comps','/api/assets/augments',
       '/tft-stat-api/unit_detail_overall','/tft-stat-api/unit_detail_items','/tft-explorer-api/unit_items']) {
       assert.ok(sourcePaths.has(path),`Missing successful live response for ${path}`);
     }
     assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
-    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · exact 2-1 offers, both rerolls, comp flip, exclusive comp, both item grants, emblem Aim, portraits, Mark made, augment references, menu, Carousel agreement and champion stats passed · ${errors.length-previousErrors} console errors`);
+    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · 2-1 offers, rerolls, comp flip, item grants, emblem Aim, portraits, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste and anvil passed · ${errors.length-previousErrors} console errors`);
     await page.close();
   }
   assert.deepEqual(errors,[]);

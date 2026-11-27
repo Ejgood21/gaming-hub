@@ -243,36 +243,38 @@ module.exports = function createCompFinder(model) {
         fitScore,componentScore,itemScore,emblemBonus,primaryEmblem,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
-    signalCount(plan){
-      return this.units(plan).length+plan.queue.filter(q=>q.done&&byId[q.item]).length+
-        this.heldAugments(plan).filter(id=>this.augment(id)).length+
-        componentOrder.reduce((sum,id)=>sum+Math.max(0,Number(plan.owned[id])||0),0);
+    fitInputs(plan){
+      const inputs=[];
+      if(plan.queue.some(q=>q.done&&byId[q.item])||componentOrder.some(id=>plan.owned[id]>0))inputs.push('items');
+      if(this.heldAugments(plan).length)inputs.push('augments');
+      if(this.units(plan).length)inputs.push('recorded champions');
+      return inputs;
     },
     alternative(plan){
       const activeId=plan.activeComp?.id||plan.activeComp?.guide?.id;
-      if(!activeId)return;
+      if(!activeId||!this.fitInputs(plan).length)return;
       const rows=this.ranked(plan);
+      const best=rows[0];
+      if(!best||best.guide.id===activeId||best.blocked||(!best.unlocked&&best.fitScore<=0))return;
       const active=rows.find(row=>row.guide.id===activeId);
-      return rows.find(row=>row.guide.id!==activeId&&!row.blocked&&(row.unlocked||row.fitScore>0)&&
-        (!active||active.blocked||row.fitScore>active.fitScore));
+      // A name can break a finder tie, but does not support a pivot.
+      if(active&&best.rankGroup===active.rankGroup&&best.effectiveScore===active.effectiveScore&&best.fitScore===active.fitScore)return;
+      return best;
     },
     recommendations(plan){
-      const rows=this.ranked(plan);
+      const rows=this.ranked(plan,{tierOnly:!this.fitInputs(plan).length});
       const highest=Academy.isCurrent()?Academy.snapshot.guides.map(g=>g.tier).filter(tier=>['S','A','B'].includes(tier)).sort((a,b)=>this.tierRank(a)-this.tierRank(b))[0]:null;
       const tierNotice=highest&&highest!=='S'?`No S-tier comp in this snapshot — top band is ${academyTier(highest).label}`:'';
-      return {rows,tierNotice,notice:rows.length?'':Academy.isCurrent()?'Not enough to recommend yet — add units/items/augment':'Not enough current info to recommend a comp.',
+      return {rows,tierNotice,notice:rows.length?'':Academy.isCurrent()?'No current builds available.':'Not enough current info to recommend a comp.',
         guidance:rows.length?[]:[
-          'Start with upgraded units and a frontline that can protect your carry.',
           'Record completed items and loose components to see which builds can use them.',
           'Add your first augment after choosing it to check for a more specific direction.'
         ]};
     },
-    ranked(plan,{allowSparse=false}={}){
+    ranked(plan,{tierOnly=false}={}){
       if(!Academy.isCurrent())return [];
       const rows=Academy.snapshot.guides.filter(g=>['S','A','B','X'].includes(g.tier))
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
-      if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&(r.primaryEmblem||r.augmentMatches.some(a=>a.academy||a.recommended)))&&
-        (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
       const rankable=rows.filter(row=>!row.blocked).length;
       return rows.filter(row=>row.guide.tier!=='X'||!row.blocked||rankable>=3)
         .map(row=>{
@@ -281,8 +283,10 @@ module.exports = function createCompFinder(model) {
           return {...row, tierBonus:bonus, rankGroup, effectiveScore:Number((row.fitScore+bonus).toFixed(2))};
         })
         // Higher fit wins an exact tie, so an adjacent tier yields at 12 points.
-        .sort((a,b)=>a.rankGroup-b.rankGroup||b.effectiveScore-a.effectiveScore||
-          b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title)||a.guide.id.localeCompare(b.guide.id));
+        .sort((a,b)=>a.rankGroup-b.rankGroup||
+          (tierOnly?this.tierRank(a.guide.tier)-this.tierRank(b.guide.tier):
+            b.effectiveScore-a.effectiveScore||b.fitScore-a.fitScore)||
+          a.guide.title.localeCompare(b.guide.title)||a.guide.id.localeCompare(b.guide.id));
     },
     componentFit(plan,entries){
       let beam=[{pool:{...plan.owned},score:0,used:[],ready:[]}];

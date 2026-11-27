@@ -90,7 +90,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, Of
       return matches?'No remaining matches for this offer.':'Limited evidence · No TFT Academy entry matches this name.';
     },
     context(plan){
-      const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan,{allowSparse:true});
+      const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan);
       const routes=ranked.filter(r=>!r.blocked).slice(0,8);
       const primary=guide?ranked.find(r=>r.guide.id===guide.id):routes[0];
       const targets=guide&&plan.queue.length?plan.queue.filter(q=>!q.done):primary?.remaining||[];

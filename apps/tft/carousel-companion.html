@@ -211,7 +211,7 @@
 .brand small{font-size:12px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);margin-top:5px}
 .topright{gap:0;flex:0 0 auto}
 .topright .actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.topright .actions>button{font-size:12px;padding:8px 10px;min-height:36px}
+.topright :is(.actions,.game-actions)>button{font-size:12px;padding:8px 10px;min-height:36px}
 .utility-menu{position:relative}
 .utility-menu>summary{list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:7px;min-width:38px;height:36px;display:grid;place-items:center;font-size:24px;line-height:1;background:#1c2730}
 .utility-menu>summary::-webkit-details-marker{display:none}
@@ -253,7 +253,7 @@
 .qcard .qtop{cursor:grab}
 .qcard .qtop button{cursor:pointer}
 .qcard .qtop .queue-grip{cursor:grab}
-@media(max-width:680px){.topbar{padding:12px;gap:12px}.brand h1{font-size:20px}.topright{width:100%}.topright .actions{justify-content:flex-end}.topright .actions>button{padding:7px 10px}.wrap{padding-top:10px}.qtop{gap:5px}.academy-order{gap:7px}}
+@media(max-width:680px){.topbar{padding:12px;gap:12px}.brand h1{font-size:20px}.topright{width:100%}.topright .actions{justify-content:flex-end}.topright :is(.actions,.game-actions)>button{padding:7px 10px}.wrap{padding-top:10px}.qtop{gap:5px}.academy-order{gap:7px}}
 
 .source-notice { color: #f0dca1; }
 .finder-empty { color: var(--muted); }
@@ -354,7 +354,7 @@
 
 @media(max-width:680px){
   .topbar{min-height:0;padding:10px 12px;gap:8px}
-  .topright .actions>button{min-height:34px;font-size:11px;padding:5px 8px}
+  .topright :is(.actions,.game-actions)>button{min-height:34px;font-size:11px;padding:5px 8px}
   #next-build{padding:10px 12px 12px;gap:5px 9px}
   #next-build>.icon{width:42px;height:42px}
   .next-build-status{max-width:80px;font-size:11px;padding:3px 5px}
@@ -392,7 +392,8 @@
 .emblem-holder details ul{margin:4px 0;padding-left:18px}
 .emblem-holder summary{cursor:pointer}
 
-.topright .actions>[data-action=reset]{min-height:44px;color:var(--text);white-space:nowrap}
+.game-actions{display:flex;gap:inherit}
+.topright .game-actions>button{min-width:44px;min-height:44px;color:var(--text);white-space:nowrap}
 
 .shopping .carousel-for{grid-area:2/1/3/5;color:#adc3b6;font-size:10px;line-height:1.2}
 .carousel-pin-label{display:block;color:var(--gold);font-size:10px}
@@ -771,7 +772,7 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, Of
       return matches?'No remaining matches for this offer.':'Limited evidence · No TFT Academy entry matches this name.';
     },
     context(plan){
-      const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan,{allowSparse:true});
+      const guide=Academy.currentGuide(plan),ranked=CompFinder.ranked(plan);
       const routes=ranked.filter(r=>!r.blocked).slice(0,8);
       const primary=guide?ranked.find(r=>r.guide.id===guide.id):routes[0];
       const targets=guide&&plan.queue.length?plan.queue.filter(q=>!q.done):primary?.remaining||[];
@@ -919,22 +920,23 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
     }
     for (const part of Object.keys(needed)) needed[part] = Math.max(0, needed[part] - (plan.owned[part] || 0));
     const champions = new Map(Academy.snapshot.champions.map(unit => [unit.apiName, unit]));
-    const carries = (guide?.finalComp || []).flatMap(unit => {
+    // Evaluate what the candidate comp can use after you build it.
+    const plannedCarriers = (guide?.finalComp || []).flatMap(unit => {
       const champion = champions.get(unit.apiName);
       return champion&&(unit.items.length||unit.apiName===guide.mainChampion?.apiName) ?
         [{...champion,boardIndex:unit.boardIndex}] : [];
     });
     const planItems = [...new Set([...targets.map(t => t.item), ...placedItems])];
-    return {needed, carries, planItems, style: `${guide?.style || ''} ${guide?.title || ''}`};
+    return {needed, plannedCarriers, planItems, style: `${guide?.style || ''} ${guide?.title || ''}`};
   }
 
-  function rule(augment, {needed, carries, planItems, style}) {
+  function rule(augment, {needed, plannedCarriers, planItems, style}) {
     const text = augment.description || '';
     const normalized = Academy.normalizeName(text);
     const component = DATA.components.find(part => needed[part.id] && normalized.includes(Academy.normalizeName(part.name)));
     const item = planItems.map(id => byId[id]).find(item => item?.name.length > 5 && normalized.includes(Academy.normalizeName(item.name)));
     const grants = /\b(?:gain|grants?|choose|receive)\b/i.test(text);
-    const casters = carries.filter(unit => /Caster/i.test(unit.role));
+    const casters = plannedCarriers.filter(unit => /Caster/i.test(unit.role));
     const level = Number(style.match(leveling)?.[1]);
 
     if (component && grants) return {points: 4, text: 'Offers a component your current targets need', detail: component.name};
@@ -945,7 +947,7 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
       const breadth = Object.values(needed).filter(Boolean).length;
       if (!breadth) return;
       if (/\bmana spent\b/i.test(text) && casters.length && planItems.some(id => manaItems.has(id))) {
-        return {points: Math.min(8, 3 + casters.length + Math.floor(breadth / 3)), text: 'Component generation feeds your item plan and rewards Mana spent by your casters'};
+        return {points: Math.min(8, 3 + casters.length + Math.floor(breadth / 3)), text: 'Component generation feeds your item plan and rewards Mana spent by the comp’s casters'};
       }
       return {points: Math.min(4, Math.ceil(breadth / 2)), text: 'Random components can fill your remaining recipes'};
     }
@@ -968,14 +970,14 @@ module.exports = function createAugmentFit({Academy, DATA, byId}) {
     if (!/\b(?:gains?|gaining|grants?|gets?|deal|have|receive|increase)\b/i.test(text)) return;
     const cost = Number(text.match(/(?:your|allied) (\d)-cost champions/i)?.[1]);
     const backRow = /back row/i.test(text);
-    const eligible = carries.filter(unit => (!cost||unit.cost===cost)&&(!backRow||unit.boardIndex>=21));
+    const eligible = plannedCarriers.filter(unit => (!cost||unit.cost===cost)&&(!backRow||unit.boardIndex>=21));
     const benefits = [
-      [/\b(?:starting mana|mana regen|restore mana|gain \d+ mana)\b/i, unit => /Caster/i.test(unit.role), 'Mana helps your casters use their abilities'],
-      [/\bability power\b/i, unit => /Magic (?!Tank)/i.test(unit.role), 'Ability Power supports your magic damage dealers'],
-      [/\battack damage\b/i, unit => /Attack (?!Tank)/i.test(unit.role), 'Attack Damage supports your physical damage dealers'],
-      [/\battack speed\b/i, unit => /Marksman/i.test(unit.role), 'Attack Speed supports your marksmen'],
-      [/\b(?:damage amp|critical strike)\b/i, unit => !/Tank/i.test(unit.role), 'Combat stats support your damage dealers'],
-      [/\b(?:armor|magic resist|durability|max health)\b/i, unit => /Tank/i.test(unit.role), 'Defensive stats support your tanks']
+      [/\b(?:starting mana|mana regen|restore mana|gain \d+ mana)\b/i, unit => /Caster/i.test(unit.role), 'Mana helps the comp’s casters use their abilities'],
+      [/\bability power\b/i, unit => /Magic (?!Tank)/i.test(unit.role), 'Ability Power supports the comp’s magic damage dealers'],
+      [/\battack damage\b/i, unit => /Attack (?!Tank)/i.test(unit.role), 'Attack Damage supports the comp’s physical damage dealers'],
+      [/\battack speed\b/i, unit => /Marksman/i.test(unit.role), 'Attack Speed supports the comp’s marksmen'],
+      [/\b(?:damage amp|critical strike)\b/i, unit => !/Tank/i.test(unit.role), 'Combat stats support the comp’s damage dealers'],
+      [/\b(?:armor|magic resist|durability|max health)\b/i, unit => /Tank/i.test(unit.role), 'Defensive stats support the comp’s tanks']
     ];
     const benefit = benefits.find(([effect, role]) => effect.test(text) && eligible.some(role));
     if (benefit) return {points: 4, text: benefit[2], detail: [...new Set(eligible.filter(benefit[1]).map(unit => unit.name))].join(', ')};
@@ -1275,36 +1277,38 @@ module.exports = function createCompFinder(model) {
         fitScore,componentScore,itemScore,emblemBonus,primaryEmblem,reasons,selectable:!!build.entries.length&&!build.missing.length};
     },
     tierRank(tier){return academyTier(tier).rank;},
-    signalCount(plan){
-      return this.units(plan).length+plan.queue.filter(q=>q.done&&byId[q.item]).length+
-        this.heldAugments(plan).filter(id=>this.augment(id)).length+
-        componentOrder.reduce((sum,id)=>sum+Math.max(0,Number(plan.owned[id])||0),0);
+    fitInputs(plan){
+      const inputs=[];
+      if(plan.queue.some(q=>q.done&&byId[q.item])||componentOrder.some(id=>plan.owned[id]>0))inputs.push('items');
+      if(this.heldAugments(plan).length)inputs.push('augments');
+      if(this.units(plan).length)inputs.push('recorded champions');
+      return inputs;
     },
     alternative(plan){
       const activeId=plan.activeComp?.id||plan.activeComp?.guide?.id;
-      if(!activeId)return;
+      if(!activeId||!this.fitInputs(plan).length)return;
       const rows=this.ranked(plan);
+      const best=rows[0];
+      if(!best||best.guide.id===activeId||best.blocked||(!best.unlocked&&best.fitScore<=0))return;
       const active=rows.find(row=>row.guide.id===activeId);
-      return rows.find(row=>row.guide.id!==activeId&&!row.blocked&&(row.unlocked||row.fitScore>0)&&
-        (!active||active.blocked||row.fitScore>active.fitScore));
+      // A name can break a finder tie, but does not support a pivot.
+      if(active&&best.rankGroup===active.rankGroup&&best.effectiveScore===active.effectiveScore&&best.fitScore===active.fitScore)return;
+      return best;
     },
     recommendations(plan){
-      const rows=this.ranked(plan);
+      const rows=this.ranked(plan,{tierOnly:!this.fitInputs(plan).length});
       const highest=Academy.isCurrent()?Academy.snapshot.guides.map(g=>g.tier).filter(tier=>['S','A','B'].includes(tier)).sort((a,b)=>this.tierRank(a)-this.tierRank(b))[0]:null;
       const tierNotice=highest&&highest!=='S'?`No S-tier comp in this snapshot — top band is ${academyTier(highest).label}`:'';
-      return {rows,tierNotice,notice:rows.length?'':Academy.isCurrent()?'Not enough to recommend yet — add units/items/augment':'Not enough current info to recommend a comp.',
+      return {rows,tierNotice,notice:rows.length?'':Academy.isCurrent()?'No current builds available.':'Not enough current info to recommend a comp.',
         guidance:rows.length?[]:[
-          'Start with upgraded units and a frontline that can protect your carry.',
           'Record completed items and loose components to see which builds can use them.',
           'Add your first augment after choosing it to check for a more specific direction.'
         ]};
     },
-    ranked(plan,{allowSparse=false}={}){
+    ranked(plan,{tierOnly=false}={}){
       if(!Academy.isCurrent())return [];
       const rows=Academy.snapshot.guides.filter(g=>['S','A','B','X'].includes(g.tier))
         .map(g=>this.evaluate(plan,g)).filter(r=>r.selectable);
-      if(!allowSparse&&!rows.some(r=>r.unlocked||!r.blocked&&(r.primaryEmblem||r.augmentMatches.some(a=>a.academy||a.recommended)))&&
-        (this.signalCount(plan)<2||!rows.some(r=>!r.blocked&&r.fitScore>0)))return [];
       const rankable=rows.filter(row=>!row.blocked).length;
       return rows.filter(row=>row.guide.tier!=='X'||!row.blocked||rankable>=3)
         .map(row=>{
@@ -1313,8 +1317,10 @@ module.exports = function createCompFinder(model) {
           return {...row, tierBonus:bonus, rankGroup, effectiveScore:Number((row.fitScore+bonus).toFixed(2))};
         })
         // Higher fit wins an exact tie, so an adjacent tier yields at 12 points.
-        .sort((a,b)=>a.rankGroup-b.rankGroup||b.effectiveScore-a.effectiveScore||
-          b.fitScore-a.fitScore||a.guide.title.localeCompare(b.guide.title)||a.guide.id.localeCompare(b.guide.id));
+        .sort((a,b)=>a.rankGroup-b.rankGroup||
+          (tierOnly?this.tierRank(a.guide.tier)-this.tierRank(b.guide.tier):
+            b.effectiveScore-a.effectiveScore||b.fitScore-a.fitScore)||
+          a.guide.title.localeCompare(b.guide.title)||a.guide.id.localeCompare(b.guide.id));
     },
     componentFit(plan,entries){
       let beam=[{pool:{...plan.owned},score:0,used:[],ready:[]}];
@@ -1538,7 +1544,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
       }).sort((a,b)=>Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||Number(b.forNext)-Number(a.forNext)||Number(b.count>0)-Number(a.count>0)||b.count-a.count||(a.count&&b.count?a.carrierRank-b.carrierRank:0)||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
     },
     discovery(plan){
-      const candidates=CompFinder.ranked(plan,{allowSparse:true}).filter(r=>!r.blocked).slice(0,8);
+      const candidates=CompFinder.ranked(plan).filter(r=>!r.blocked).slice(0,8);
       return componentOrder.slice(0,8).map(id=>{
         let score=0;const items=new Set(),routes=[];
         for(const r of candidates){
@@ -1556,7 +1562,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
     },
     anvil(plan,type='ornns'){
       if(type==='components')return this.carousel(plan).filter(r=>componentOrder.slice(0,8).includes(r.id)).map(r=>({...r,item:byId[r.id],component:true,champion:'',reason:r.count?r.count+' still needed for your queue':r.discovery?'Flexible component':r.pivot?'Pivot item':'Not needed'}));
-      const guide=Academy.currentGuide(plan),ranked=guide?[]:CompFinder.ranked(plan,{allowSparse:true}).filter(r=>!r.blocked).slice(0,8);
+      const guide=Academy.currentGuide(plan),ranked=guide?[]:CompFinder.ranked(plan).filter(r=>!r.blocked).slice(0,8);
       const guides=guide?[guide]:ranked.map(r=>r.guide),names=[...new Set(guides.flatMap(g=>g.finalComp.map(u=>Academy.snapshot.champions.find(c=>c.apiName===u.apiName)?.name)).filter(Boolean))];
       const bases=new Map(guides.map(g=>[g.id,Academy.build(g).entries]));
       return CompFinder.ownedCatalog().filter(i=>i.type===type).map(item=>{
@@ -3055,13 +3061,8 @@ const AcademyUI=(() => {
     let choice;
     try{choice=QuickImport.choose(code,state);}catch(e){feedback.textContent=e.message;feedback.classList.add('error');return;}
     let counts;
-    mutate(()=>{
-      counts=QuickImport.replace(state,choice,code);
-      const playable=new Set(CompFinder.champions().map(unit=>unit.apiName));
-      const imported=state.activeComp.guide.finalComp.filter(unit=>playable.has(unit.apiName));
-      state.currentUnits=CompFinder.units({currentUnits:imported})
-        .map(({apiName,stars})=>({apiName,stars}));
-    },`${choice.guide.title} imported. Current champions updated. Inventory kept.`);
+    mutate(()=>{counts=QuickImport.replace(state,choice,code);},
+      `${choice.guide.title} imported. Current champions, inventory and chosen augments kept.`);
     document.dispatchEvent(new Event('carousel-comp-imported'));
     feedback.textContent=`${counts.pending} targets${counts.covered?' · '+counts.covered+' already owned':''}.`+
       (choice.variants>1?` ${choice.variants} guides share this code. Using ${choice.guide.title}.`:'');
@@ -3091,7 +3092,7 @@ const AcademyUI=(() => {
   document.addEventListener('carousel-backup-imported',()=>void refreshData(plannedSet()));
   document.addEventListener('carousel-new-game',()=>{intent++;feedback.textContent='';feedback.classList.remove('error');void refreshData();});
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="undo"],#apply-import')){intent++;feedback.textContent='';feedback.classList.remove('error');}},true);
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy; component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Loose components and completed items stay; matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>Only exact champion matches are imported. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Use <b>Paste a comp</b> or paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy. Component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Current champions, chosen augments, loose components and completed items stay. Matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>The team code must match a guide’s final board exactly. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
   void refreshData(plannedSet());
   return {
     isChecking:()=>checking,
@@ -3408,10 +3409,10 @@ const DialogDismiss = {
 (() => {
   let expanded=false,catalogSignature='',exploring=false,lastComp=state.activeComp?.id||'',unitCost=0,specialType='all';
   const panel=document.createElement('section');panel.id='comp-finder';panel.className='panel comp-finder';panel.setAttribute('aria-labelledby','finder-title');
-  panel.innerHTML=`<div class="finder-heading"><div><h2 id="finder-title">Explore builds</h2><p>Your board, your drops → an Academy plan to aim for.</p></div></div>
-  <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Board + bench · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
+  panel.innerHTML=`<div class="finder-heading"><div><h2 id="finder-title">Explore builds</h2><p>Find an Academy plan with your items and augments.</p></div></div>
+  <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Optional · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
   <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
-  <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong>Closest routes from what you have</strong><span>Ranks update with your board, items and augments</span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
+  <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong></strong><span></span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
   <details class="finder-method"><summary>How this is ranked</summary><p>Effective score = fit + ${CompFinder.tierFitGap} points per tier step. S adds ${2*CompFinder.tierFitGap}, A and unlocked X add ${CompFinder.tierFitGap}, and B adds 0. Ties go to the higher fit.</p><p>Academy routes for owned emblems come first. Fit includes up to +${CompFinder.primaryEmblemCap} for Academy emblem matches and +${CompFinder.flexEmblemCap} for other emblem matches. Builds that still require an unlock appear last.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
@@ -3429,6 +3430,7 @@ const DialogDismiss = {
   const alternativeButton=alternatives.querySelector('button');
   const compFit=document.getElementById('comp-fit');
   const alternativeStatus=alternatives.querySelector('p');
+  const inputList=new Intl.ListFormat('en');
   const mode=document.createElement('button');mode.id='explore-mode';mode.className='quiet';mode.textContent='Explore builds';document.querySelector('.actions').prepend(mode);
   mode.addEventListener('click',()=>{
     exploring=!exploring;draw();
@@ -3521,7 +3523,7 @@ const DialogDismiss = {
   const unitChips=units=>units.map(u=>`<span class="fit-unit" title="${esc(u.name)} ${u.stars}★${u.targetStars&&u.targetStars>u.stars?' → target '+u.targetStars+'★':''}" aria-label="${esc(u.name)}, ${u.stars} stars">${IconUI.champion(u.apiName)}<b>${u.stars}★</b></span>`).join('');
   function drawBoard(){
     const units=CompFinder.units(state);
-    document.getElementById('explore-current-units').innerHTML=units.map(u=>`<div class="current-unit"><div>${IconUI.champion(u.apiName)}<strong>${esc(u.name)}</strong><button class="unit-remove" data-unit-remove="${esc(u.apiName)}" aria-label="Remove ${esc(u.name)}">×</button></div><div class="unit-stars" role="group" aria-label="${esc(u.name)} star level">${[1,2,3].map(n=>`<button data-unit-stars="${n}" data-unit="${esc(u.apiName)}" data-focus="unit-${esc(u.apiName)}-${n}" aria-pressed="${u.stars===n}" aria-label="${esc(u.name)} ${n} star${n>1?'s':''}">${n}★</button>`).join('')}</div></div>`).join('')||'<p class="finder-note">Add a few units to see which boards you’re closest to.</p>';
+    document.getElementById('explore-current-units').innerHTML=units.map(u=>`<div class="current-unit"><div>${IconUI.champion(u.apiName)}<strong>${esc(u.name)}</strong><button class="unit-remove" data-unit-remove="${esc(u.apiName)}" aria-label="Remove ${esc(u.name)}">×</button></div><div class="unit-stars" role="group" aria-label="${esc(u.name)} star level">${[1,2,3].map(n=>`<button data-unit-stars="${n}" data-unit="${esc(u.apiName)}" data-focus="unit-${esc(u.apiName)}-${n}" aria-pressed="${u.stars===n}" aria-label="${esc(u.name)} ${n} star${n>1?'s':''}">${n}★</button>`).join('')}</div></div>`).join('')||'<p class="finder-note">No champions recorded.</p>';
     if(unitsDialog.open)drawUnitDialog();drawSearch();
   }
   function draw(){
@@ -3537,15 +3539,18 @@ const DialogDismiss = {
     document.querySelector('.centercol').classList.toggle('exploring-plan',!!state.activeComp&&exploring);
     alternatives.hidden=!state.activeComp;
     const current=Academy.currentGuide(state),guide=current||Academy.guide(state);
+    const inputs=CompFinder.fitInputs(state),basis=inputList.format(inputs);
+    const tierOnly=!inputs.length;
     const fit=current&&CompFinder.evaluate(state,current);
     compFit.hidden=!state.activeComp;
     const tier=fit?.unlocked?'X · Unlocked':guide?.tier==='X'&&fit?'X · Situational':guide?.tier;
-    compFit.innerHTML=`${tier?academyTierBadges(guide,tier):''}<span>${fit?.selectable?'Fit score '+Number(fit.fitScore.toFixed(2)):'Fit score unavailable'}</span>`;
+    const score=fit?.selectable?'Fit score '+Number(fit.fitScore.toFixed(2)):'Fit score unavailable';
+    compFit.innerHTML=(tier?academyTierBadges(guide,tier):'')+(tierOnly?'':`<span>${score}</span>`);
     const alternative=CompFinder.alternative(state)?.guide;
-    alternativeTitle.textContent=alternative?'A better fit for your board':'No better fit yet';
-    alternativeStatus.textContent=alternative?'Better fit for your current board and items.':Academy.isCurrent()
-      ?'No better-fitting pivot available for your board and items.'
-      :'Refresh live data to compare your plan with other comps.';
+    alternativeTitle.textContent=alternative?`A better fit for your ${basis}`:'No better fit yet';
+    alternativeStatus.textContent=alternative?'Ranked first in Explore builds.':!Academy.isCurrent()
+      ?'Refresh live data to compare your plan with other comps.'
+      :tierOnly?'Record items or augments to compare builds.':`No higher-ranked pivot fits your ${basis}.`;
     alternativeButton.hidden=!alternative;
     alternativeButton.dataset.chooseComp=alternative?.id||'';
     alternativeButton.innerHTML=alternative?`<span class="inline-entity">${IconUI.champion(alternative.mainChampion?.apiName)}<span>Pivot to ${esc(alternative.title)}</span></span>`:'';
@@ -3574,7 +3579,10 @@ const DialogDismiss = {
     note.textContent=held?(hasMatch?'★ marks an Academy recommendation or a rules-based augment fit.':'Review each fit score for your augment’s contribution.'):'Optional · select your 2-1 augment.';
     note.title=CompFinder.augment(selected)?.description||'';
     panel.querySelector('#finder-tier-notice').textContent=tierNotice;
-    panel.querySelector('.finder-list-heading').hidden=!rows.length;
+    const listHeading=panel.querySelector('.finder-list-heading');
+    listHeading.hidden=!rows.length;
+    listHeading.querySelector('strong').textContent=tierOnly?'TFT Academy tier list':'Closest routes from what you have';
+    listHeading.querySelector('span').textContent=tierOnly?'Record items or augments to personalize the ranking.':`Ranked using Academy tiers and your ${basis}.`;
     const groupLabels=['Academy routes for owned emblems','Other available builds','Builds with unmet requirements'];
     const visibleRows=expanded?rows:rows.slice(0,5);
     panel.querySelector('#comp-suggestions').innerHTML=visibleRows.map((r,n)=>{
@@ -3584,7 +3592,6 @@ const DialogDismiss = {
       const fit=[r.keepers.length?`<span>Keep ${unitChips(r.keepers)}</span>`:'',r.early.length?`<span>Early ${unitChips(r.early)}</span>`:'',r.bridges.length?`<span>Trait bridge ${unitChips(r.bridges)}</span>`:'',r.matched.length?`<span>Owned ${chips(r.matched)}</span>`:'',r.used.length?`<span>Fits ${chips(r.used)}</span>`:'',r.ready.length?`<span>Can build ${chips(r.ready)}</span>`:'',r.earlyMatches.length?`<span>Early items ${chips(r.earlyMatches.map(m=>m.item))}</span>`:'',r.featuredOwned?`<span>Academy key item ${chips([r.featuredOwned])}</span>`:'',r.unmatched.length?`<span class="finder-unmatched">Off-plan ${chips(r.unmatched)}</span>`:'',r.unknownSpecial.some(id=>id!==r.featuredOwned)?`<span class="finder-unmatched">No supported match ${chips(r.unknownSpecial.filter(id=>id!==r.featuredOwned))}</span>`:''].filter(Boolean).join('');
       const special=r.specialMatches.map(s=>`<span class="special-destination" title="${esc(s.source)}">${chips([s.item])}<span>→</span>${IconUI.championLabel(s.champion)}<small>${esc(s.source)}</small></span>`).join('');
       const needs=[r.missingEmblems.length?`<span>Plan needs ${chips(r.missingEmblems)}</span>`:'',r.craftableEmblems.length?`<span>Emblem ready ${chips(r.craftableEmblems)}</span>`:'',r.missingAugment?`<span>Needs ${augmentIcon(r.missingAugment)} ${esc(CompFinder.augment(r.missingAugment)?.name||'required augment')}</span>`:'',r.missingCore.length?`<span>Aim for ${unitChips(r.missingCore.map(u=>({...u,stars:u.targetStars})))}</span>`:''].filter(Boolean).join('');
-      const noFit=Object.values(state.owned).some(n=>n>0)||CompFinder.units(state).length?'No strong match yet':'Add items or units to personalize';
       const stars=r.augmentMatches.filter(a=>a.academy||a.recommended).map(a=>{
         const label=a.name+' · '+(a.academy?'Academy recommendation':'Rules-based augment fit');
         return `<span class="finder-augment-match" title="${esc(label)}" aria-label="${esc(label)}">${augmentIcon(a.id)}<b aria-hidden="true">★</b></span>`;
@@ -3595,7 +3602,8 @@ const DialogDismiss = {
           ?esc(label)+' · '+units.map(({name,apiName,stars})=>IconUI.championLabel(name+(stars?' '+stars+'★':''),apiName)).join(', ')
           :esc(text)}</li>`)
       ].join('');
-      return `${heading}<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div><div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':noFit)+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}<details class="finder-method"><summary><span class="finder-fit-score">Fit score ${r.fitScore}</span> · <span class="finder-effective-score">Effective score ${r.effectiveScore}</span></summary><ul>${breakdown}</ul></details></div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
+      const fitDetails=tierOnly?'':`<div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':'No strong match yet')+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}<details class="finder-method"><summary><span class="finder-fit-score">Fit score ${r.fitScore}</span> · <span class="finder-effective-score">Effective score ${r.effectiveScore}</span></summary><ul>${breakdown}</ul></details>`;
+      return `${heading}<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div>${fitDetails}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}</div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;
@@ -3605,7 +3613,7 @@ const DialogDismiss = {
   document.addEventListener('carousel-meta-updated',draw);
   document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]:not([data-pivot-kind])');if(b)PivotDialog.open(b.dataset.pivotItem);});
   const previous=render;render=function(){const focus=document.activeElement?.dataset.focus;previous();draw();if(focus?.startsWith('unit-'))document.querySelector('[data-focus="'+CSS.escape(focus)+'"]')?.focus();for(const card of document.querySelectorAll('#queue .qcard')){const uid=card.querySelector('[data-action="remove"]')?.dataset.id,img=card.querySelector('.qtop > .icon');if(!uid||!img)continue;const b=document.createElement('button');b.className='queue-item-pivot';b.dataset.pivotItem=uid;b.setAttribute('aria-label','Pivot '+byId[state.queue.find(q=>q.uid===uid).item].name);b.setAttribute('aria-haspopup','dialog');img.before(b);b.append(img);}};
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Explore builds:</b> type a champion name and Enter, then set its stars. Record your first augment and any completed items using the owned-item search or Browse all. Standard items, emblems, radiants, artifacts and other items are supported; click once per owned copy. Effective score combines your fit and a bonus for the Academy tier. Unbuilt wishlist items do not count. Suggestions update from your board and inventory. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Other special-item carrier suggestions do not assign equipment automatically. Explore builds can be reopened from your plan. New game clears board, augment and inventory; Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');
+  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>In <b>Explore builds</b>, record your chosen augments, completed items and loose components to personalize the Academy tier list. You can also add champions you own and set their stars. Effective score combines your fit and a bonus for the Academy tier. Unbuilt wishlist items do not count. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Equip other special items manually. Explore builds can be reopened from your plan. New game clears your champions, augments and inventory. Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');
   render();
 })();
 
@@ -3853,7 +3861,7 @@ const AugmentUI=(()=>{
    Numeric shortcuts are scoped to the topmost component-anvil dialog. */
 const AnvilUI=(()=>{
   const types=[['components','Components'],['ornns','Artifacts'],['craftables','Completed'],['radiants','Radiant'],['emblems','Emblems']];
-  let type='ornns',mode='browse',query='',rows=[],matches=[],searchIndex=0,offers={};
+  let type='components',mode='browse',query='',rows=[],matches=[],searchIndex=0,offers={};
   const modal=document.createElement('dialog');modal.id='anvil-dialog';modal.setAttribute('aria-labelledby','anvil-dialog-title');
   modal.innerHTML='<div class="modal-heading"><h2 id="anvil-dialog-title">Anvil choices</h2><button data-close="anvil-dialog" aria-label="Close anvil choices">×</button></div><div id="anvil-tabs" class="decision-tabs" role="group" aria-label="Anvil item category"></div><div class="anvil-mode" role="group" aria-label="Browse or compare anvil offers"><button data-anvil-mode="browse">Full priority list</button><button data-anvil-mode="compare">My offers</button></div><p id="anvil-instructions" class="decision-note"></p><div id="anvil-component-keys" class="anvil-component-keys" hidden></div><div class="anvil-search-wrap"><label for="anvil-search" class="visuallyhidden">Find an offered item</label><input id="anvil-search" class="search" type="search" autocomplete="off" placeholder="Find an offered item…"><div id="anvil-search-matches" hidden></div></div><div id="anvil-offer-chips" class="anvil-offer-chips"></div><div id="anvil-verdict" role="status" aria-live="polite"></div><div id="anvil-results" class="decision-list"></div>';
   document.body.append(modal);
@@ -3901,7 +3909,7 @@ const AnvilUI=(()=>{
     }).join('')||(mode==='compare'?'':'<p class="decision-note">No matching items.</p>');
     drawSearch();
   }
-  function open(){setQuery();draw(true);modal.showModal();if(type!=='components')input.focus();}
+  function open(){type='components';mode='browse';setQuery();draw(true);modal.showModal();}
   document.getElementById('anvil-open').addEventListener('click',open);
   input.addEventListener('input',e=>{query=e.target.value;searchIndex=0;draw();});
   input.addEventListener('keydown',e=>{
@@ -4160,6 +4168,18 @@ const AnvilUI=(()=>{
       resetDialog.showModal();
     })
   );
+  const pasteComp=document.createElement('button');
+  pasteComp.type='button';
+  pasteComp.id='paste-comp';
+  pasteComp.className='quiet';
+  pasteComp.textContent='Paste a comp';
+  pasteComp.setAttribute('aria-haspopup','dialog');
+  pasteComp.addEventListener('click',()=>AcademyUI.openImport());
+  const newGame=actions.querySelector('[data-action="reset"]');
+  const gameActions=document.createElement('div');
+  gameActions.className='game-actions';
+  newGame.before(gameActions);
+  gameActions.append(pasteComp,newGame);
   options.append(shortcut('Import a game',()=>AcademyUI.openImport()),help,settings);
   actions.append(menu);
   top.append(actions);
