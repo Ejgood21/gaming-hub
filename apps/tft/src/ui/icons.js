@@ -22,7 +22,9 @@ const IconUI = {
     const search=pop.querySelector('input'),list=pop.querySelector('.icon-select-options');
     const picture=value=>!value?'<span class="any-icon" aria-hidden="true">✦</span>':kind==='champion'?IconUI.champion(value):kind==='augment'?augmentIcon(value):byId[value]?icon(value):'';
     const close=()=>{pop.hidden=true;trigger.setAttribute('aria-expanded','false');};
-    const draw=()=>{const q=search.value.toLowerCase();list.innerHTML=[...select.querySelectorAll('option')].filter(o=>o.textContent.toLowerCase().includes(q)).map(o=>`<button type="button" data-option-value="${esc(o.value)}" class="icon-select-option" aria-pressed="${o.value===select.value}">${picture(o.value)}<span>${esc(o.textContent)}</span>${o.value===select.value?'<b>✓</b>':''}</button>`).join('')||'<span class="picker-no-match" role="status">'+esc(noMatch(search.value))+'</span>';};
+    const searchable=text=>kind==='augment'?Academy.normalizeName(text):text.toLowerCase();
+    const draw=()=>{const q=searchable(search.value);list.innerHTML=[...select.querySelectorAll('option')].filter(o=>
+      (kind!=='augment'||!o.value.startsWith('reference:')||q)&&searchable(o.textContent).includes(q)).map(o=>`<button type="button" data-option-value="${esc(o.value)}" class="icon-select-option" aria-pressed="${o.value===select.value}">${picture(o.value)}<span>${esc(o.textContent)}</span>${o.value===select.value?'<b>✓</b>':''}</button>`).join('')||'<span class="picker-no-match" role="status">'+esc(noMatch(search.value))+'</span>';};
     const open=()=>{search.value='';draw();pop.hidden=false;trigger.setAttribute('aria-expanded','true');search.focus();};
     const refresh=()=>{const o=[...select.querySelectorAll('option')].find(o=>o.value===select.value)||select.querySelector('option');trigger.innerHTML=picture(o?.value||'')+'<span>'+esc(o?.textContent||'Choose')+'</span><span class="picker-chevron">⌄</span>';if(!pop.hidden)draw();};
     trigger.addEventListener('click',()=>pop.hidden?open():close());

@@ -2,6 +2,11 @@
 
 module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, OfflineTracker, DATA}) {
   const stages = ['2-1', '3-2', '4-2'];
+  // Reference only. Riot cycled AFK out in 18.1 and Manaflow I out in 15.1.
+  const pastAugments = [
+    {apiName:'reference:AFK',name:'A.F.K.',description:'You cannot take actions for three rounds. Then gain 17 gold.'},
+    {apiName:'reference:Manaflow1',name:'Manaflow I',description:'Units starting combat in the back row gain 2 extra Mana per attack.'}
+  ];
   const {augmentFit} = CompFinder;
   const verdictPrefixes = {take:'Take ', decent:'Decent: ', reroll:'Reroll: ', avoid:'Do not take '};
   const verdictPhrases = {
@@ -60,6 +65,23 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, Of
     },
     roundNotice(augment,round){
       return `${augment.name} is listed by Academy for ${augment.stages.join(' and ')}, not ${stages[round]}.`;
+    },
+    references(){
+      const {augments,items}=Academy.snapshot;
+      const names=new Set((augments||[]).map(a=>Academy.normalizeName(a.name)));
+      const emblems=items.filter(item=>item.type==='emblems'&&item.description).map(item=>({
+        apiName:'reference:'+item.apiName,name:item.name,description:item.description.trim(),item:item.apiName
+      }));
+      return [...pastAugments,...emblems].filter(entry=>!names.has(Academy.normalizeName(entry.name)));
+    },
+    referenceVerdict(entry,plan){
+      if(!entry.item)return {verdict:'avoid',verdictLine:'Do not take '+entry.name,
+        phrase:'Outside the current augment pool'};
+      const guide=Academy.currentGuide(plan);
+      const fits=guide?.mainItem?.apiName===entry.item||
+        [...(guide?.finalComp||[]),...(guide?.altBuilds||[])].some(unit=>unit.items.includes(entry.item));
+      return {verdict:fits?'take':'avoid',verdictLine:(fits?'Take ':'Do not take ')+entry.name,
+        phrase:fits?'Emblem fits your comp':guide?'Emblem is outside your plan':'Emblem · choose a comp to check fit'};
     },
     searchNotice(query){
       const term=Academy.normalizeName(query);

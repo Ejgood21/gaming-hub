@@ -20,7 +20,8 @@ module.exports = function createTracker({LootTracker}) {
         });
         return {...q, rank, slots};
       });
-      return {rows, needs, remaining};
+      const next = rows.find(row => row.slots.some(slot => !slot.have)) || rows[0];
+      return {rows, needs, remaining, next};
     },
     complete(state, q, item) {
       if(q.done||!canCraft(state.owned,item))return false;

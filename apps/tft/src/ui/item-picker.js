@@ -3,12 +3,15 @@
   let targetId=null,pivotQuery='',lastCandidates;
   function matches(item,text){const words=text.toLowerCase().trim().split(/\s+/).filter(Boolean);const hay=[item.name,...item.recipe.map(id=>byId[id].name),...PivotPlanner.profile(item.id).flatMap(r=>[r,PivotPlanner.labels[r]])].join(' ').toLowerCase();return words.every(w=>hay.includes(w));}
   const dialog=document.createElement('dialog');dialog.id='pivot-dialog';dialog.setAttribute('aria-labelledby','pivot-title');
-  dialog.innerHTML='<div class="pivot-dialog-head"><div id="pivot-original"></div><button id="close-pivot" aria-label="Close pivot chooser">×</button></div><label class="visuallyhidden" for="pivot-search">Find a replacement</label><input id="pivot-search" class="search" type="search" placeholder="Find an item…"><div id="pivot-results"></div>';
+  dialog.innerHTML='<div class="pivot-dialog-head"><div id="pivot-original"></div><button id="close-pivot" aria-label="Close pivot chooser">×</button></div><label class="visuallyhidden" for="pivot-search">Find a replacement</label><input id="pivot-search" class="search" type="search" placeholder="Find an item…"><p id="pivot-data-note" class="pivot-context" hidden></p><div id="pivot-results"></div>';
   document.body.append(dialog);
   function drawCandidates(){
     const target=state.queue.find(q=>q.uid===targetId&&!q.done);
     if(!target){if(dialog.open)dialog.close();return;}
     document.getElementById('pivot-original').innerHTML=`${icon(target.item)}<div><small>Pivot${target.champion?' · '+IconUI.championLabel(target.champion):''}</small><h2 id="pivot-title">${esc(byId[target.item].name)}</h2></div>`;
+    const note=document.getElementById('pivot-data-note');
+    note.textContent=MetaBuilds.pivotNotice(target.champion);
+    note.hidden=!note.textContent;
     const pool=PivotPlanner.available(state,targetId,DATA.items);
     const sourceType=Academy.itemInfo(target.item)?.type;
     const results=PivotPlanner.suggest(state,targetId,DATA.items,{role:'all'}).filter(r=>

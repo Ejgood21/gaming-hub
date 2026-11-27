@@ -8,13 +8,23 @@
     if(Array.isArray(saved))for(const entry of saved)MetaBuilds.cache(entry,'browser cache');
   }catch{}
   const status=document.createElement('span');status.id='meta-status';status.className='meta-status';document.querySelector('.academy-bar').append(status);
-  status.title='Requests go to api-hc.metatft.com. Data & keys shows last checks and errors. Academy remains the baseline.';
+  status.title='Requests go to api-hc.metatft.com. Settings shows last checks and errors. Academy remains the baseline.';
   const statusLink='<a href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">MetaTFT supplement</a>';
-  MetaBuilds.connection=name=>{
-    const cached=MetaBuilds.find(name,true);
-    return {...connections.get(MetaBuilds.champion(name)?.apiName),source:cached?.source==='live'&&!MetaBuilds.isCompatible(cached.entry)?'saved':cached?.source||'none'};
+  function connection(unit){
+    const info=connections.get(unit),cached=MetaBuilds.find(Academy.snapshot.champions.find(c=>c.apiName===unit)?.name,true);
+    const live=MetaBuilds.isCompatible(cached?.entry);
+    return {...info,unit,source:cached?.source==='live'&&!live?'saved':cached?.source||'unavailable',
+      builds:live?cached.entry.builds.length:0};
+  }
+  MetaBuilds.connection=name=>connection(MetaBuilds.champion(name)?.apiName);
+  MetaBuilds.connections=()=>[...connections.keys()].map(connection);
+  MetaBuilds.pivotNotice=name=>{
+    if(!name||MetaBuilds.dataFor({champion:name}))return '';
+    const {revision,phase}=MetaBuilds.connection(name);
+    return Academy.live&&revision===Academy.revision&&phase!=='idle'
+      ?'Academy baseline — checking MetaTFT champion data'
+      :'Academy baseline — MetaTFT champion data unavailable';
   };
-  MetaBuilds.connections=()=>[...connections.entries()].filter(([id,s])=>s.checked).map(([id,s])=>({unit:id,...s}));
   MetaBuilds.request= name=>{const unit=MetaBuilds.champion(name);if(unit)request(unit);};
   function draw(){
     for(const card of document.querySelectorAll('#queue .qcard')){
@@ -63,7 +73,10 @@
     const {set,patch}=Academy.snapshot,revision=Academy.revision,requestKey=JSON.stringify([id,revision]);
     if(pending.has(requestKey)||now-(attempted.get(requestKey)||0)<(info.error?5*60000:freshness))return;
     const cached=MetaBuilds.dataFor({champion:unit.name});
-    if(cached&&now-Number(cached.fetchedAt||0)<freshness)return;
+    if(cached&&now-Number(cached.fetchedAt||0)<freshness){
+      if(info.revision!==revision)mark(id,{revision,checked:cached.fetchedAt,phase:'idle',error:''});
+      return;
+    }
     attempted.set(requestKey,now);mark(id,{revision,checked:now,error:'',phase:'queued'});
     pending.set(requestKey,revision);waiting.push({id,set,patch,revision,requestKey});pump();
   }

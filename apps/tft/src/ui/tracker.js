@@ -23,7 +23,7 @@ function render(){
  const focus=document.activeElement?.dataset.focus;
  QueueOrder.ensure(state);
  const a=Tracker.allocate(state,DATA.items),done=state.queue.filter(q=>q.done);
- const next=a.rows[0],nextBuild=document.getElementById('next-build');
+ const next=a.next,nextBuild=document.getElementById('next-build');
  nextBuild.hidden=!state.activeComp;
  if(next){
    const item=byId[next.item],covered=next.slots.filter(slot=>slot.have).length;

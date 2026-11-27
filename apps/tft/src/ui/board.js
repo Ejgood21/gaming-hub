@@ -51,7 +51,7 @@
   }
 
   function drawConnections(){
-    document.getElementById('meta-diagnostics').innerHTML=MetaBuilds.connections().map(s=>`<p><b>${IconUI.championLabel(Academy.snapshot.champions.find(c=>c.apiName===s.unit)?.name||s.unit)}</b> · ${esc(s.source||'no data')} · checked ${new Date(s.checked).toLocaleTimeString()}${s.error?`<br><span class="connection-error">${esc(s.error)} · saved stats are reference only</span>`:''}</p>`).join('')||'<p>No requests yet. Import a comp or choose a champion in S/A item builds.</p>';
+    document.getElementById('meta-diagnostics').innerHTML=MetaBuilds.connections().map(s=>`<p><b>${IconUI.championLabel(Academy.snapshot.champions.find(c=>c.apiName===s.unit)?.name||s.unit)}</b> · ${esc(s.phase==='idle'?s.source:'checking…')}${s.builds?` · ${s.builds} ranked builds`:''} · checked ${new Date(s.checked).toLocaleTimeString()}${s.error?`<br><span class="connection-error">${esc(s.error)} · saved stats are reference only</span>`:''}</p>`).join('')||'<p>No requests yet. Import a comp or choose a champion in S/A item builds.</p>';
   }
   overview.addEventListener('click',e=>{
     const target=e.target.closest('[data-board-target]');if(target)PivotDialog.open(target.dataset.boardTarget);

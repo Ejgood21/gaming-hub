@@ -1,5 +1,5 @@
 const AugmentUI=(()=>{
-  let activeSlot=0,query='',searchRows=[],variants=null,searchIndex=0,result=null,contextKey='',lastSearchResults;
+  let activeSlot=0,query='',searchRows=[],variants=null,searchIndex=0,result=null,contextKey='',lastSearchResults,lastOffersHTML,reference=null;
   const button=document.createElement('button');button.id='augment-open';button.textContent='Augment choices';document.querySelector('.decision-controls').append(button);
   const selected=document.createElement('div');selected.id='chosen-augments';selected.className='chosen-augments';document.querySelector('.decision-controls').after(selected);
   const modal=document.createElement('dialog');modal.id='augment-dialog';modal.setAttribute('aria-labelledby','augment-title');
@@ -7,7 +7,7 @@ const AugmentUI=(()=>{
     <div class="augment-stage" role="group" aria-label="Augment round"></div>
     <div id="augment-verdict" role="status" aria-live="polite"></div>
     <div class="augment-search-wrap"><label id="augment-search-label" for="augment-offer-search">Offer 1</label><input id="augment-offer-search" class="search" type="search" autocomplete="off" placeholder="Type a name, Enter → next offer" aria-controls="augment-search-results"><div id="augment-search-results" hidden></div></div>
-    <div id="augment-offers"></div>`;
+    <div id="augment-reference" hidden></div><div id="augment-offers"></div>`;
   document.body.append(modal);
   const input=document.getElementById('augment-offer-search'),list=document.getElementById('augment-search-results');
   const badge=a=>['','Silver','Gold','Prismatic'][a.tier]||'Augment';
@@ -28,15 +28,17 @@ const AugmentUI=(()=>{
         groups.get(key).push(a);
       }
     }
-    searchRows=variants||[...groups.values()].map(choices=>{
+    const matches=choices=>{
       choices.sort((a,b)=>Number(AugmentAdvisor.eligible(b,o.round))-Number(AugmentAdvisor.eligible(a,o.round)));
       return {...choices[0],choices};
-    }).sort((a,b)=>relevance(Academy.normalizeName(a.name))-relevance(Academy.normalizeName(b.name))||a.name.localeCompare(b.name)).slice(0,7);
+    };
+    const references=norm?AugmentAdvisor.references().filter(a=>Academy.normalizeName(a.name).includes(norm)).map(a=>({...a,reference:true})):[];
+    searchRows=variants||[...[...groups.values()].map(matches),...references].sort((a,b)=>relevance(Academy.normalizeName(a.name))-relevance(Academy.normalizeName(b.name))||a.name.localeCompare(b.name)).slice(0,7);
     searchIndex=Math.max(0,Math.min(searchIndex,searchRows.length-1));
     const results=searchRows.map((a,n)=>{
       const multiple=a.choices?.length>1;
-      const detail=multiple?'Choose the matching effect or rarity.':AugmentAdvisor.eligible(a,o.round)?a.description:AugmentAdvisor.roundNotice(a,o.round);
-      return `<button class="${n===searchIndex?'search-active':''}" data-offer-result="${n}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span>${variants?'':`<strong>${esc(a.name)}</strong>`}<small>${esc(detail)}</small></span>${multiple?'':`<b class="augment-rarity">${badge(a)}</b>`}</button>`;
+      const detail=a.reference?a.description:multiple?'Choose the matching effect or rarity.':AugmentAdvisor.eligible(a,o.round)?a.description:AugmentAdvisor.roundNotice(a,o.round);
+      return `<button class="${n===searchIndex?'search-active':''}" data-offer-result="${n}" title="${esc(a.description)}">${augmentIcon(a.apiName)}<span>${variants?'':`<strong>${esc(a.name)}</strong>`}<small>${esc(detail)}</small></span>${multiple?'':`<b class="augment-rarity">${a.reference?'Reference':badge(a)}</b>`}</button>`;
     }).join('')||'<p role="status">'+esc(AugmentAdvisor.searchNotice(query))+'</p>';
     if(results!==lastSearchResults){list.innerHTML=results;lastSearchResults=results;}
   }
@@ -48,7 +50,7 @@ const AugmentUI=(()=>{
     document.getElementById('augment-search-label').textContent=o.awaiting?.[activeSlot]
       ?`Offer ${activeSlot+1} · enter replacement after rerolling in game`
       :`Offer ${activeSlot+1} · type a few letters, Enter${logged?' · replaces recorded pick':''}`;
-    document.getElementById('augment-offers').innerHTML=o.ids.map((id,slot)=>{
+    const offersHTML=o.ids.map((id,slot)=>{
       const r=comparison.rows.find(r=>r.slot===slot),awaiting=o.awaiting?.[slot],active=slot===activeSlot?'active-slot':'';
       if(!r)return `<article class="augment-offer empty-offer ${active}" ${id?'data-verdict="avoid"':''}><button data-offer-edit="${slot}"><span>${slot+1}</span>${awaiting?'Awaiting replacement':id?'Do not take unavailable offer':'Add offer '+(slot+1)}</button></article>`;
       const a=r.augment,reroll=comparison.rerolls.find(row=>row.slot===slot);
@@ -64,17 +66,32 @@ const AugmentUI=(()=>{
         <button class="augment-reroll" data-offer-replace="${slot}">Reroll this offer</button></div>
       </article>`;
     }).join('');
+    if(offersHTML!==lastOffersHTML){document.getElementById('augment-offers').innerHTML=offersHTML;lastOffersHTML=offersHTML;}
     search();
+  }
+  function showReference(entry){
+    const panel=document.getElementById('augment-reference');
+    reference=entry;
+    panel.hidden=!entry;
+    if(!entry){panel.replaceChildren();return;}
+    const {verdict,verdictLine,phrase}=AugmentAdvisor.referenceVerdict(entry,state);
+    panel.innerHTML=`<article class="augment-offer" data-verdict="${verdict}"><div class="augment-offer-heading"><strong class="augment-verdict-line">${esc(verdictLine)}</strong></div><p class="augment-phrase">${esc(phrase)}</p><details class="augment-description"><summary>Why and effect</summary><p>${esc(entry.description)}</p></details></article>`;
   }
   function clearSearch(){query='';variants=null;input.value='';searchIndex=0;}
   function open(round,id){
     if(Number.isInteger(round)&&offers().round!==round){state.augmentOffers=AugmentAdvisor.newOffers(round);save();}
     const o=offers(),pending=o.awaiting?.findIndex(Boolean)??-1;
     activeSlot=pending>=0?pending:Math.max(0,o.ids.findIndex(id=>!id));
-    clearSearch();contextKey='';modal.showModal();if(id)add(id);draw();input.focus();
+    clearSearch();contextKey='';modal.showModal();
+    const entry=AugmentAdvisor.references().find(a=>a.apiName===id);
+    showReference(entry);
+    if(id&&!entry)add(id);
+    draw();input.focus();
   }
   function pick(result){
-    if(result.choices?.length>1){
+    if(result.reference){
+      clearSearch();showReference(result);search();input.focus();
+    }else if(result.choices?.length>1){
       variants=result.choices;
       searchIndex=0;
       search();
@@ -98,13 +115,13 @@ const AugmentUI=(()=>{
     }else open(round,id);
   }
   button.addEventListener('click',()=>open());
-  input.addEventListener('input',e=>{query=e.target.value;variants=null;searchIndex=0;search();});
+  input.addEventListener('input',e=>{if(reference)showReference(null);query=e.target.value;variants=null;searchIndex=0;search();});
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&searchRows[searchIndex]){e.preventDefault();pick(searchRows[searchIndex]);}else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();searchIndex+=e.key==='ArrowDown'?1:-1;search();}else if(e.key==='Escape'&&query){e.preventDefault();e.stopPropagation();if(variants){variants=null;}else{query='';input.value='';}searchIndex=0;search();}});
   document.addEventListener('click',e=>{
     let b=e.target.closest('[data-offer-result]');if(b)pick(searchRows[Number(b.dataset.offerResult)]);
     b=e.target.closest('[data-edit-augment]');if(b)open(Number(b.dataset.editAugment));
-    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;clearSearch();activeSlot=0;mutate(()=>state.augmentOffers=AugmentAdvisor.newOffers(round),'Augment round changed.');input.focus();}
-    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);clearSearch();draw();input.focus();}
+    b=e.target.closest('[data-augment-round]');if(b){const round=Number(b.dataset.augmentRound);if(round===offers().round)return;clearSearch();showReference(null);activeSlot=0;mutate(()=>state.augmentOffers=AugmentAdvisor.newOffers(round),'Augment round changed.');input.focus();}
+    b=e.target.closest('[data-offer-edit]');if(b){activeSlot=Number(b.dataset.offerEdit);clearSearch();showReference(null);draw();input.focus();}
     b=e.target.closest('[data-offer-move]');if(b)enterAt(Number(b.dataset.offerMove),b.dataset.augmentId);
     b=e.target.closest('[data-offer-replace]');if(b){
       activeSlot=Number(b.dataset.offerReplace);clearSearch();
