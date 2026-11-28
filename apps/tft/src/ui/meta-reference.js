@@ -8,8 +8,6 @@
   const champSelect=document.getElementById('reference-champion'),itemSelect=document.getElementById('reference-item');
   let selected='',itemFilter='',matchEquipped=true,opener=null,lastSnapshot;
   const champPicker=IconUI.picker(champSelect,'champion','Champion'),itemPicker=IconUI.picker(itemSelect,'item','Containing item');
-  reference.querySelector('.reference-options').insertAdjacentHTML('afterend',
-    '<p class="finder-note">S/A are relative within this champion (top builds rescaled)</p>');
   function champions(){
     lastSnapshot=Academy.snapshot;
     const all=[...new Map(Academy.snapshot.champions.filter(c=>c.name).map(c=>[c.name,c])).values()].sort((a,b)=>a.name.localeCompare(b.name));
@@ -29,10 +27,10 @@
       return (!itemFilter||b.ids.includes(itemFilter))&&(!matchEquipped||remaining!==null)&&
         MetaBuilds.fits(remaining||[],intents);
     });
-    document.getElementById('reference-date').textContent=MetaBuilds.isCurrentSet(data)?`${filtered.length} builds · ${data.rankFilter==='ALL'?'All ranks':'Platinum+'} · patch ${data.patch||'?'} · snapshot ${new Date(data.updated).toLocaleDateString()} · ranked by MetaTFT score${MetaBuilds.isCompatible(data)?'':' · stale data · reference only'}`:'No rankings available for this champion in the loaded set.';
-    const connection=MetaBuilds.connection(selected);document.getElementById('reference-date').textContent+=' · '+connection.source+(connection.error?' · refresh failed: '+connection.error:'');
+    document.getElementById('reference-date').textContent=MetaBuilds.isCurrentSet(data)?`${filtered.length} builds · ${data.rankFilter==='ALL'?'All ranks':'Platinum+'} · Patch ${data.patch||'?'}${MetaBuilds.isCompatible(data)?'':' · saved data'}`:'No rankings available for this champion in the loaded set.';
+    const connection=MetaBuilds.connection(selected);
     document.getElementById('reference-title').innerHTML=IconUI.champion(selected)+'<span>'+esc(selected)+' <small>MetaTFT · S/A builds</small></span>';
-    document.getElementById('reference-data-summary').textContent=`${filtered.length} builds · ${connection.source}${data&&!MetaBuilds.isCompatible(data)?' · stale data · reference only':''}${connection.error?' · refresh unavailable':''}`;
+    document.getElementById('reference-data-summary').textContent=`${filtered.length} builds · ${connection.source}${data&&!MetaBuilds.isCompatible(data)?' · saved data':''}${connection.error?' · refresh unavailable':''}`;
     document.getElementById('reference-owned').innerHTML=equipped.length?'<span>Equipped</span>'+equipped.map(id=>`<span class="equipped-chip" title="${esc(byId[id].name)}">${icon(id)}<b>✓</b></span>`).join(''):'<span>No completed items assigned to this champion</span>';
     document.getElementById('reference-pivot').disabled=!MetaBuilds.isCompatible(data);
     document.getElementById('reference-clear').disabled=!itemFilter;

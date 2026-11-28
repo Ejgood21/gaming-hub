@@ -29,8 +29,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
       }
       // Keep evidence important without making every tiny statistical difference
       // more important than several missing components or an existing plan.
-      const urgent=plan.tempo==='urgent';
-      const utility=b=>({S:12,A:9}[b.tier])+Math.max(-1,Math.min(1,b.score))*4+b.retained*1.8-b.missing*(urgent?2.2:.65);
+      const utility=b=>({S:12,A:9}[b.tier])+Math.max(-1,Math.min(1,b.score))*4+b.retained*1.8-b.missing*.65;
       return result.sort((a,b)=>utility(b)-utility(a)||b.games-a.games||a.items.join().localeCompare(b.items.join()));
     },
     pivot(plan,name,id){
@@ -73,7 +72,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
       return groups.sort((a,b)=>a.rank-b.rank);
     },
     solve(plan,groups=this.groups(plan)){
-      const urgent=plan.tempo==='urgent';let beam=[{pool:{...plan.owned},score:0,actions:[],count:0}];
+      let beam=[{pool:{...plan.owned},score:0,actions:[],count:0}];
       for(const group of groups){
         const variants=[];
         for(const b of group.options){
@@ -85,7 +84,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
             if(Object.entries(need).some(([c,n])=>n>(plan.owned[c]||0)))continue;
             const targetPool=group.targets.map(q=>q.item);let matching=0;
             for(const id of crafts){const at=targetPool.indexOf(id);if(at>=0){matching++;targetPool.splice(at,1);}}
-            const score=crafts.length*(urgent?42:28)+crafts.length*Math.max(1,12-group.rank)+matching*4-(b.source==='meta'?(urgent?2:8):0)+Math.max(0,Math.min(2,(b.score||0)*2));
+            const score=crafts.length*28+crafts.length*Math.max(1,12-group.rank)+matching*4-(b.source==='meta'?8:0)+Math.max(0,Math.min(2,(b.score||0)*2));
             variants.push({choice:b,crafts,need,score});
           }
         }
@@ -209,7 +208,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
       return OfflineTracker.rankComponents(plan,rows);
     },
     anvil(plan,type='ornns'){
-      if(type==='components')return this.carousel(plan).filter(r=>componentOrder.slice(0,8).includes(r.id)).map(r=>({...r,item:byId[r.id],component:true,champion:'',reason:r.count?r.count+' still needed for your queue':r.discovery?'Flexible component':r.pivot?'Pivot item':'Not needed'}));
+      if(type==='components')return this.carousel(plan).filter(r=>componentOrder.slice(0,8).includes(r.id)).map(r=>({...r,item:byId[r.id],component:true,champion:'',reason:r.count?'×'+r.count+' needed':r.discovery?'Flexible component':r.pivot?'For another build':'Not needed'}));
       const guide=Academy.currentGuide(plan),ranked=guide?[]:CompFinder.ranked(plan).filter(r=>!r.blocked).slice(0,8);
       const guides=guide?[guide]:ranked.map(r=>r.guide),names=[...new Set(guides.flatMap(g=>g.finalComp.map(u=>Academy.snapshot.champions.find(c=>c.apiName===u.apiName)?.name)).filter(Boolean))];
       const bases=new Map(guides.map(g=>[g.id,Academy.build(g).entries]));

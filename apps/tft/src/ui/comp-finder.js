@@ -2,10 +2,10 @@
   let expanded=false,catalogSignature='',exploring=false,lastComp=state.activeComp?.id||'',unitCost=0,specialType='all';
   const panel=document.createElement('section');panel.id='comp-finder';panel.className='panel comp-finder';panel.setAttribute('aria-labelledby','finder-title');
   panel.innerHTML=`<div class="finder-heading"><div><h2 id="finder-title">Explore builds</h2><p>Find an Academy plan with your items and augments.</p></div></div>
-  <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3><span>Optional · highest star per champion</span></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Add champion… type a name, Enter" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
-  <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div><small class="explore-inventory-note">Track loose components on the component bench.</small></section></div>
+  <div class="explore-inputs"><section class="explore-board"><div class="explore-label"><h3>Current champions</h3></div><div class="unit-search-row"><label class="visuallyhidden" for="explore-unit-search">Add a champion</label><input id="explore-unit-search" class="search" placeholder="Find a champion…" autocomplete="off" type="search" aria-controls="explore-unit-results"><button id="explore-browse" class="quiet">Browse</button></div><div id="explore-unit-results" class="unit-search-results" hidden></div><div id="explore-current-units" class="current-units"></div></section>
+  <section class="explore-inventory"><div class="finder-controls"><label for="first-augment-trigger">First augment</label><select id="first-augment"></select></div><p id="augment-note" class="finder-note"></p><div class="explore-label"><h3>Completed items</h3><button id="explore-items-open" class="quiet">Browse all</button></div><div class="owned-search-wrap"><label class="visuallyhidden" for="owned-item-search">Add an owned completed item</label><input id="owned-item-search" class="search" type="search" placeholder="Add owned item… Rageblade, emblem, radiant…" autocomplete="off" aria-controls="owned-item-results"><div id="owned-item-results" hidden></div></div><div id="explore-owned-items"></div></section></div>
   <p id="finder-tier-notice" class="finder-note"></p><div class="finder-list-heading"><strong></strong><span></span></div><div id="comp-suggestions"></div><button id="finder-more" class="quiet"></button>
-  <details class="finder-method"><summary>How this is ranked</summary><p>Effective score = fit + ${CompFinder.tierFitGap} points per tier step. S adds ${2*CompFinder.tierFitGap}, A and unlocked X add ${CompFinder.tierFitGap}, and B adds 0. Ties go to the higher fit.</p><p>Academy routes for owned emblems come first. Fit includes up to +${CompFinder.primaryEmblemCap} for Academy emblem matches and +${CompFinder.flexEmblemCap} for other emblem matches. Builds that still require an unlock appear last.</p></details>`;
+  <details class="finder-method"><summary>How this is ranked</summary><p>Builds are ranked by Academy tier and how well they fit what you have, with Academy builds for your emblems first.</p></details>`;
   document.querySelector('.plan-queue').prepend(panel);
   const exploreInputs=panel.querySelector('.explore-inputs');
   const boardEditor=exploreInputs.querySelector('.explore-board');
@@ -136,13 +136,14 @@
     const fit=current&&CompFinder.evaluate(state,current);
     compFit.hidden=!state.activeComp;
     const tier=fit?.unlocked?'X · Unlocked':guide?.tier==='X'&&fit?'X · Situational':guide?.tier;
-    const score=fit?.selectable?'Fit score '+Number(fit.fitScore.toFixed(2)):'Fit score unavailable';
-    compFit.innerHTML=(tier?academyTierBadges(guide,tier):'')+(tierOnly?'':`<span>${score}</span>`);
+    compFit.innerHTML=tier?academyTierBadges(guide,tier):'';
+    if(fit?.selectable)compFit.dataset.fitScore=fit.fitScore;
+    else delete compFit.dataset.fitScore;
     const alternative=CompFinder.alternative(state)?.guide;
-    alternativeTitle.textContent=alternative?`A better fit for your ${basis}`:'No better fit yet';
-    alternativeStatus.textContent=alternative?'Ranked first in Explore builds.':!Academy.isCurrent()
+    alternativeTitle.textContent=alternative?'A better fit for your game':'No better fit yet';
+    alternativeStatus.textContent=alternative?'':!Academy.isCurrent()
       ?'Refresh live data to compare your plan with other comps.'
-      :tierOnly?'Record items or augments to compare builds.':`No higher-ranked pivot fits your ${basis}.`;
+      :tierOnly?'Record items or augments to compare builds.':'Record more items or augments to check again.';
     alternativeButton.hidden=!alternative;
     alternativeButton.dataset.chooseComp=alternative?.id||'';
     alternativeButton.innerHTML=alternative?`<span class="inline-entity">${IconUI.champion(alternative.mainChampion?.apiName)}<span>Pivot to ${esc(alternative.title)}</span></span>`:'';
@@ -168,7 +169,7 @@
     const {rows,tierNotice,notice,guidance}=CompFinder.recommendations(state);
     const note=panel.querySelector('#augment-note');
     const held=CompFinder.heldAugments(state).length,hasMatch=rows.some(r=>r.augmentMatches.some(a=>a.academy||a.recommended));
-    note.textContent=held?(hasMatch?'★ marks an Academy recommendation or a rules-based augment fit.':'Review each fit score for your augment’s contribution.'):'Optional · select your 2-1 augment.';
+    note.textContent=held?(hasMatch?'★ marks builds that suit your augment.':''):'Optional · select your 2-1 augment.';
     note.title=CompFinder.augment(selected)?.description||'';
     panel.querySelector('#finder-tier-notice').textContent=tierNotice;
     const listHeading=panel.querySelector('.finder-list-heading');
@@ -181,21 +182,15 @@
       const newGroup=r.rankGroup!==visibleRows[n-1]?.rankGroup&&(n>0||r.rankGroup!==1);
       const heading=newGroup?`<h3 class="finder-group">${groupLabels[r.rankGroup]}</h3>`:'';
       const g=r.guide,tier=r.unlocked?'X · Unlocked':g.tier==='X'?'X · Situational':academyTier(g.tier).label,carry=g.mainChampion?.apiName;
-      const fit=[r.keepers.length?`<span>Keep ${unitChips(r.keepers)}</span>`:'',r.early.length?`<span>Early ${unitChips(r.early)}</span>`:'',r.bridges.length?`<span>Trait bridge ${unitChips(r.bridges)}</span>`:'',r.matched.length?`<span>Owned ${chips(r.matched)}</span>`:'',r.used.length?`<span>Fits ${chips(r.used)}</span>`:'',r.ready.length?`<span>Can build ${chips(r.ready)}</span>`:'',r.earlyMatches.length?`<span>Early items ${chips(r.earlyMatches.map(m=>m.item))}</span>`:'',r.featuredOwned?`<span>Academy key item ${chips([r.featuredOwned])}</span>`:'',r.unmatched.length?`<span class="finder-unmatched">Off-plan ${chips(r.unmatched)}</span>`:'',r.unknownSpecial.some(id=>id!==r.featuredOwned)?`<span class="finder-unmatched">No supported match ${chips(r.unknownSpecial.filter(id=>id!==r.featuredOwned))}</span>`:''].filter(Boolean).join('');
+      const fit=[r.keepers.length?`<span>Keep ${unitChips(r.keepers)}</span>`:'',r.early.length?`<span>Early ${unitChips(r.early)}</span>`:'',r.bridges.length?`<span>Trait bridge ${unitChips(r.bridges)}</span>`:'',r.matched.length?`<span>Owned ${chips(r.matched)}</span>`:'',r.used.length?`<span>Fits ${chips(r.used)}</span>`:'',r.ready.length?`<span>Can build ${chips(r.ready)}</span>`:'',r.earlyMatches.length?`<span>Early items ${chips(r.earlyMatches.map(m=>m.item))}</span>`:'',r.featuredOwned?`<span>Academy key item ${chips([r.featuredOwned])}</span>`:'',r.unmatched.length?`<span class="finder-unmatched">Off-plan ${chips(r.unmatched)}</span>`:'',r.unknownSpecial.some(id=>id!==r.featuredOwned)?`<span class="finder-unmatched">No clear holder ${chips(r.unknownSpecial.filter(id=>id!==r.featuredOwned))}</span>`:''].filter(Boolean).join('');
       const special=r.specialMatches.map(s=>`<span class="special-destination" title="${esc(s.source)}">${chips([s.item])}<span>→</span>${IconUI.championLabel(s.champion)}<small>${esc(s.source)}</small></span>`).join('');
       const needs=[r.missingEmblems.length?`<span>Plan needs ${chips(r.missingEmblems)}</span>`:'',r.craftableEmblems.length?`<span>Emblem ready ${chips(r.craftableEmblems)}</span>`:'',r.missingAugment?`<span>Needs ${augmentIcon(r.missingAugment)} ${esc(CompFinder.augment(r.missingAugment)?.name||'required augment')}</span>`:'',r.missingCore.length?`<span>Aim for ${unitChips(r.missingCore.map(u=>({...u,stars:u.targetStars})))}</span>`:''].filter(Boolean).join('');
       const stars=r.augmentMatches.filter(a=>a.academy||a.recommended).map(a=>{
-        const label=a.name+' · '+(a.academy?'Academy recommendation':'Rules-based augment fit');
+        const label=a.name+' · '+(a.academy?'Academy recommendation':'Good augment match');
         return `<span class="finder-augment-match" title="${esc(label)}" aria-label="${esc(label)}">${augmentIcon(a.id)}<b aria-hidden="true">★</b></span>`;
       }).join('');
-      const breakdown=[
-        `<li>+${r.tierBonus} · Academy tier ${esc(tier)} ranking bonus</li>`,
-        ...r.reasons.map(({points,text,label,units})=>`<li>${points>0?'+':''}${Number(points.toFixed(2))} · ${units?.length
-          ?esc(label)+' · '+units.map(({name,apiName,stars})=>IconUI.championLabel(name+(stars?' '+stars+'★':''),apiName)).join(', ')
-          :esc(text)}</li>`)
-      ].join('');
-      const fitDetails=tierOnly?'':`<div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':'No strong match yet')+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}<details class="finder-method"><summary><span class="finder-fit-score">Fit score ${r.fitScore}</span> · <span class="finder-effective-score">Effective score ${r.effectiveScore}</span></summary><ul>${breakdown}</ul></details>`;
-      return `${heading}<article class="comp-suggestion"><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div>${fitDetails}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}</div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
+      const fitDetails=tierOnly?'':`<div class="finder-fit">${fit||'<span class="muted">'+(stars?'Augment fit':'No strong match yet')+'</span>'}</div>${special?'<div class="special-destinations">'+special+'</div>':''}${needs?'<div class="finder-needs">'+needs+'</div>':''}`;
+      return `${heading}<article class="comp-suggestion"${tierOnly?'':` data-fit-score="${r.fitScore}" data-effective-score="${r.effectiveScore}"`}><span class="finder-rank">${r.blocked?'':n+1}</span><div class="finder-comp"><div class="finder-titleline">${IconUI.champion(carry)}<h3>${esc(g.title)}</h3>${academyTierBadges(g,tier)}${stars}</div>${fitDetails}${r.gateReason||r.unlockReason?`<p class="finder-note">${esc(r.gateReason||r.unlockReason)}</p>`:''}</div><button ${r.blocked?'disabled ':''}data-choose-comp="${esc(g.id)}" aria-label="Choose ${esc(g.title)}">Aim here</button></article>`;
     }).join('')||`<div class="finder-empty"><p role="status">${esc(notice)}</p><ul>${guidance.map(text=>`<li>${esc(text)}</li>`).join('')}</ul></div>`;
     const more=panel.querySelector('#finder-more');more.hidden=rows.length<=5;more.textContent=expanded?'Show fewer':`All ${rows.length} comps`;
     const empty=document.querySelector('#queue .empty');if(empty)empty.hidden=true;
@@ -205,6 +200,5 @@
   document.addEventListener('carousel-meta-updated',draw);
   document.addEventListener('click',e=>{const b=e.target.closest('[data-pivot-item]:not([data-pivot-kind])');if(b)PivotDialog.open(b.dataset.pivotItem);});
   const previous=render;render=function(){const focus=document.activeElement?.dataset.focus;previous();draw();if(focus?.startsWith('unit-'))document.querySelector('[data-focus="'+CSS.escape(focus)+'"]')?.focus();for(const card of document.querySelectorAll('#queue .qcard')){const uid=card.querySelector('[data-action="remove"]')?.dataset.id,img=card.querySelector('.qtop > .icon');if(!uid||!img)continue;const b=document.createElement('button');b.className='queue-item-pivot';b.dataset.pivotItem=uid;b.setAttribute('aria-label','Pivot '+byId[state.queue.find(q=>q.uid===uid).item].name);b.setAttribute('aria-haspopup','dialog');img.before(b);b.append(img);}};
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>In <b>Explore builds</b>, record your chosen augments, completed items and loose components to personalize the Academy tier list. You can also add champions you own and set their stars. Effective score combines your fit and a bonus for the Academy tier. Unbuilt wishlist items do not count. Aim here loads an Academy guide and preserves everything recorded. Radiants cover the corresponding normal-item targets. Equip other special items manually. Explore builds can be reopened from your plan. New game clears your champions, augments and inventory. Undo restores them.</li><li>Click an unfinished item icon on the board or queue to pivot. Click outside any dialog to close it.</li>');
   render();
 })();

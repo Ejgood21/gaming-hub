@@ -53,6 +53,5 @@
     }
     if(dialog.open)drawCandidates();
   };
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>On a queued item, <b>Pivot</b> ranks alternatives by MetaTFT for assigned champions; unassigned items use similarity. <b>Plan instead</b> replaces its target; <b>Build instead</b> also consumes tracked ingredients. Undo reverses either action.</li>');
   render();
 })();

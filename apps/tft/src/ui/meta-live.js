@@ -8,16 +8,13 @@
     if(Array.isArray(saved))for(const entry of saved)MetaBuilds.cache(entry,'browser cache');
   }catch{}
   const status=document.createElement('span');status.id='meta-status';status.className='meta-status';document.querySelector('.academy-bar').append(status);
-  status.title='Requests go to api-hc.metatft.com. Settings shows last checks and errors. Academy remains the baseline.';
   const statusLink='<a href="https://www.metatft.com/units" target="_blank" rel="noopener noreferrer">MetaTFT supplement</a>';
   function connection(unit){
     const info=connections.get(unit),cached=MetaBuilds.find(Academy.snapshot.champions.find(c=>c.apiName===unit)?.name,true);
     const live=MetaBuilds.isCompatible(cached?.entry);
-    return {...info,unit,source:cached?.source==='live'&&!live?'saved':cached?.source||'unavailable',
-      builds:live?cached.entry.builds.length:0};
+    return {...info,unit,source:cached?.source==='live'&&!live?'saved':cached?.source||'unavailable'};
   }
   MetaBuilds.connection=name=>connection(MetaBuilds.champion(name)?.apiName);
-  MetaBuilds.connections=()=>[...connections.keys()].map(connection);
   MetaBuilds.pivotNotice=name=>{
     if(!name||MetaBuilds.dataFor({champion:name}))return '';
     const {revision,phase}=MetaBuilds.connection(name);
@@ -46,8 +43,6 @@
     const info=names.map(n=>MetaBuilds.connection(n));
     const errors=info.map(s=>s.revision===Academy.revision?s.error:'');
     const failed=!Academy.live||errors.some(Boolean);
-    const staleLive=errors.some(error=>error?.startsWith('Stale patch'));
-    const live=info.filter(s=>s.source==='live').length;
     const relevant=names.flatMap((name,i)=>{
       const data=MetaBuilds.find(name,true)?.entry;
       return data&&(MetaBuilds.isCompatible(data)||!Academy.live||errors[i])?[data]:[];
@@ -59,12 +54,12 @@
       const updated=new Date(data.sourceUpdated||data.updated);
       const date=Number.isNaN(updated.getTime())?'unknown date':updated.toISOString().slice(0,10);
       const stale=!MetaBuilds.isCompatible(data);
-      const source=`Patch ${data.patch||'unknown'} · ${date}${stale?' · stale reference':''}`;
+      const source=`Patch ${data.patch||'unknown'} · ${date}${stale?' · saved data':''}`;
       sources.set(source,stale);
     }
-    const statusText=failed?'refresh unavailable':!names.length?(currentProbe?'live check complete':'awaiting champion'):live===names.length?'live stats':live?'some live stats':'awaiting champion stats';
+    const statusText=failed?'refresh unavailable':'';
     const labels=[...sources].map(([label,stale])=>`<span class="${stale?'source-notice':''}">${esc(label)}</span>`).join(' / ');
-    status.innerHTML=[statusLink,labels,statusText,staleLive?'live returned a stale patch':''].filter(Boolean).join(' · ');
+    status.innerHTML=[statusLink,labels,statusText].filter(Boolean).join(' · ');
   }
 
   function request(unit){
@@ -74,10 +69,10 @@
     if(pending.has(requestKey)||now-(attempted.get(requestKey)||0)<(info.error?5*60000:freshness))return;
     const cached=MetaBuilds.dataFor({champion:unit.name});
     if(cached&&now-Number(cached.fetchedAt||0)<freshness){
-      if(info.revision!==revision)mark(id,{revision,checked:cached.fetchedAt,phase:'idle',error:''});
+      if(info.revision!==revision)mark(id,{revision,phase:'idle',error:''});
       return;
     }
-    attempted.set(requestKey,now);mark(id,{revision,checked:now,error:'',phase:'queued'});
+    attempted.set(requestKey,now);mark(id,{revision,error:'',phase:'queued'});
     pending.set(requestKey,revision);waiting.push({id,set,patch,revision,requestKey});pump();
   }
 
@@ -92,7 +87,7 @@
       const data=MetaBuilds.compact(result.overall,result.items,result.patch);
       if(data.set!=='TFTSet'+set||!data.builds.length)throw Error('Stats unavailable for this set');
       if(data.patch!==patch)throw Error(`Stale patch ${data.patch} (Academy ${patch})`);
-      data.fetchedAt=Date.now();MetaBuilds.cache(data,'live');mark(id,{success:Date.now(),error:''});
+      data.fetchedAt=Date.now();MetaBuilds.cache(data,'live');mark(id,{error:''});
       try{localStorage.setItem(key,JSON.stringify(MetaBuilds.cached()));}catch{}
     }catch(e){
       if(revision===Academy.revision){
@@ -118,6 +113,5 @@
     const name=byId[q.item].name;
     applyItemPivot(next=>PivotPlanner.replace(next,q.uid,choice.item.id,DATA.items,true),`${choice.item.name} built instead of ${name}.`);
   });
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Build instead</b> beneath a queued item offers a one-click, craftable pivot. MetaTFT suggestions rank three-item builds around your champion’s equipped items, then show the best craftable pivot. Only S/A builds with at least 100 games qualify. The three small icons show the full build; other unbuilt targets may differ. With no strong match, no pivot is suggested. Generic similarity is only used for items without an assigned champion. Undo restores the original item and ingredients.</li>');
   render();
 })();

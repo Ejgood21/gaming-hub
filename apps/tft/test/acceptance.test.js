@@ -201,7 +201,7 @@ test('A9: component anvil preserves priority and records the receipt as other', 
   const input = plan({queue: [queue('InfinityEdge'), queue('SpearOfShojin')]});
   const offers = DecisionPlanner.anvil(input, 'components').filter(r => ['BFSword','SparringGloves'].includes(r.id));
   assert.equal(offers[0].id, 'BFSword');
-  assert.match(offers[0].reason, /2 still needed/);
+  assert.equal(offers[0].reason, '×2 needed');
   DecisionPlanner.receiveAnvil(input, offers[0]);
   assert.deepEqual(input.lootHistory.loose.BFSword, ['other']);
   assert.equal(input.lootHistory.counts.BFSword, undefined);
