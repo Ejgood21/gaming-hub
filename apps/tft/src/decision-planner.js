@@ -172,7 +172,7 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
         return evaluations.get(rank);
       };
       const forNext=target=>!!plan.activeComp&&target.uid===allocation.next.uid;
-      return componentOrder.filter((id,n)=>n<8||needs[id]||pivots[id]?.length).map(id=>{
+      const rows=componentOrder.filter((id,n)=>n<8||needs[id]||pivots[id]?.length).map(id=>{
         const targets=(planned[id]||[]).slice().sort((a,b)=>Number(forNext(b))-Number(forNext(a))||holderRank(a.champion)-holderRank(b.champion)||a.rank-b.rank);
         const alternatives=pivots[id]||[],baseline=needs[id],priority=Academy.componentPreference(plan,id);
         const carrierRank=targets.length?holderRank(targets[0].champion):Infinity;
@@ -186,12 +186,13 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
         }else if(alternatives.length){
           const b=alternatives[0];score=(b.tier==='S'?20:10)+Math.max(0,Math.min(2,b.score))-Math.min(6,b.missing)*.1;
         }
-        return {id,score,gain,best,carrierRank,forNext:targets.some(forNext),pivot:!!alternatives.length,pivotTier:alternatives[0]?.tier||'',targets,pivotTargets:alternatives,count:baseline?.count||0,rank:baseline?.rank??99,items:baseline?.items||[],finishes:targets};
-      }).sort((a,b)=>Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||Number(b.forNext)-Number(a.forNext)||Number(b.count>0)-Number(a.count>0)||b.count-a.count||(a.count&&b.count?a.carrierRank-b.carrierRank:0)||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
+        return {id,score,gain,best,pivot:!!alternatives.length,pivotTier:alternatives[0]?.tier||'',targets,pivotTargets:alternatives,count:baseline?.count||0,rank:baseline?.rank??99,items:baseline?.items||[],finishes:targets};
+      });
+      return OfflineTracker.rankComponents(plan,rows);
     },
     discovery(plan){
       const candidates=CompFinder.ranked(plan).filter(r=>!r.blocked).slice(0,8);
-      return componentOrder.slice(0,8).map(id=>{
+      const rows=componentOrder.slice(0,8).map(id=>{
         let score=0;const items=new Set(),routes=[];
         for(const r of candidates){
           const pending=r.remaining||r.build.entries,pool={...plan.owned};let best=0;
@@ -204,7 +205,8 @@ module.exports = function createDecisionPlanner({Academy, MetaBuilds, PlanAdviso
           if(best){score+=best*(1+Math.max(0,r.fitScore)/100);routes.push(r.guide.title);}
         }
         return {id,score,gain:0,count:0,rank:99,items:[],routes,discovery:true,targets:[...items].map(item=>({item,source:'discovery'})),pivotTargets:[],finishes:[...items].map(item=>({item})),best:{actions:[]}};
-      }).sort((a,b)=>Number(plan.pins.includes(b.id))-Number(plan.pins.includes(a.id))||b.score-a.score||LootTracker.compare(plan,a.id,b.id)||componentOrder.indexOf(a.id)-componentOrder.indexOf(b.id));
+      });
+      return OfflineTracker.rankComponents(plan,rows);
     },
     anvil(plan,type='ornns'){
       if(type==='components')return this.carousel(plan).filter(r=>componentOrder.slice(0,8).includes(r.id)).map(r=>({...r,item:byId[r.id],component:true,champion:'',reason:r.count?r.count+' still needed for your queue':r.discovery?'Flexible component':r.pivot?'Pivot item':'Not needed'}));

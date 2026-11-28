@@ -1,10 +1,5 @@
-/* Compact champion reference and source-aware component entry. */
+/* Compact champion reference. */
 (() => {
-  const note=document.createElement('details');note.className='loot-note';
-  note.innerHTML='<summary id="loot-summary">Loot-history tie-break</summary><p>Among equally urgent needs, prefer components already dropped more often from natural PvE loot. This is a historical bag heuristic, not verified current-set odds. Pins, queue order, Academy priorities and the number needed come first. It does not predict when another component will drop.</p><p>Bench + and 1–8 record PvE loot. Choose component anvils in Anvil choices; those record Other. “Got one” always records carousel. Anvils, augments, special components and recipe clicks do not count as natural drops. − corrects the source of the last loose copy; crafting keeps the drop history. Undo corrects any recent action.</p><label><input type="checkbox" id="loot-enabled"> Use loot history to break ties</label><div id="loot-counts"></div><p id="loot-coverage"></p></details>';
-  document.querySelector('.bench').append(note);
-  document.querySelector('.shoppingfoot').textContent='Got one = carousel · ★ Pin to put first';
-  document.getElementById('loot-enabled').addEventListener('change',e=>mutate(()=>state.lootTieBreak=e.target.checked,'Carousel ordering updated.'));
   const makeDialog=(id,html)=>{const d=document.createElement('dialog');d.id=id;d.innerHTML=html;document.body.append(d);return d;};
   const reference=makeDialog('meta-reference','<div class="modal-heading"><h2 id="reference-title">MetaTFT · S/A item builds</h2><button data-close="meta-reference" aria-label="Close builds">×</button></div><div class="reference-controls"><label>Champion <select id="reference-champion"></select></label><label>Containing item <select id="reference-item"><option value="">Any item</option></select></label></div><div class="reference-options"><label><input type="checkbox" id="reference-equipped" checked> Match completed items</label><button id="reference-pivot">Pivot to an item…</button><button id="reference-site">Open MetaTFT here ↗</button></div><div id="reference-owned" class="reference-owned"></div><div class="reference-hint"><span>Green ✓ = completed on this champion</span><button id="reference-clear">Clear item filter</button></div><details class="reference-data"><summary id="reference-data-summary">Data details</summary><p id="reference-date" class="reference-date"></p></details><div class="reference-table-heading"><span>Build</span><span>Tier</span><span>Avg place</span><span>Games</span></div><div id="reference-results"></div>');
   reference.setAttribute('aria-labelledby','reference-title');
@@ -70,17 +65,11 @@
   document.addEventListener('carousel-meta-updated',()=>{if(reference.open)drawReference();});
   document.addEventListener('carousel-new-game',()=>{reference.close();site.close();document.getElementById('meta-frame').removeAttribute('src');});
   const oldRender=render;render=function(){
-    LootTracker.ensure(state);oldRender();
+    oldRender();
     for(const card of document.querySelectorAll('#queue .qcard')){
       const q=state.queue.find(q=>q.uid===card.dataset.queueUid),owner=card.querySelector('.item-owner');if(!q?.champion||!owner)continue;
       const b=document.createElement('button');b.className='queue-champion';b.dataset.championBuilds=q.champion;b.innerHTML=owner.innerHTML;b.setAttribute('aria-label',q.champion+' S/A builds');b.setAttribute('aria-haspopup','dialog');b.setAttribute('aria-expanded','false');owner.replaceChildren(b);
     }
-    const h=state.lootHistory;
-    document.getElementById('loot-enabled').checked=state.lootTieBreak!==false;document.getElementById('loot-enabled').disabled=!h.complete;
-    document.getElementById('loot-summary').textContent='Loot-history tie-break · '+(!h.complete?'unavailable':state.lootTieBreak===false?'off':'estimate');
-    document.getElementById('loot-coverage').textContent=h.complete?'Tracks natural PvE components from the start of this game.':'This game predates source tracking. Start a new game for a complete history; current inventory is preserved.';
-    document.getElementById('loot-counts').innerHTML='<span>Natural drops</span>'+componentOrder.slice(0,8).map(id=>`<span title="${esc(byId[id].name)}" aria-label="${esc(byId[id].name)}: ${h.counts[id]||0} natural drops">${icon(id)} ×${h.counts[id]||0}</span>`).join('');
-    for(const el of document.querySelectorAll('#shopping .need')){const id=el.querySelector('[data-action="gain"]')?.dataset.id;if(!id)continue;el.querySelector('[data-action="gain"]').setAttribute('aria-label','Got one '+byId[id].name+' from carousel');if(h.complete&&state.lootTieBreak!==false&&(h.counts[id]||0)>0)el.querySelector('.needname').insertAdjacentHTML('beforeend',`<small class="loot-history-label">${h.counts[id]} prior PvE drop${h.counts[id]===1?'':'s'} · tie-break only</small>`);}
     if(reference.open){
       if(lastSnapshot!==Academy.snapshot)champions();
       MetaBuilds.request(selected);drawReference();

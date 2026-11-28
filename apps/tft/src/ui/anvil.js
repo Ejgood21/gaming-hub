@@ -37,7 +37,7 @@ const AnvilUI=(()=>{
     const ranked=[...visible]; // model order (including pins) is authoritative
     const best=ranked[0],second=ranked[1];
     const supported=best&&(best.component?best.score>0||state.pins.includes(best.item.id):best.score>0);
-    const tied=second&&best.score===second.score&&(!best.component||(!!best.count===!!second.count&&(!best.count||best.carrierRank===second.carrierRank)&&state.pins.includes(best.item.id)===state.pins.includes(second.item.id)));
+    const tied=second&&(best.component?OfflineTracker.compareComponentPriority(state,best,second)===0:best.score===second.score);
     let verdict='';
     if(mode==='compare')verdict=!ranked.length?'Add your offers to compare.':ranked.length===1?'1 offer entered — add the others to compare.':!supported?'No supported preference among these offers.':tied?'Top options are similarly supported.':'';
     document.getElementById('anvil-verdict').textContent=verdict;
