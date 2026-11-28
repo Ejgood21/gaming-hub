@@ -51,7 +51,7 @@ export async function checkChampionOptionalPlay(page) {
   const nextBuild = () => page.locator('#next-build strong').textContent();
   const carouselTarget = () => page.locator('#shopping .need').first().locator('.carousel-for').textContent();
   await page.getByText('TFT Academy tier list',{exact:true}).waitFor();
-  assert.equal(await page.locator('#comp-suggestions .finder-effective-score').count(),0);
+  assert.equal(await page.locator('#comp-suggestions [data-effective-score]').count(),0);
 
   for (const item of ['Needlessly Large Rod','Chain Vest']) {
     await page.getByRole('button',{name:'Got one '+item+' from carousel',exact:true}).click();
@@ -65,11 +65,11 @@ export async function checkChampionOptionalPlay(page) {
   const destination = 'Riftbeast Reroll';
   assert.notEqual(best,destination);
   assert.equal(await top.locator('.finder-rank').textContent(),'1');
-  assert.ok(Number((await top.locator('.finder-fit-score').textContent()).split(' ').at(-1))>0);
+  assert.ok(Number(await top.getAttribute('data-fit-score'))>0);
   await top.getByRole('button',{name:'Choose '+best,exact:true}).click();
   await title.getByText(best,{exact:true}).waitFor();
   assert.equal(await pivot.getByRole('button').count(),0);
-  assert.match(await pivot.textContent(),/items and augments/);
+  assert.match(await pivot.textContent(),/No better fit yet/);
   const beforePaste = await saved(page);
   const bannerBefore = await nextBuild();
   const carouselBefore = await carouselTarget();
@@ -101,7 +101,7 @@ export async function checkChampionOptionalPlay(page) {
 
   await page.locator('#explore-mode').click();
   assert.equal(await topTitle(),best);
-  await pivot.getByRole('heading',{name:'A better fit for your items and augments',exact:true}).waitFor();
+  await pivot.getByRole('heading',{name:'A better fit for your game',exact:true}).waitFor();
   assert.equal(await pivot.getByRole('button').innerText(),'Pivot to '+best);
   await page.getByRole('button',{name:'Explore emblems',exact:true}).click();
   const emblems = page.locator('#emblem-explorer');

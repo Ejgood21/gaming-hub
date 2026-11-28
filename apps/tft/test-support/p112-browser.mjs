@@ -40,8 +40,8 @@ async function yiRank(page) {
   assert.equal(await choose(row,'Yi Rengar').isEnabled(),true);
   return {
     rank:Number(await row.locator('.finder-rank').textContent()),
-    fit:Number((await row.locator('.finder-fit-score').textContent()).slice('Fit score '.length)),
-    effective:Number((await row.locator('.finder-effective-score').textContent()).slice('Effective score '.length))
+    fit:Number(await row.getAttribute('data-fit-score')),
+    effective:Number(await row.getAttribute('data-effective-score'))
   };
 }
 
@@ -67,7 +67,7 @@ export async function checkEmblemAiming(page, {checkFallback = false, expectedUn
   await page.getByRole('button',{name:'Record owned Brawler Emblem',exact:true}).click();
   // Both Aim actions should use the same live item-build data for the emblem holder.
   await page.evaluate(()=>window.MetaReference.open('Master Yi'));
-  await page.locator('#meta-diagnostics > p').filter({hasText:/^Master Yi · live · [1-9]\d* ranked builds/}).waitFor({state:'attached'});
+  await page.locator('#reference-data-summary').getByText(/^[1-9]\d* builds · live$/).waitFor();
   await page.getByRole('button',{name:'Close builds',exact:true}).click();
   const top = page.locator('.comp-suggestion').first();
   await top.getByRole('heading',{name:'Adaptor Reroll',exact:true}).waitFor();
@@ -201,7 +201,7 @@ export async function checkMarkMade(page) {
   const undo = page.locator('#undo');
   const rod = page.getByRole('button',{name:'Got one Needlessly Large Rod from carousel',exact:true});
   const vest = page.getByRole('button',{name:'Got one Chain Vest from carousel',exact:true});
-  const fit = async () => Number((await page.locator('#comp-fit').innerText()).split('Fit score ').at(-1));
+  const fit = async () => Number(await page.locator('#comp-fit').getAttribute('data-fit-score'));
   const before = await fit();
   const carousel = () => page.locator('#shopping .need').allTextContents();
   const needs = await carousel();
@@ -463,7 +463,7 @@ export async function checkChampionStats(page) {
   const reference=page.locator('#meta-reference');
   for(const name of ['Ivern','Alune','Morgana','Sentinel']){
     await page.locator(`#position-board [data-champion-builds="${name}"]`).click();
-    await page.locator('#meta-diagnostics > p').filter({hasText:new RegExp('^'+name+' · live · [1-9]\\d* ranked builds')}).waitFor({state:'attached'});
+    await reference.locator('#reference-data-summary').getByText(/^[1-9]\d* builds · live$/).waitFor();
     await reference.locator('.reference-build .build-games').first().waitFor();
     await reference.getByRole('button',{name:'Close builds',exact:true}).click();
   }

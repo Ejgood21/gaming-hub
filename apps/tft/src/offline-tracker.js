@@ -29,7 +29,6 @@ module.exports = function createOfflineTracker({DATA, byId, Academy, Tracker, Lo
           seen:(Array.isArray(value.augmentOffers.seen)?value.augmentOffers.seen:[]).filter(id=>typeof id==='string').map(id=>id.slice(0,120)).slice(-60),
           awaiting:Array.from({length:3},(_,n)=>!value.augmentOffers.ids?.[n]&&value.augmentOffers.awaiting?.[n]===true)
         }:null,
-        tempo:value.tempo==='urgent'?'urgent':'balanced',
         pivotIntents:Object.fromEntries(Object.entries(value.pivotIntents||{}).filter(([name,ids])=>name.length<120&&Array.isArray(ids)).map(([name,ids])=>[name,ids.filter(id=>valid.has(id)).slice(0,3)])),
         firstAugment:typeof value.firstAugment==='string'?value.firstAugment.slice(0,120):'',
         lootHistory:LootTracker.clean(value.lootHistory,value.owned),

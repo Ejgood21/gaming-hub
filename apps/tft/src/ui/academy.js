@@ -20,15 +20,12 @@ const AcademyUI=(() => {
   let listed;
   function status(){
     const s=Academy.snapshot,updated=new Date(s.sourceUpdated||s.fetchedAt);
-    const label=Number.isNaN(updated.getTime())?'unknown time':updated.toLocaleString();
-    const saved=new Date(s.fetchedAt||s.sourceUpdated);
-    const date=Number.isNaN(saved.getTime())?'an unknown date':saved.toISOString().slice(0,10);
+    const label=Number.isNaN(updated.getTime())?'':updated.toLocaleString(undefined,{year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'2-digit'});
     const el=document.getElementById('academy-status');
-    el.textContent=checking?'Checking live data…':Academy.live?`Live · Patch ${s.patch} · updated ${label}`:`Saved · Patch ${s.patch} · ${date}`;
-    document.getElementById('recipe-freshness').hidden=Academy.live&&s.patch===DATA.patch;
+    el.textContent=checking?'Checking live data…':Academy.live?`Live · Patch ${s.patch}${label?' · updated '+label:''}`:`Saved · Patch ${s.patch}`;
     bar.querySelector('#refresh-live-data').disabled=checking;
     warning.hidden=checking||Academy.live;
-    const message=`Live data unavailable — showing saved Patch ${s.patch} data from ${date}. Recommendations may be wrong for the current patch.`;
+    const message=`Live data is unavailable. Showing saved Patch ${s.patch} data.`;
     if(warning.textContent!==message)warning.textContent=message;
     warning.title=error;
     if(listed!==s){
@@ -36,13 +33,13 @@ const AcademyUI=(() => {
       const guides=s.guides.slice().sort((a,b)=>academyTier(a.tier).rank-academyTier(b.tier).rank||a.title.localeCompare(b.title));
       reference.querySelector('ul').innerHTML=guides.map(g=>`<li>${academyTierBadges(g)} <a href="https://tftacademy.com/tierlist/comps/${encodeURIComponent(g.compSlug)}" target="_blank" rel="noopener">${IconUI.championLabel(g.title,g.mainChampion?.apiName||g.title)}</a></li>`).join('');
     }
-    reference.querySelector('summary').textContent=`${Academy.live?'Live Academy tier list':'Stale Academy tier list · reference only'} · Set ${s.set} · Patch ${s.patch}`;
+    reference.querySelector('summary').textContent=`${Academy.live?'Live Academy tier list':'Saved Academy tier list'} · Set ${s.set} · Patch ${s.patch}`;
   }
   const priority=document.createElement('div');priority.id='academy-priority';priority.className='academy-priority';priority.hidden=true;
   document.querySelector('.queuehead').before(priority);
   function drawPriority(){
     const current=Academy.currentGuide(state),list=current?Academy.priorities(current):[];priority.hidden=!list.length;
-    priority.innerHTML=list.length?'<span>Academy priority</span>'+list.map((p,n)=>`${n?'<span aria-hidden="true">›</span>':''}<span class="academy-priority-item" title="${esc(byId[p.id]?.name||p.id)}${p.component?' · component preference':''}" aria-label="${n+1}. ${esc(byId[p.id]?.name||p.id)}${p.component?', component preference':''}">${icon(p.id)}${p.component?'<small>component</small>':''}</span>`).join(''):'';
+    priority.innerHTML=list.length?'<span>Academy priority</span>'+list.map((p,n)=>`${n?'<span aria-hidden="true">›</span>':''}<span class="academy-priority-item" title="${esc(byId[p.id]?.name||p.id)}" aria-label="${n+1}. ${esc(byId[p.id]?.name||p.id)}">${icon(p.id)}${p.component?`<small>${esc(shortNames[p.id]||byId[p.id]?.name||p.id)}</small>`:''}</span>`).join(''):'';
   }
   const oldRender=render;render=function(){oldRender();const title=document.getElementById('app-title'),carry=Academy.guide(state)?.mainChampion?.apiName;title.innerHTML=(carry?IconUI.champion(carry):'')+esc(state.activeComp?.title||'Carousel');status();drawPriority();};
   function plannedSet(){
@@ -73,7 +70,7 @@ const AcademyUI=(() => {
     const ready=await refreshData(decoded.set);
     if(mine!==intent)return;
     if(!ready){
-      feedback.textContent='Live data could not be verified for this team code. Your plan is still saved.';
+      feedback.textContent='Couldn’t load live data for this team code. Try again.';
       feedback.classList.add('error');
       return;
     }
@@ -111,7 +108,6 @@ const AcademyUI=(() => {
   document.addEventListener('carousel-backup-imported',()=>void refreshData(plannedSet()));
   document.addEventListener('carousel-new-game',()=>{intent++;feedback.textContent='';feedback.classList.remove('error');void refreshData();});
   document.addEventListener('click',e=>{if(e.target.closest('[data-action="undo"],#apply-import')){intent++;feedback.textContent='';feedback.classList.remove('error');}},true);
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li>Use <b>Paste a comp</b> or paste a TFT Academy team code anywhere with <b>Ctrl/Cmd + V</b>. Its final-board items immediately replace unfinished targets, ordered by Academy’s Item Priority list. Each listed item promotes one copy. Component-only lists use the guide’s early-board items first, then favor recipes using its preferred components. Early holder → final holder appears on those cards. Current champions, chosen augments, loose components and completed items stay. Matching completed items count toward the new build. Undo reverses the import.</li><li><b>New game</b> immediately clears targets, completed items, components, and pins. Live data is checked when you open Carousel, start a new game, paste a code or select <b>Refresh live data</b>. Saved tier lists remain available as stale reference during an outage.</li><li>The team code must match a guide’s final board exactly. If multiple guides use the same code, the highest-tier, most recently updated guide is used and shown in the heading.</li>');
   void refreshData(plannedSet());
   return {
     isChecking:()=>checking,

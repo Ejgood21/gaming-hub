@@ -9,7 +9,11 @@
   panel.setAttribute('aria-label', OpenerGuidance.label);
   panel.innerHTML = `<h2><a href="${OpenerGuidance.source}" target="_blank" rel="noopener">${OpenerGuidance.label}</a></h2><ul></ul>`;
   const rules = panel.querySelector('ul');
-  const priority = document.createElement('p');
+  const priority = document.createElement('button');
+  priority.type = 'button';
+  priority.setAttribute('aria-haspopup', 'dialog');
+  priority.setAttribute('aria-controls', 'augment-dialog');
+  priority.addEventListener('click', () => AugmentUI.open());
   priority.id = 'augment-priority';
   priority.className = 'augment-priority';
   const workspace = document.querySelector('.workspace');
@@ -19,7 +23,7 @@
   function draw() {
     const openers = OpenerGuidance.forPlan(state);
     panel.hidden = !openers.length;
-    rules.innerHTML = openers.map(text => `<li>${esc(text)} <small>Patch ${OpenerGuidance.patch}</small></li>`).join('');
+    rules.innerHTML = openers.map(text => `<li>${esc(text)}</li>`).join('');
     priority.hidden = !state.activeComp;
     if (state.activeComp) {
       // Reviewing the chooser does not advance the next unrecorded round.
@@ -29,7 +33,8 @@
       const style = guide?.style || guide?.title || '';
       const archetype = /reroll/i.test(style) ? 'reroll' : /fast\s*9\b/i.test(style) ? 'fast9' : 'flex';
       priority.textContent = AugmentAdvisor.stages[round] + ': ' + priorities[archetype][round];
-      if (shopping.nextElementSibling !== priority) priority.before(shopping);
+      priority.setAttribute('aria-label', 'Augment choices, ' + priority.textContent);
+      if (priority.nextElementSibling !== shopping) priority.after(shopping);
     } else if (shopping.previousElementSibling !== workspace) {
       workspace.after(shopping);
     }

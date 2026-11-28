@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {checkAugmentReferencesAndCarousel, checkChampionStats, checkAugmentRerolls, checkCompFlipAndGrants, checkEmblemAiming, checkKarmaBoardAndOffers, checkMarkMade} from './test-support/p112-browser.mjs';
 import {checkChampionOptionalPlay} from './test-support/p116-browser.mjs';
 import {checkComponentPriorities} from './test-support/p117-browser.mjs';
+import {checkStyleAndText} from './test-support/p118-browser.mjs';
 
 const require = createRequire(import.meta.url);
 const {chromium} = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -101,8 +102,9 @@ async function replayFixtures() {
   await page.getByText('Live · Patch 18.3b',{exact:false}).waitFor();
   const opener = page.getByRole('region',{name:'Opener guide Patch 18.3b',exact:true});
   await opener.waitFor();
-  const patchLabels = await opener.locator('li small').allTextContents();
-  assert.ok(patchLabels.length>=2 && patchLabels.length<=3 && patchLabels.every(label=>label==='Patch 18.3b'));
+  const openerRules = await opener.locator('li').allTextContents();
+  assert.ok(openerRules.length>=2 && openerRules.length<=3);
+  assert.ok(openerRules.every(rule=>!rule.includes('Patch 18.3b')));
   const utility = page.getByLabel('More options',{exact:true});
   const expectedUtilities = ['Import a game','How it works','Settings'];
   for(let n=0;n<3;n++){
@@ -133,7 +135,7 @@ async function replayFixtures() {
 
   assert.equal(await alternate.isVisible(),false);
   await choose('Ahri Morgana');
-  await alternate.getByRole('heading',{name:'A better fit for your items and recorded champions',exact:true}).waitFor();
+  await alternate.getByRole('heading',{name:'A better fit for your game',exact:true}).waitFor();
   const before = await page.locator('#app-title').textContent();
   const pivotAction = alternate.getByRole('button',{name:/^Pivot to /});
   const next = (await pivotAction.textContent()).replace(/^Pivot to /,'');
@@ -163,12 +165,11 @@ async function replayFixtures() {
   await page.getByText('Live · Patch 18.7',{exact:false}).waitFor();
   await page.getByRole('button',{name:'Got one Needlessly Large Rod from carousel',exact:true}).click();
   await page.getByRole('button',{name:'Got one Chain Vest from carousel',exact:true}).click();
-  const fitSummary=suggestion('AP Fast 9').locator('.finder-fit-score');
+  const apFast9Row=suggestion('AP Fast 9');
   await suggestion('AP Fast 9').locator('.academy-tier').getByText('S',{exact:true}).waitFor();
-  const rankScore=suggestion('AP Fast 9').locator('.finder-effective-score');
-  const scoreValue=async locator=>Number((await locator.innerText()).split(' ').at(-1));
-  assert.equal(await scoreValue(rankScore),await scoreValue(fitSummary)+24);
-  const originalFit=await fitSummary.textContent();
+  const scoreValue=async name=>Number(await apFast9Row.getAttribute('data-'+name+'-score'));
+  assert.equal(await scoreValue('effective'),await scoreValue('fit')+24);
+  const originalFit=await scoreValue('fit');
   await page.locator('#first-augment-trigger').click();
   const firstAugments=(await page.locator('#first-augment-choices .icon-select-option span').allTextContents())
     .map(label=>label.trim().replace(/\s+/g,' ').toLowerCase());
@@ -181,10 +182,8 @@ async function replayFixtures() {
   assert.deepEqual(await page.locator('#first-augment-choices .icon-select-option span').allTextContents(),['Unrivaled']);
   await page.locator('#first-augment-choices input').fill('Woven Magic');
   await page.locator('[data-option-value="DA_WovenMagic"]').click();
-  assert.notEqual(await fitSummary.textContent(),originalFit);
-  await suggestion('AP Fast 9').locator('.finder-method summary').click();
-  await suggestion('AP Fast 9').getByText(/\+\d+ · Augment: Woven Magic.*Rules-based fit/).waitFor();
-  await suggestion('AP Fast 9').getByLabel('Woven Magic · Rules-based augment fit').waitFor();
+  assert.notEqual(await scoreValue('fit'),originalFit);
+  await apFast9Row.getByLabel('Woven Magic · Good augment match').waitFor();
 
   await startGame();
   await checkWidth('#comp-finder, .comp-suggestion, .current-unit, .need');
@@ -196,9 +195,8 @@ async function replayFixtures() {
   await page.locator('.academy-reference summary').click();
   await choose('Mamawood');
   await alternate.getByRole('button',{name:'Pivot to AP Fast 9',exact:true}).click();
-  const noPivot=alternate.getByText(/^No higher-ranked pivot fits your /);
+  const noPivot=alternate.getByRole('heading',{name:'No better fit yet',exact:true});
   await noPivot.waitFor();
-  await alternate.getByRole('heading',{name:'No better fit yet',exact:true}).waitFor();
   assert.equal(await alternate.getByRole('button').count(),0);
   await startGame();
   await choose('AP Fast 9');
@@ -210,7 +208,7 @@ async function replayFixtures() {
   const hero = page.locator('#next-build');
   assert.equal(await page.locator('.opener-banner').isVisible(),false);
   assert.equal(await page.locator('#augment-priority').innerText(),'2-1: Econ › Item › Combat');
-  const lockedFit = async () => Number((await page.locator('#comp-fit').innerText()).split('Fit score ').at(-1));
+  const lockedFit = async () => Number(await page.locator('#comp-fit').getAttribute('data-fit-score'));
   const carouselPriorities = () => page.locator('#shopping .need').allTextContents();
   const markCrownguard = async (message, received) => {
     const fit=await lockedFit();
@@ -260,7 +258,7 @@ async function replayFixtures() {
   await page.setViewportSize({width:390,height:844});
 
   await markCrownguard('Crownguard marked made.',false);
-  await page.getByRole('button',{name:'+ Received item',exact:true}).click();
+  await page.getByRole('button',{name:'Record received item',exact:true}).click();
   await page.locator('#receive-search').fill('Crownguard');
   await page.locator('#receive-items [data-receive-item="Crownguard"]').click();
   assert.equal(await page.locator('#completed .completeitem[aria-label^="Crownguard"]').count(),1);
@@ -409,6 +407,7 @@ async function replayAugmentFixtures() {
     const page = await newPage(width);
     await routeFixture(page,fixture);
     await page.goto(origin);
+    await checkStyleAndText(page,width);
     const alune = await checkEmblemAiming(page,{expectedUnownedRank:8});
     await checkChampionStats(page);
     await checkMarkMade(page);
@@ -420,7 +419,7 @@ async function replayAugmentFixtures() {
     await checkChampionOptionalPlay(page);
     await checkComponentPriorities(page);
     assert.deepEqual(errors,[]);
-    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, rerolls, comp flip, item grants, Yi Rengar #8/#8/#19, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste, anvil and P1.17 component priorities passed · zero console errors`);
+    console.log(`${width} × 844 · 18.7 fixture · 2-1 offers, rerolls, comp flip, item grants, Yi Rengar #8/#8/#19, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste, anvil, P1.17 component priorities and P1.18 style and copy passed · zero console errors`);
     await page.close();
   }
 }
@@ -436,6 +435,7 @@ async function replayLive() {
       if (hostname==='tftacademy.com'||hostname==='api-hc.metatft.com') sourcePaths.add(pathname);
     });
     await page.goto(origin);
+    await checkStyleAndText(page,width);
     const alune = await checkEmblemAiming(page);
     await checkChampionStats(page);
     await checkMarkMade(page);
@@ -451,7 +451,7 @@ async function replayLive() {
       assert.ok(sourcePaths.has(path),`Missing successful live response for ${path}`);
     }
     assert.deepEqual([alune.rank,karma.tearOnly.rank,karma.beforeAim.rank,karma.afterAim.rank],[8,8,19,19]);
-    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · 2-1 offers, rerolls, comp flip, item grants, emblem Aim, portraits, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste, anvil and P1.17 component priorities passed · ${errors.length-previousErrors} console errors`);
+    console.log(`${width} × 844 · Live Set 18 Patch 18.7 · 2-1 offers, rerolls, comp flip, item grants, emblem Aim, portraits, Mark made, augment references, menu, Carousel agreement, champion stats, champion-optional play, paste, anvil, P1.17 component priorities and P1.18 style and copy passed · ${errors.length-previousErrors} console errors`);
     await page.close();
   }
   assert.deepEqual(errors,[]);

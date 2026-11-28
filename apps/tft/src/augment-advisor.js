@@ -96,12 +96,12 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, Of
       const targets=guide&&plan.queue.length?plan.queue.filter(q=>!q.done):primary?.remaining||[];
       const placed=guide?plan.queue.filter(q=>q.done).map(q=>q.item):primary?.placements.map(p=>p.item)||[];
       const fitGuide=guide||primary?.guide;
-      return {guide,fitGuide,routes,ranked,held:this.held(plan),urgent:plan.tempo==='urgent',
+      return {guide,fitGuide,routes,ranked,held:this.held(plan),
         fit:augmentFit.context(plan,fitGuide,targets,placed),
         needs:Tracker.allocate(plan,DATA.items).needs};
     },
     evaluate(augment,ctx,round){
-      const {guide,fitGuide,routes,ranked,held,urgent,fit,needs}=ctx;
+      const {guide,fitGuide,routes,ranked,held,fit,needs}=ctx;
       if(held.includes(augment.apiName))return {augment,reasons:[{text:'Already selected'}],invalid:true};
       if(!this.eligible(augment,round))return {
         augment,reasons:[{text:this.roundNotice(augment,round)}],offRound:true,
@@ -117,9 +117,6 @@ module.exports = function createAugmentAdvisor({Academy, CompFinder, Tracker, Of
         `${match.text} for ${route?.guide.title||fitGuide.title}` :
         match.points?`Rules-based fit · ${match.text}${match.detail?' · '+match.detail:''}`:match.text}];
       let score=match.points;
-      if(urgent&&/after (?:\d+|every)|next \d+ rounds|every \d+ player|hatches in/i.test(text)&&!/\bnow\b/i.test(text)){
-        score-=3;reasons.push({text:'Delayed payoff while you need strength now'});
-      }
       if(/cannot choose your carousel/i.test(text)&&Object.values(needs).some(n=>n.count>0)){
         score-=3;reasons.push({text:'Gives up choosing the carousel components you need'});
       }

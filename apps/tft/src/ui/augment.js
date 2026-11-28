@@ -143,6 +143,5 @@ const AugmentUI=(()=>{
   const previous=render;render=function(){previous();contextKey='';draw();};
   document.addEventListener('carousel-new-game',()=>{modal.close();clearSearch();contextKey='';drawSelected();});
   document.addEventListener('carousel-meta-updated',()=>{contextKey='';draw();});
-  document.querySelector('#help ol').insertAdjacentHTML('beforeend','<li><b>Augment choices:</b> type a few letters and press Enter for each offer. Entry advances automatically. The round defaults to your next unrecorded augment. Click Reroll this offer to clear the slot, then enter the replacement after rerolling in game. Took this records your choice and adds any named completed items it grants. Record random items, components, and chest or anvil rewards when received.</li>');
   drawSelected();return {open,refresh:draw};
 })();

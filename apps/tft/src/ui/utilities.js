@@ -61,7 +61,7 @@
   const reset=document.createElement('button');reset.id='reset-queue-order';reset.className='quiet';reset.textContent='Reset order';reset.title='Restore recommended order; keep current targets and inventory';
   document.querySelector('.queuehead').insertBefore(reset,document.getElementById('receive-open'));
   const queue=document.getElementById('queue');
-  queue.insertAdjacentHTML('beforebegin','<span id="queue-drag-help" class="visuallyhidden">Drag to reorder. Keyboard: Space to pick up, arrows to move, Enter to drop, Escape to cancel.</span><span id="queue-sort-status" class="visuallyhidden" role="status" aria-live="polite"></span>');
+  queue.insertAdjacentHTML('beforebegin','<span id="queue-sort-status" class="visuallyhidden" role="status" aria-live="polite"></span>');
   const announce=text=>document.getElementById('queue-sort-status').textContent=text;
   let drag=null,frame=0;
   const cards=()=>[...queue.querySelectorAll('.qcard')];
